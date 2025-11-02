@@ -10,67 +10,155 @@ I use the MovieLens dataset and treat low ratings as negative feedback.
 
 ##  1. Setup (Ubuntu / WSL)
 
-Make sure you’re in Ubuntu (WSL), **not PowerShell**.(just for me)
+This project runs in Ubuntu (WSL) on Windows 10/11.
 
-```bash
-cd "/mnt/c/Users/Helin/OneDrive/Dokumente/BachelorThesis/code/srcCode/recsys-negative-feedback"
+Requirements
+
+WSL2 with Ubuntu 20.04 or newer
+
+Visual Studio Code
+
+Remote - WSL extension
+
+Python extension
+
+Jupyter extension
+
+Miniconda installed inside WSL
+
+2. Install Miniconda
+
+Run the following commands in your Ubuntu terminal:
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda3
+rm Miniconda3-latest-Linux-x86_64.sh
+
+# Initialize Conda
+~/miniconda3/bin/conda init bash
+exec bash
 
 
-installed packages:
-sudo apt update
-sudo apt install -y python3 python3-venv python3-pip
+Accept Conda terms (required for new versions):
 
-##create and activate virtual enviorment:
-python3 -m venv .venv
-source .venv/bin/activate
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
-python libs:
+3. Create Environment
+conda create -n recsys-conda python=3.8 -y
+conda activate recsys-conda
+
+4. Install Required Packages
+
+Use Conda (recommended):
+
+conda install -c conda-forge pandas numpy pyarrow jupyter scikit-learn scikit-surprise scipy matplotlib seaborn ipykernel -y
+
+
+Or use pip:
+
 pip install --upgrade pip
-pip install pandas numpy pyarrow jupyter
+pip install pandas numpy pyarrow jupyter scikit-learn scikit-surprise scipy matplotlib seaborn
+
+5. Register Kernel for VS Code
+
+Make the environment visible in Jupyter and VS Code:
+
+python -m ipykernel install --user --name recsys-conda --display-name "Python 3.8 (recsys)"
 
 
-python3 --version
-pip --version
+Verify:
 
-python3 --version
-Python 3.10.16
-helin@DESKTOP-AE9GKSP:/mnt/c/Users/Helin/OneDrive/Dokumente/BachelorThesis/code/srcCode/recsys-negative-feedback$ pip3 --version
-pip 25.3 from /home/helin/.local/lib/python3.10/site-packages/pip (python 3.10) 
+cat /home/helin/.local/share/jupyter/kernels/recsys-conda/kernel.json
 
 
-venv active start repo:
-jupyter notebook --no-browser --ip=127.0.0.1
+It should contain a line similar to:
 
-URL it prints (starts with http://127.0.0.1:8888/...) and open it in your Windows browser
+"argv": ["/home/helin/miniconda3/envs/recsys-conda/bin/python", ...]
+"display_name": "Python 3.8 (recsys)"
+
+6. Open the Project in VS Code (WSL Mode)
+conda activate recsys-conda
+cd /mnt/c/Users/Helin/OneDrive/Dokumente/BachelorThesis/code/srcCode/recsys-negative-feedback
+code .
 
 
-3. What the notebook 02_movielensEdaAndSplit does
+In VS Code:
 
-Load raw MovieLens data (u.data)
+Make sure the bottom-left corner shows WSL: Ubuntu.
+
+When you open a notebook, click Select Kernel (top-right).
+
+Choose Python 3.8 (recsys).
+
+7. Verify Installation
+
+Run this in a new notebook cell:
+
+import sys
+from surprise import SVD
+print("Python:", sys.version)
+print("Executable:", sys.executable)
+print("Surprise OK:", SVD)
+
+
+Expected output:
+
+Python: 3.8.x
+Executable: /home/helin/miniconda3/envs/recsys-conda/bin/python
+Surprise OK: <class 'surprise.prediction_algorithms.matrix_factorization.SVD'>
+
+8. Daily Workflow
+
+Every time you work:
+
+conda activate recsys-conda
+cd /mnt/c/Users/Helin/OneDrive/Dokumente/BachelorThesis/code/srcCode/recsys-negative-feedback
+code .
+
+9. Notebooks Overview
+
+02_movielensEdaAndSplit.ipynb
+
+Loads raw MovieLens data (u.data)
 
 Columns: user, item, rating, timestamp
 
-Each row = one event (user-item interaction)
+Filters users and items with at least 5 ratings
 
-Filter sparse users/items
-minUserEvents, minItemEvents = 5, 5
+Maps IDs to integers
 
-Keep only users and items with ≥5 ratings.
+Sorts by time
 
-Map IDs to 0..N-1
-Creates dense integer IDs for ML models.
+Splits into train/test (last event per user = test)
 
-Sort by time
-So we know what “last” means for each user.
-
-Split train/test
-Each user’s last event = test
-All previous = train
-→ simulates “can we predict the next thing?”
-
-Save processed data
+Saves:
 
 data/processed/movielens/train.parquet
+
 data/processed/movielens/test.parquet
 
+10. Running Models
 
+Run baseline collaborative filtering:
+
+python -m src.eval.evaluateAlsMovielens
+
+
+Run thesis comparison (baseline vs. negative model):
+
+python -m src.eval.generate_thesis_results
+
+11. Output Files
+
+Generated under reports/:
+
+reports/
+  figures/
+    learned_factors.png
+    learning_curves.png
+    metric_comparison.png
+  tables/
+    baseline_metrics.csv
+    negative_feedback_metrics.csv
+    statistical_tests.csv
