@@ -17,6 +17,7 @@ def recommend_top_n_for_user(model, userId, all_item_ids, known_items, n=10):
     scores.sort(key=lambda x: x[1], reverse=True)
     return [item for (item, score) in scores[:n]]
 
+
 def build_user_history(df):#set of items they’ve interacted with in train
     # df: trainDf
     # return dict: userId -> set of items they've seen (train interactions)

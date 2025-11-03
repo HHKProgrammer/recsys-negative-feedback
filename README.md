@@ -53,7 +53,10 @@ conda activate recsys-conda
 Use Conda (recommended):
 
 conda install -c conda-forge pandas numpy pyarrow jupyter scikit-learn scikit-surprise scipy matplotlib seaborn ipykernel -y
-
+#conda install -c conda-forge matplotlib -y
+#conda install -c conda-forge matplotlib scikit-learn -y
+# To recreate environment from file:
+conda env create -f environment.yml
 
 Or use pip:
 
