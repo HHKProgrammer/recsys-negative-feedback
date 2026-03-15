@@ -1,0 +1,1 @@
+{"timestamp": "2025-11-03 23:11:00", "dataset": "MovieLens-100k (user-wise last-item test)", "model": "Surprise SVD (positive-only)", "params": {"n_factors": 150, "n_epochs": 40, "lr_all": 0.01, "reg_all": 0.1}, "metrics": {"P@10": 0.002120890774125133, "R@10": 0.021208907741251327, "nDCG@10": 0.009282911286154143}}
