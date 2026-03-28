@@ -12,7 +12,9 @@
 # 3 Compute P@K, R@K, nDCG@K, Negative@K, Hit@K, MRR.
 # 4. Return both aggregated means and a per-user DataFrame for significance tests
 
+import os
 import random
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 import pandas as pd
@@ -82,6 +84,7 @@ def evaluate_ranking(
     seed: int = 42,
     max_users: Optional[int] = None,
     similarity_fn=None,
+    n_workers: Optional[int] = None,
 ) -> Tuple[Dict[str, float], pd.DataFrame]:
     # Evaluate a model on the test set.
     # model: SVDBaseline or a negative variant Detected by whether it has a
@@ -89,52 +92,60 @@ def evaluate_ranking(
     # user_negative_items: maps userId  set of negative movieIds
     #                      WeightedPenalty instead needs Dict[int,float]
     # max_users if set, evaluate only on the first max_users test users
+    # n_workers: how many threads to use defaults to number of CPU cores
+    #            threads work well here because numpy releases the GIL during matmul
+
+    from src.models.svd_baseline import SVDBaseline
+    from src.models.negative_variants import FilterNegatives, RerankPenalty, WeightedPenalty
+
+    if n_workers is None:
+        n_workers = os.cpu_count() or 4
 
     # own rng instance  isolated from global seed, reproducible per-user sampling
+    # note: we pre-generate all candidate lists before threading so the rng order
+    # is deterministic regardless of which thread finishes first
     rng = random.Random(seed)
     user_train_items: Dict[int, Set[int]] = (
         train_df.groupby("userId")["movieId"].apply(set).to_dict()
     )
 
-    rows = test_df.iterrows()
-    if max_users is not None:
-        import itertools
-        rows = itertools.islice(rows, max_users)
+    # pick the test rows we want to evaluate
+    subset = test_df.head(max_users) if max_users is not None else test_df
 
-    per_user: List[Dict] = []
-
-    for _, row in tqdm(rows, desc="Evaluating", total=max_users or len(test_df)):
+    # pre-sample candidates for every user in a fixed order so results are reproducible
+    user_rows = []
+    for _, row in subset.iterrows():
         user_id = int(row["userId"])
         test_item = int(row["movieId"])
-
         seen = user_train_items.get(user_id, set())
         candidates = sample_negative_candidates(user_id, all_items, seen, n_candidates, rng)
         # guarantee the true test item is always in the candidate pool
-        # without this, the model would have no chance of ever finding it
         if test_item not in candidates:
             candidates.append(test_item)
+        user_rows.append((user_id, test_item, candidates))
 
+    def _eval_one(args):
+        # runs inside a thread processes one user and returns the metric dict
+        user_id, test_item, candidates = args
         negatives = user_negative_items.get(user_id, set() if not isinstance(
             next(iter(user_negative_items.values()), {}), dict) else {})
 
-        # Dispatch based on model type
-        from src.models.svd_baseline import SVDBaseline
-        from src.models.negative_variants import FilterNegatives, RerankPenalty, WeightedPenalty
-
         if isinstance(model, SVDBaseline):
             ranked = model.rank_items_for_user(user_id, candidates)
-        elif isinstance(model, WeightedPenalty):
-            # weighted needs dict {movieId: rating} to compute severityweighted penalty
-            ranked = model.rank_items_for_user(user_id, candidates, negatives)
         else:
-            # FilterNegatives and RerankPenalty both take Set[int]
             ranked = model.rank_items_for_user(user_id, candidates, negatives)
 
         ranked_items = [item for item, _ in ranked]
-        # For negative@K metric we always need a Set[int]
         neg_set = set(negatives) if isinstance(negatives, dict) else negatives
+        return evaluate_user(user_id, ranked_items, test_item, neg_set, k, similarity_fn)
 
-        per_user.append(evaluate_user(user_id, ranked_items, test_item, neg_set, k, similarity_fn))
+    # run all users in parallel using a thread pool
+    # ThreadPoolExecutor is fine here: numpy matmul releases the GIL so threads actually run
+    per_user: List[Dict] = []
+    with ThreadPoolExecutor(max_workers=n_workers) as pool:
+        futures = {pool.submit(_eval_one, args): args for args in user_rows}
+        for future in tqdm(as_completed(futures), desc="Evaluating", total=len(user_rows)):
+            per_user.append(future.result())
 
     per_user_df = pd.DataFrame(per_user)
 

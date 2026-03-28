@@ -59,24 +59,27 @@ class RerankPenalty:
         self.baseline = baseline
         self.alpha = alpha  # penalty strength — 0.1 gentle, 1.0 aggressive
 
-    def _penalty(self, item_id: int, negative_items: Set[int]) -> float:
-        # max cosine similarity between this candidate and any of the user's negative items
-        if not negative_items:
-            return 0.0
-        return max(self.baseline.get_similarity(item_id, neg) for neg in negative_items)
-
     def rank_items_for_user(
         self,
         user_id: int,
         candidate_items: List[int],
         negative_items: Set[int],
     ) -> List[Tuple[int, float]]:
-        scores = []
-        for item in candidate_items:
-            pred = self.baseline.predict(user_id, item)
-            penalty = self._penalty(item, negative_items)
-            # adjusted score items near hated items get pushed down the list
-            scores.append((item, pred - self.alpha * penalty))
+        # batch predict all candidates at once one matmul instead of 500 calls
+        preds = self.baseline.predict_batch(user_id, candidate_items)
+
+        if not negative_items:
+            scores = list(zip(candidate_items, preds.tolist()))
+        else:
+            # sim_matrix shape: (n_candidates, n_negatives)
+            # each row = one candidate, each column = one hated item
+            neg_list = list(negative_items)
+            sim_matrix = self.baseline.similarity_matrix_batch(candidate_items, neg_list)
+            # penalty per candidate = max similarity to any hated item
+            penalties = sim_matrix.max(axis=1)  # shape (n_candidates,)
+            adjusted = preds - self.alpha * penalties
+            scores = list(zip(candidate_items, adjusted.tolist()))
+
         scores.sort(key=lambda x: x[1], reverse=True)
         return scores
 
@@ -106,30 +109,35 @@ class WeightedPenalty:
         self.alpha = alpha
         self.max_rating = max_rating  # 5.0 for ml-1m rating scale
 
-    def _penalty(
-        self, item_id: int, negative_items_with_ratings: Dict[int, float]
-    ) -> float:
-        # weighted mean of (similarity * severity_weight) across all negative items
-        # weight examples: rating=1 -> (5-1)/5=0.8, rating=2 -> 0.6, rating=3 -> 0.4
-        if not negative_items_with_ratings:
-            return 0.0
-        contributions = []
-        for neg_item, rating in negative_items_with_ratings.items():
-            sim = self.baseline.get_similarity(item_id, neg_item)
-            weight = (self.max_rating - rating) / self.max_rating
-            contributions.append(sim * weight)
-        return float(np.mean(contributions))
-
     def rank_items_for_user(
         self,
         user_id: int,
         candidate_items: List[int],
         negative_items_with_ratings: Dict[int, float],  # {movieId: rating}
     ) -> List[Tuple[int, float]]:
-        scores = []
-        for item in candidate_items:
-            pred = self.baseline.predict(user_id, item)
-            penalty = self._penalty(item, negative_items_with_ratings)
-            scores.append((item, pred - self.alpha * penalty))
+        # batch predict all candidates at once
+        preds = self.baseline.predict_batch(user_id, candidate_items)
+
+        if not negative_items_with_ratings:
+            scores = list(zip(candidate_items, preds.tolist()))
+        else:
+            neg_items = list(negative_items_with_ratings.keys())
+            # weight per negative: 1-star -> 0.8, 2-star -> 0.6, 3-star -> 0.4
+            weights = np.array(
+                [(self.max_rating - negative_items_with_ratings[n]) / self.max_rating
+                 for n in neg_items],
+                dtype=np.float32,
+            )
+
+            # sim_matrix shape: (n_candidates, n_negatives)
+            sim_matrix = self.baseline.similarity_matrix_batch(candidate_items, neg_items)
+
+            # penalty per candidate = mean(sim * weight) across all negatives
+            # (n_candidates, n_negatives) @ (n_negatives,) = (n_candidates,)
+            penalties = (sim_matrix @ weights) / len(neg_items)
+
+            adjusted = preds - self.alpha * penalties
+            scores = list(zip(candidate_items, adjusted.tolist()))
+
         scores.sort(key=lambda x: x[1], reverse=True)
         return scores

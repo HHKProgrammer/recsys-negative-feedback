@@ -143,12 +143,85 @@ class SVDBaseline:
         qi = self._model.qi  # shape (n_surprise_items, n_factors)
         self._sim_matrix = cosine_similarity(qi).astype(np.float32)
 
+    def predict_batch(self, user_id: int, item_ids: List[int]) -> np.ndarray:
+        # vectorized version of predict()  one numpy matmul instead of N surprise calls
+        # formula: mu + bu[u] + bi[items] + qi[items] @ pu[u]
+        # ~50x faster than calling predict() 500 times in a loop
+        global_mean = self._model.global_mean
+
+        # get user bias and latent vector fall back to zero if user is unknown
+        try:
+            user_inner = self._trainset.to_inner_uid(str(user_id))
+            user_bias = self._model.bu[user_inner]
+            user_vec = self._model.pu[user_inner]  # shape (n_factors,)
+        except ValueError:
+            user_bias = 0.0
+            user_vec = np.zeros(self.n_factors)
+
+        # map movie IDs to surprise inner IDs, mark unknown items
+        inners = []
+        unknown_mask = []
+        for item in item_ids:
+            inner = self._raw_to_inner.get(item)
+            if inner is not None:
+                inners.append(inner)
+                unknown_mask.append(False)
+            else:
+                inners.append(0)  # placeholder  will be overwritten below
+                unknown_mask.append(True)
+
+        inners_arr = np.array(inners, dtype=np.int32)
+        unknown_arr = np.array(unknown_mask, dtype=bool)
+
+        # batch prediction: all items at once  shape (n_items,)
+        item_biases = self._model.bi[inners_arr]
+        item_vecs = self._model.qi[inners_arr]  # shape (n_items, n_factors)
+        preds = global_mean + user_bias + item_biases + item_vecs @ user_vec
+
+        # unknown items: just return global mean (same as surprise fallback)
+        preds[unknown_arr] = global_mean
+        return preds
+
+    def similarity_matrix_batch(
+        self, items_a: List[int], items_b: List[int]
+    ) -> np.ndarray:
+        # cosine similarity between every pair in items_a x items_b at once
+        # returns matrix of shape (len(items_a), len(items_b))
+        # used by rerank/weighted variants to vectorize penalty computation
+        #
+        # instead of calling get_similarity() 501*50 times (one per candidate-neg pair)
+        # we do: S = norm(Q_a) @ norm(Q_b).T one matmul for all pairs
+
+        def _get_vecs(item_ids):
+            inners = [self._raw_to_inner.get(i) for i in item_ids]
+            vecs = np.zeros((len(item_ids), self.n_factors), dtype=np.float32)
+            for j, inner in enumerate(inners):
+                if inner is not None:
+                    vecs[j] = self._model.qi[inner]
+            return vecs
+
+        vecs_a = _get_vecs(items_a)  # shape (n_a, n_factors)
+        vecs_b = _get_vecs(items_b)  # shape (n_b, n_factors)
+
+        # L2-normalize rows so dot product == cosine similarity
+        norms_a = np.linalg.norm(vecs_a, axis=1, keepdims=True)
+        norms_b = np.linalg.norm(vecs_b, axis=1, keepdims=True)
+        # avoid division by zero for unknown items (zero vectors)
+        norms_a[norms_a == 0] = 1.0
+        norms_b[norms_b == 0] = 1.0
+        vecs_a /= norms_a
+        vecs_b /= norms_b
+
+        # (n_a, n_factors) @ (n_factors, n_b) = (n_a, n_b)
+        return (vecs_a @ vecs_b.T).astype(np.float32)
+
     def rank_items_for_user(
         self, user_id: int, candidate_items: List[int]
     ) -> List[Tuple[int, float]]:
         # scores each candidate with svd prediction, returns sorted list descending
-        # baseline does no negative feedback adjustment  pure svd score
-        scores = [(item, self.predict(user_id, item)) for item in candidate_items]
+        # uses predict_batch() instead of 500 individual predict() calls
+        preds = self.predict_batch(user_id, candidate_items)
+        scores = list(zip(candidate_items, preds.tolist()))
         scores.sort(key=lambda x: x[1], reverse=True)
         return scores
 
