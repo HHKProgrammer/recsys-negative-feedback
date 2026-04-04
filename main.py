@@ -65,7 +65,7 @@ def main():
 
     # ── prepare ──────────────────────────────────────────────────────────────
     p_prep = sub.add_parser("prepare", help="Prepare dataset splits")
-    p_prep.add_argument("--dataset", choices=["1m", "10m", "20m"], default="1m")
+    p_prep.add_argument("--dataset", choices=["100k", "1m", "10m", "20m"], default="1m")
     p_prep.add_argument("--raw_dir", default="data/raw/movielens")
     p_prep.add_argument("--output_dir", default=None)
     p_prep.add_argument("--min_ratings", type=int, default=5)

@@ -30,6 +30,13 @@ from src.utils.io import save_parquet, ensure_dir
 
 # config per dataset version ml-1m and ml-10m use :: separator, ml-20m uses csv with header
 DATASET_CONFIGS = {
+    "100k": {
+        "filename": "u.data",
+        "sep": "\t",
+        "columns": ["userId", "movieId", "rating", "timestamp"],
+        "has_header": False,
+        "raw_subdir": "ml-100k",
+    },
     "1m": {
         "filename": "ratings.dat",
         "sep": "::",
@@ -42,7 +49,7 @@ DATASET_CONFIGS = {
         "sep": "::",
         "columns": ["userId", "movieId", "rating", "timestamp"],
         "has_header": False,
-        "raw_subdir": "ml-10M100K",
+        "raw_subdir": "ml-10m",  # upload your data to data/raw/movielens/ml-10m/
     },
     "20m": {
         "filename": "ratings.csv",
@@ -205,7 +212,7 @@ def prepare_movielens(
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare MovieLens dataset splits")
-    parser.add_argument("--dataset", choices=["1m", "10m", "20m"], default="1m")
+    parser.add_argument("--dataset", choices=["100k", "1m", "10m", "20m"], default="1m")
     parser.add_argument("--raw_dir", default="data/raw/movielens")
     parser.add_argument("--output_dir", default=None)
     parser.add_argument("--min_ratings", type=int, default=5)
