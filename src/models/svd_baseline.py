@@ -147,7 +147,8 @@ class SVDBaseline:
         # vectorized version of predict()  one numpy matmul instead of N surprise calls
         # formula: mu + bu[u] + bi[items] + qi[items] @ pu[u]
         # ~50x faster than calling predict() 500 times in a loop
-        global_mean = self._model.global_mean
+        # global_mean lives on the trainset in surprise 1.1.1, not on the model
+        global_mean = self._trainset.global_mean
 
         # get user bias and latent vector fall back to zero if user is unknown
         try:
