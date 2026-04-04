@@ -1,0 +1,46 @@
+# MovieLens 20M — experiment configuration
+# same settings as 1m, just pointing to the 20m processed data
+
+dataset:
+  name: movielens-20m
+  raw_path: data/raw/movielens/ml-20m/ratings.csv
+  processed_path: data/processed/movielens/ml-20m/
+
+splits:
+  train_file: train.parquet
+  train_inner_file: train_inner.parquet
+  val_file: val.parquet
+  test_file: test.parquet
+  user_thresholds_file: user_thresholds.parquet
+
+model:
+  name: SVD
+  params:
+    n_factors: 100
+    n_epochs: 20
+    lr_all: 0.01
+    reg_all: 0.05
+
+negative_feedback:
+  fixed_thresholds: [1, 2, 3]
+  use_median: true
+  use_modus: true
+  alphas: [0.1, 0.3, 1.0]
+  pos_threshold: 4
+
+evaluation:
+  k: 10
+  n_candidates: 500
+  random_seed: 42
+
+random_seed: 42
+
+quick_mode:
+  n_candidates: 100
+  max_users: 500
+  thresholds: [2]
+  alphas: [0.3]
+  variants: [baseline, filter, rerank]
+
+output:
+  base_dir: outputs/movielens/ml-20m/runs/
