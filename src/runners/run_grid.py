@@ -28,23 +28,26 @@ from src.runners.run_experiment import run_single_experiment
 from src.utils.config import ExperimentConfig
 from src.utils.io import ensure_dir
 
-# checkpoint file stores list of completed experiment ids as json
-CHECKPOINT_FILE = "outputs/.grid_checkpoint.json"
+# checkpoint file lives inside the dataset output dir so each dataset has its own
+# this prevents ml-1m completed experiments from blocking ml-10m from running
+def _checkpoint_path(output_dir: str) -> str:
+    return os.path.join(output_dir, ".grid_checkpoint.json")
 
 
-def _load_checkpoint() -> List[str]:
-    # returns list of alreadycompleted experiment ids
-    # empty list if no checkpoint exists yet first run
-    if os.path.exists(CHECKPOINT_FILE):
-        with open(CHECKPOINT_FILE) as f:
+def _load_checkpoint(output_dir: str) -> List[str]:
+    # returns list of already completed experiment ids for this dataset
+    path = _checkpoint_path(output_dir)
+    if os.path.exists(path):
+        with open(path) as f:
             return json.load(f)
     return []
 
 
-def _save_checkpoint(completed: List[str]) -> None:
+def _save_checkpoint(completed: List[str], output_dir: str) -> None:
     # saves checkpoint after each experiment so progress is never lost
-    ensure_dir(os.path.dirname(CHECKPOINT_FILE))
-    with open(CHECKPOINT_FILE, "w") as f:
+    path = _checkpoint_path(output_dir)
+    ensure_dir(os.path.dirname(path))
+    with open(path, "w") as f:
         json.dump(completed, f, indent=2)
 
 
@@ -116,7 +119,7 @@ def run_full_grid(config_path: str, quick: bool = False) -> None:
     ensure_dir(config.output_dir)
 
     experiments = build_experiment_list(config, quick)
-    completed = _load_checkpoint()
+    completed = _load_checkpoint(config.output_dir)
 
     print(f"\n{'='*60}")
     print(f"Experiment grid: {len(experiments)} runs ({'quick' if quick else 'full'})")
@@ -149,7 +152,7 @@ def run_full_grid(config_path: str, quick: bool = False) -> None:
 
         # save checkpoint immediately after each run  crash safety
         completed.append(exp_id)
-        _save_checkpoint(completed)
+        _save_checkpoint(completed, config.output_dir)
 
     _save_grid_summary(config_path, config, all_results)
     print(f"\nGrid complete. See {config.output_dir}")

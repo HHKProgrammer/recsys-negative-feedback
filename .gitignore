@@ -1,6 +1,7 @@
 data/
 !src/data/
 outputs/
+!outputs/**/grid_summary.json
 .venv/
 .ipynb_checkpoints/
 __pycache__/
