@@ -10,6 +10,7 @@ grid      Run the full experiment grid (36 runs for ML-1M)
 Examples
 --------
 python main.py prepare --dataset 1m
+python main.py prepare --dataset spotify --raw_dir data/raw/spotify
 python main.py run --config configs/movielens_1m.yaml --variant baseline
 python main.py run --config configs/movielens_1m.yaml --variant rerank --threshold_type fixed --fixed_threshold 2 --alpha 0.3
 python main.py grid --config configs/movielens_1m.yaml
@@ -19,15 +20,24 @@ import argparse
 
 
 def cmd_prepare(args):
-    from src.data.prepare_movielens import prepare_movielens
+    if args.dataset == "spotify":
+        from src.data.prepare_spotify import prepare_spotify
 
-    output_dir = args.output_dir or f"data/processed/movielens/ml-{args.dataset}"
-    prepare_movielens(
-        raw_dir=args.raw_dir,
-        output_dir=output_dir,
-        dataset=args.dataset,
-        min_ratings=args.min_ratings,
-    )
+        output_dir = args.output_dir or "data/processed/spotify"
+        prepare_spotify(
+            raw_dir=args.raw_dir,
+            output_dir=output_dir,
+        )
+    else:
+        from src.data.prepare_movielens import prepare_movielens
+
+        output_dir = args.output_dir or f"data/processed/movielens/ml-{args.dataset}"
+        prepare_movielens(
+            raw_dir=args.raw_dir,
+            output_dir=output_dir,
+            dataset=args.dataset,
+            min_ratings=args.min_ratings,
+        )
 
 
 def cmd_run(args):
@@ -65,7 +75,7 @@ def main():
 
     # ── prepare ──────────────────────────────────────────────────────────────
     p_prep = sub.add_parser("prepare", help="Prepare dataset splits")
-    p_prep.add_argument("--dataset", choices=["100k", "1m", "10m", "20m"], default="1m")
+    p_prep.add_argument("--dataset", choices=["100k", "1m", "10m", "20m", "spotify"], default="1m")
     p_prep.add_argument("--raw_dir", default="data/raw/movielens")
     p_prep.add_argument("--output_dir", default=None)
     p_prep.add_argument("--min_ratings", type=int, default=5)
