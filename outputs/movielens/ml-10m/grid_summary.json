@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-25T23:02:21.377990",
+  "generated_at": "2026-04-26T13:24:40.256285",
   "config_file": "configs/movielens_10m.yaml",
   "n_experiments": 36,
   "experiments": [

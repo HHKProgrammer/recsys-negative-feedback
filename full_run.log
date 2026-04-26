@@ -1,0 +1,222 @@
+nohup: ignoring input
+Phase 1: MovieLens 1M
+
+============================================================
+Experiment grid: 36 runs (full)
+Already completed: 36
+============================================================
+
+[1/36] SKIP (done): baseline
+[2/36] SKIP (done): filter_fixed_1
+[3/36] SKIP (done): rerank_fixed_1_a0.1
+[4/36] SKIP (done): rerank_fixed_1_a0.3
+[5/36] SKIP (done): rerank_fixed_1_a1.0
+[6/36] SKIP (done): weighted_fixed_1_a0.1
+[7/36] SKIP (done): weighted_fixed_1_a0.3
+[8/36] SKIP (done): weighted_fixed_1_a1.0
+[9/36] SKIP (done): filter_fixed_2
+[10/36] SKIP (done): rerank_fixed_2_a0.1
+[11/36] SKIP (done): rerank_fixed_2_a0.3
+[12/36] SKIP (done): rerank_fixed_2_a1.0
+[13/36] SKIP (done): weighted_fixed_2_a0.1
+[14/36] SKIP (done): weighted_fixed_2_a0.3
+[15/36] SKIP (done): weighted_fixed_2_a1.0
+[16/36] SKIP (done): filter_fixed_3
+[17/36] SKIP (done): rerank_fixed_3_a0.1
+[18/36] SKIP (done): rerank_fixed_3_a0.3
+[19/36] SKIP (done): rerank_fixed_3_a1.0
+[20/36] SKIP (done): weighted_fixed_3_a0.1
+[21/36] SKIP (done): weighted_fixed_3_a0.3
+[22/36] SKIP (done): weighted_fixed_3_a1.0
+[23/36] SKIP (done): filter_median
+[24/36] SKIP (done): rerank_median_a0.1
+[25/36] SKIP (done): rerank_median_a0.3
+[26/36] SKIP (done): rerank_median_a1.0
+[27/36] SKIP (done): weighted_median_a0.1
+[28/36] SKIP (done): weighted_median_a0.3
+[29/36] SKIP (done): weighted_median_a1.0
+[30/36] SKIP (done): filter_modus
+[31/36] SKIP (done): rerank_modus_a0.1
+[32/36] SKIP (done): rerank_modus_a0.3
+[33/36] SKIP (done): rerank_modus_a1.0
+[34/36] SKIP (done): weighted_modus_a0.1
+[35/36] SKIP (done): weighted_modus_a0.3
+[36/36] SKIP (done): weighted_modus_a1.0
+Summary saved -> outputs/movielens/ml-1m/grid_summary.json
+
+Grid complete. See outputs/movielens/ml-1m/runs/
+Phase 2: MovieLens 10M
+
+============================================================
+Preparing MovieLens 10M
+============================================================
+Loading data/raw/movielens/ml-10m/ratings.dat ...
+  Loaded 10,000,054 ratings | 69,878 users | 10,677 items
+
+Filtering cold-start (min 5 ratings per user/item) ...
+  Iter 1: 9,998,816 ratings remaining
+  Iter 2: 9,998,816 ratings remaining
+  After filtering: 69,878 users | 10,196 items
+
+Remapping IDs to dense integers ...
+  Users: 0–69877 | Items: 0–10195
+
+Split (random): train=9,928,938 | test=69,878
+Split (random): train_inner=9,859,060 | val=69,878
+
+Computing per-user thresholds ...
+  Median mean=3.70 | Modus mean=3.79
+
+Saving files ...
+
+All files written to data/processed/movielens/ml-10m
+Done.
+
+============================================================
+Experiment grid: 36 runs (full)
+Already completed: 36
+============================================================
+
+[1/36] SKIP (done): baseline
+[2/36] SKIP (done): filter_fixed_1
+[3/36] SKIP (done): rerank_fixed_1_a0.1
+[4/36] SKIP (done): rerank_fixed_1_a0.3
+[5/36] SKIP (done): rerank_fixed_1_a1.0
+[6/36] SKIP (done): weighted_fixed_1_a0.1
+[7/36] SKIP (done): weighted_fixed_1_a0.3
+[8/36] SKIP (done): weighted_fixed_1_a1.0
+[9/36] SKIP (done): filter_fixed_2
+[10/36] SKIP (done): rerank_fixed_2_a0.1
+[11/36] SKIP (done): rerank_fixed_2_a0.3
+[12/36] SKIP (done): rerank_fixed_2_a1.0
+[13/36] SKIP (done): weighted_fixed_2_a0.1
+[14/36] SKIP (done): weighted_fixed_2_a0.3
+[15/36] SKIP (done): weighted_fixed_2_a1.0
+[16/36] SKIP (done): filter_fixed_3
+[17/36] SKIP (done): rerank_fixed_3_a0.1
+[18/36] SKIP (done): rerank_fixed_3_a0.3
+[19/36] SKIP (done): rerank_fixed_3_a1.0
+[20/36] SKIP (done): weighted_fixed_3_a0.1
+[21/36] SKIP (done): weighted_fixed_3_a0.3
+[22/36] SKIP (done): weighted_fixed_3_a1.0
+[23/36] SKIP (done): filter_median
+[24/36] SKIP (done): rerank_median_a0.1
+[25/36] SKIP (done): rerank_median_a0.3
+[26/36] SKIP (done): rerank_median_a1.0
+[27/36] SKIP (done): weighted_median_a0.1
+[28/36] SKIP (done): weighted_median_a0.3
+[29/36] SKIP (done): weighted_median_a1.0
+[30/36] SKIP (done): filter_modus
+[31/36] SKIP (done): rerank_modus_a0.1
+[32/36] SKIP (done): rerank_modus_a0.3
+[33/36] SKIP (done): rerank_modus_a1.0
+[34/36] SKIP (done): weighted_modus_a0.1
+[35/36] SKIP (done): weighted_modus_a0.3
+[36/36] SKIP (done): weighted_modus_a1.0
+Summary saved -> outputs/movielens/ml-10m/grid_summary.json
+
+Grid complete. See outputs/movielens/ml-10m/runs/
+Phase 3: MovieLens 20M
+
+============================================================
+Preparing MovieLens 20M
+============================================================
+Loading data/raw/movielens/ml-20m/ratings.csv ...
+  Loaded 20,000,263 ratings | 138,493 users | 26,744 items
+
+Filtering cold-start (min 5 ratings per user/item) ...
+  Iter 1: 19,984,024 ratings remaining
+  Iter 2: 19,984,024 ratings remaining
+  After filtering: 138,493 users | 18,345 items
+
+Remapping IDs to dense integers ...
+  Users: 0–138492 | Items: 0–18344
+
+Split (random): train=19,845,531 | test=138,493
+Split (random): train_inner=19,707,038 | val=138,493
+
+Computing per-user thresholds ...
+  Median mean=3.73 | Modus mean=3.83
+
+Saving files ...
+
+All files written to data/processed/movielens/ml-20m
+Done.
+
+============================================================
+Experiment grid: 36 runs (full)
+Already completed: 36
+============================================================
+
+[1/36] SKIP (done): baseline
+[2/36] SKIP (done): filter_fixed_1
+[3/36] SKIP (done): rerank_fixed_1_a0.1
+[4/36] SKIP (done): rerank_fixed_1_a0.3
+[5/36] SKIP (done): rerank_fixed_1_a1.0
+[6/36] SKIP (done): weighted_fixed_1_a0.1
+[7/36] SKIP (done): weighted_fixed_1_a0.3
+[8/36] SKIP (done): weighted_fixed_1_a1.0
+[9/36] SKIP (done): filter_fixed_2
+[10/36] SKIP (done): rerank_fixed_2_a0.1
+[11/36] SKIP (done): rerank_fixed_2_a0.3
+[12/36] SKIP (done): rerank_fixed_2_a1.0
+[13/36] SKIP (done): weighted_fixed_2_a0.1
+[14/36] SKIP (done): weighted_fixed_2_a0.3
+[15/36] SKIP (done): weighted_fixed_2_a1.0
+[16/36] SKIP (done): filter_fixed_3
+[17/36] SKIP (done): rerank_fixed_3_a0.1
+[18/36] SKIP (done): rerank_fixed_3_a0.3
+[19/36] SKIP (done): rerank_fixed_3_a1.0
+[20/36] SKIP (done): weighted_fixed_3_a0.1
+[21/36] SKIP (done): weighted_fixed_3_a0.3
+[22/36] SKIP (done): weighted_fixed_3_a1.0
+[23/36] SKIP (done): filter_median
+[24/36] SKIP (done): rerank_median_a0.1
+[25/36] SKIP (done): rerank_median_a0.3
+[26/36] SKIP (done): rerank_median_a1.0
+[27/36] SKIP (done): weighted_median_a0.1
+[28/36] SKIP (done): weighted_median_a0.3
+[29/36] SKIP (done): weighted_median_a1.0
+[30/36] SKIP (done): filter_modus
+[31/36] SKIP (done): rerank_modus_a0.1
+[32/36] SKIP (done): rerank_modus_a0.3
+[33/36] SKIP (done): rerank_modus_a1.0
+[34/36] SKIP (done): weighted_modus_a0.1
+[35/36] SKIP (done): weighted_modus_a0.3
+[36/36] SKIP (done): weighted_modus_a1.0
+Summary saved -> outputs/movielens/ml-20m/grid_summary.json
+
+Grid complete. See outputs/movielens/ml-20m/runs/
+Phase 4: Spotify
+
+============================================================
+Preparing Spotify MSSD
+============================================================
+Split: temporal, test_ratio=0.2
+(temporal split because spotify data IS sequential)
+Loading data/raw/spotify/data/training_set/log_mini.csv ...
+  Loaded 167,880 track plays | 10,000 sessions
+
+Computing negative weights (skip level x context) ...
+  Skip (negative) rate: 51.2%
+  Search behavior rate: 1.9% (excluded from negatives)
+
+Temporal split: train=134,312 plays in 8,000 sessions
+               test =33,568 plays in 2,000 sessions
+
+Saving files ...
+
+All files written to data/processed/spotify
+Done.
+Traceback (most recent call last):
+  File "main.py", line 117, in <module>
+    main()
+  File "main.py", line 111, in main
+    cmd_grid(args)
+  File "main.py", line 65, in cmd_grid
+    run_full_grid(config_path=args.config, quick=args.quick)
+  File "/home/helin/thesis/src/runners/run_grid.py", line 118, in run_full_grid
+    config = ExperimentConfig.from_yaml(config_path)
+  File "/home/helin/thesis/src/utils/config.py", line 103, in from_yaml
+    with open(path, "r") as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'configs/spotify.yaml'
