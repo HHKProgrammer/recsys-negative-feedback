@@ -1,17 +1,29 @@
-# pipeline step 2 — data preparation
-# reads raw movielens ratings, cleans them, splits randomly, computes per user thresholds
+# pipeline step 2movielens data preparation
+# reads raw movielens ratings, cleans them, splits randomly, computes per-user thresholds
 #
-# IMPORTANT: uses RANDOM leave-one-out split, not temporal
-# reason: movielens is not genuinely sequential median user session is ~1 hour
-# splitting by last timestamp creates artificial sequentiality that doesnt exist
+# split strategy: RANDOM leave-one-out (not temporal)
+# movielens timestamps are unreliable for sequentiality median user session is ~1 hour
+# and many ratings were backdated; temporal split creates artificial bias that does not exist
 # reference: Fan et al. 2024 "Our Model Achieves Excellent Performance on MovieLens: What Does It Mean?"
 #
+# evaluation protocol: sampled ranking (500 random unseen items as candidates per user)
+# reference: Krichene & Rendle 2020 "On Sampled Metrics for Item Recommendation" (KDD 2020)
+# this is the same protocol used in NCF (He et al. 2017) and most modern recsys papers
+#
+# negative feedback definition: explicit ratings <= threshold
+# similar to BPR (Rendle et al. 2009) which treats unobserved items as implicit negatives
+# we differ by using LOW explicit ratings as STRONG negative signal instead of absence
+#
+# Surprise library context: Surprise evaluates SVD with RMSE/MAE (rating prediction)
+# we use NDCG@10/HR@10/MRR (ranking quality) which is the standard in the recommendation literature
+#  SVD baseline RMSE on ML-1M should be ~0.87 matching the Surprise benchmark table (hopefully)
+#
 # Produces 5 files in the output directory:
-#   train.parquet        — all training interactions (random 80%)
-#   test.parquet           — one random item per user held out
-#   train_inner.parquet  — train minus one additional random item per user
-#   val.parquet            — one random item per user for hyperparameter tuning
-#   user_thresholds.parquet — per-user median, modus, mean, count
+#   train.parquet           — all training interactions
+#   test.parquet            — one random item per user held out for final evaluation
+#   train_inner.parquet     — train minus val items (for hyperparameter tuning)
+#   val.parquet             — one random item per user for hyperparameter selection
+#   user_thresholds.parquet — per-user median, modus, mean for adaptive thresholds
 
 # Usage:
 #   python -m src.data.prepare_movielens --dataset 1m

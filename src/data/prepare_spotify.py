@@ -1,27 +1,37 @@
 # spotify mssd data preparation
-# unlike movielens, spotify data IS sequential because it comes from real listening sessions
-# reference: Brost et al. 2019 "The Music Streaming Sessions Dataset" (WSDM Cup 2019)
+# dataset: Music Streaming Sessions Dataset (MSSD), Brost et al. 2019 (WSDM Cup 2019)
+# https://dl.acm.org/doi/10.1145/3289600.3290983
+#
+# original evaluation in the paper: skip PREDICTION task
+#   given the first half of a session, predict skip/no-skip for tracks in the second half
+#   evaluated with mean average accuracy across 10 binary classification sub-tasks
+#   this is a SEQUENTIAL task session order matters, temporal split is mandatory there
+#
+# my evaluation approach: RANKING task (same protocol as movielens)
+#   i treat each session as a "user" and tracks as "items"
+#   skip level -> integer rating 1-5 so the same Surprise SVD pipeline works unchanged
+#   this lets me directly compare how negative feedback strategies transfer across datasets
+#   tradeoff: i lose the sequential session structure but gain cross-dataset comparability
+#
+# similar work: Hu et al. 2008 "Collaborative Filtering for Implicit Feedback Datasets" (ICDM)
+#   converts implicit signals (play counts) to confidence weights for matrix factorization
+#   my approach is analogous: skip level -> rating strength (stronger skip = lower rating)
+#
+# also related: BPR (Rendle et al. 2009) which treats observed items as positive
+#   and unobserved as implicit negatives — my work adds EXPLICIT negative signals (skips)
+#   on top of that, distinguishing between items the user never saw vs items they actively skipped
 #
 # key differences from movielens:
-# 1. negative feedback is implicit (skips) not explicit (star ratings)
-# 2. not all skips are equal: skip after 2 seconds means more than skip after 50 seconds
-# 3. context matters: skipping while searching for a song is normal, not a dislike signal
-#
-# i treat each listening session as a "user" and each track as an "item"
-# this maps the session data to the same userId/movieId/rating format as movielens
-# so the same evaluation pipeline runs on both datasets unchanged
+# 1. negative feedback is IMPLICIT (skips) not explicit (star ratings)
+# 2. not all skips are equal: skip after 2s means more than skip after 50s
+# 3. context matters: skipping while searching for a song is not a real dislike signal
+# 4. as in Spotify MSSD: skip_1/skip_2/skip_3/not_skipped are the 4 defined skip levels
 #
 # rating mapping: inverted negative weight scaled to 1-5
 #   not_skipped (weight=0.0) -> rating 5  (fully listened, positive)
 #   skip_3      (weight=0.3) -> rating 4  (mostly listened, weak positive)
 #   skip_2      (weight=0.7) -> rating 2  (brief listen, negative)
 #   skip_1      (weight=1.0) -> rating 1  (immediate skip, strongly negative)
-#
-# skip taxonomy (4 levels defined by spotify in the mssd dataset):
-#   skip_1 = very brief listen (first few seconds)  strongest negative
-#   skip_2 = brief listen (several seconds)          moderate negative
-#   skip_3 = most of track played, then skipped      weak negative
-#   not_skipped = full track completed               positive signal
 
 import json
 import os
