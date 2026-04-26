@@ -1,0 +1,5 @@
+Algorithm,RMSE,MAE,Source
+Random (lower bound),1.504,1.206,surpriselib.com
+SVD default,0.873,0.686,surpriselib.com
+SVD++ default,0.862,0.672,surpriselib.com
+My SVD (tuned n=100),0.865,N/A,This thesis
