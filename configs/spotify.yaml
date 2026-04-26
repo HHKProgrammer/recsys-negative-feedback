@@ -1,0 +1,49 @@
+# Spotify MSSD mini experiment configuration
+# sessions are treated as users, tracks as items
+# rating scale: 1-5 where 5=fully listened, 1=immediate skip
+
+dataset:
+  name: spotify-mssd-mini
+  raw_path: data/raw/spotify/data
+  processed_path: data/processed/spotify/
+
+splits:
+  train_file: train.parquet
+  train_inner_file: train_inner.parquet
+  val_file: val.parquet
+  test_file: test.parquet
+  user_thresholds_file: user_thresholds.parquet
+
+model:
+  name: SVD
+  params:
+    n_factors: 50
+    n_epochs: 20
+    lr_all: 0.01
+    reg_all: 0.05
+
+negative_feedback:
+  # rating <= threshold is negative (same  as movielens
+  # 1 = immediate skips only; 2 = brief skips; 3 = any skip
+  fixed_thresholds: [1, 2, 3]
+  use_median: true
+  use_modus: true
+  alphas: [0.1, 0.3, 1.0]
+  pos_threshold: 4    # fully listened or mostly listened = positive
+
+evaluation:
+  k: 10
+  n_candidates: 500
+  random_seed: 42
+
+random_seed: 42
+
+quick_mode:
+  n_candidates: 50
+  max_users: 200
+  thresholds: [2]
+  alphas: [0.3]
+  variants: [baseline, filter, rerank]
+
+output:
+  base_dir: outputs/spotify/runs/
