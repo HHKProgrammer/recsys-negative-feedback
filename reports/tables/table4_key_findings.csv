@@ -1,0 +1,10 @@
+Dataset,Variant,Best NDCG@10,Baseline NDCG,Change (%),Best config,sim_neg@10
+ml-1m,filter,0.0684,0.0684,0.0,filter_fixed_1,0.0405
+ml-1m,rerank,0.0676,0.0684,-1.2,rerank_fixed_1_a0.1,0.0344
+ml-1m,weighted,0.0679,0.0684,-0.7,weighted_fixed_1_a0.1,0.0374
+ml-10m,filter,0.0872,0.0872,0.0,filter_fixed_2,0.1637
+ml-10m,rerank,0.0857,0.0872,-1.8,rerank_fixed_1_a0.1,0.0225
+ml-10m,weighted,0.0865,0.0872,-0.8,weighted_fixed_1_a0.1,0.0287
+ml-20m,filter,0.0826,0.0826,0.0,filter_fixed_2,0.1453
+ml-20m,rerank,0.0814,0.0826,-1.4,rerank_fixed_1_a0.1,0.0205
+ml-20m,weighted,0.0826,0.0826,0.0,weighted_fixed_1_a0.1,0.0267
