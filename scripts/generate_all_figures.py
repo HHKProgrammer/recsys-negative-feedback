@@ -9,7 +9,7 @@ Run from the project root:  python scripts/generate_all_figures.py
   5. Saves everything to reports/figures/ and reports/tables/
 
 If you rerun experiments and want updated figures, just run this script again.
-Option A results (grid_summary_optionA.json) are loaded automatically if they exist.
+Known-negative injection results (grid_summary_known_neg_eval.json) are loaded automatically if they exist.
 
 Main:
 
@@ -41,7 +41,7 @@ Why standard evaluation always shows negative@10 = 0:
   We add the user's own negative items into the candidate pool on purpose (adversarial test).
   Now negative@10 can be non-zero for the baseline.
   The filter / rerank / weighted variants should push those items out of the top 10.
-  Run: python scripts/run_option_a.py  to generate the Option A grid summaries.
+  Run: python scripts/run_known_negative_eval.py --config configs/movielens_1m.yaml
 """
 
 import json
@@ -168,17 +168,17 @@ def load_all_results():
         if exps:
             standard[ds] = exps
             print(f"  {ds}: {len(exps)} experiments")
-        exps_a = load_experiments(folder / "grid_summary_optionA.json")
+        exps_a = load_experiments(folder / "grid_summary_known_neg_eval.json")
         if exps_a:
             option_a[ds] = exps_a
-            print(f"  {ds} Option A: {len(exps_a)} experiments")
+            print(f"  {ds} known-neg eval: {len(exps_a)} experiments")
 
     exps_sp = load_experiments(RESULTS_DIR / "spotify/grid_summary.json")
     if exps_sp:
         standard["spotify"] = exps_sp
         print(f"  spotify: {len(exps_sp)} experiments")
 
-    exps_sp_a = load_experiments(RESULTS_DIR / "spotify/grid_summary_optionA.json")
+    exps_sp_a = load_experiments(RESULTS_DIR / "spotify/grid_summary_known_neg_eval.json")
     if exps_sp_a:
         option_a["spotify"] = exps_sp_a
         print(f"  spotify Option A: {len(exps_sp_a)} experiments")
@@ -671,19 +671,21 @@ def fig7_movielens_vs_spotify(standard: dict):
 # items in the candidate pool, can the filter / rerank / weighted variants keep them
 # out of the top 10?
 #
-# This is the "adversarial" test. In the standard evaluation, negatives are never
-# in the candidate pool so negative@10 = 0 always. Here we force them in and ask:
+# This is the known-negative injection test (Krichene & Rendle 2020).
+# In standard evaluation, negatives are never in the candidate pool so
+# negative@10 = 0 always. Here we inject up to 50 of the user's own
+# low-rated items into the 501-item candidate pool and ask:
 # "Does our method actually protect the user from seeing known dislikes?"
 #
-# How to generate  results:
-#   python scripts/run_option_a.py
-# This runs the same 36 experiments but adds negative items to the candidate pool
-# and saves the results as grid_summary_optionA.json in each dataset folder.
+# How to generate results:
+#   python scripts/run_known_negative_eval.py --config configs/movielens_1m.yaml
+# Saves as grid_summary_known_neg_eval.json in each dataset's output folder.
 
-def fig8_option_a(standard: dict, option_a: dict):
+def fig8_known_neg_eval(standard: dict, option_a: dict):
     avail = [ds for ds in standard if ds in option_a]
     if not avail:
-        print("  skipping fig8: no Option A results (run: python scripts/run_option_a.py)")
+        print("  skipping fig8: no known-negative eval results")
+        print("  run: python scripts/run_known_negative_eval.py --config configs/movielens_1m.yaml")
         return
 
     n = len(avail)
@@ -698,35 +700,36 @@ def fig8_option_a(standard: dict, option_a: dict):
                     for v in variants}
 
         std_neg  = avg(standard[ds],  "negative@10")
-        opt_neg  = avg(option_a[ds],  "negative@10")
+        inj_neg  = avg(option_a[ds],  "negative@10")
         std_ndcg = avg(standard[ds],  "ndcg@10")
-        opt_ndcg = avg(option_a[ds],  "ndcg@10")
+        inj_ndcg = avg(option_a[ds],  "ndcg@10")
 
         x, w = np.arange(len(variants)), 0.35
         colors = [VARIANT_COLORS.get(v, "#aaa") for v in variants]
         ax.bar(x - w/2, [std_neg[v] for v in variants], w,
                color=colors, alpha=0.4, label="Standard neg@10 (always ≈ 0)")
-        ax.bar(x + w/2, [opt_neg[v] for v in variants], w,
-               color=colors, alpha=0.85, label="Option A neg@10")
+        ax.bar(x + w/2, [inj_neg[v] for v in variants], w,
+               color=colors, alpha=0.85, label="Injected neg@10")
 
         ax2 = ax.twinx()
         ax2.plot(x, [std_ndcg[v] for v in variants], "o-",
                  color="#666", lw=1.5, ms=6, label="Standard NDCG@10")
-        ax2.plot(x, [opt_ndcg[v] for v in variants], "s--",
-                 color="#222", lw=1.5, ms=6, label="Option A NDCG@10")
+        ax2.plot(x, [inj_ndcg[v] for v in variants], "s--",
+                 color="#222", lw=1.5, ms=6, label="Injected NDCG@10")
         ax2.set_ylabel("NDCG@10", fontsize=9)
 
         ax.set_xticks(x)
         ax.set_xticklabels(variants)
         ax.set_ylabel("negative@10\n(disliked items in top 10)")
-        ax.set_title(f"Fig 8 — Option A: Adversarial Evaluation ({ds.upper()})\n"
-                     "Negatives added to candidates on purpose")
+        ax.set_title(f"Fig 8 — Known-Negative Injection Evaluation ({ds.upper()})\n"
+                     "50 disliked items deliberately added to candidate pool\n"
+                     "(Krichene & Rendle 2020)")
 
         h1, l1 = ax.get_legend_handles_labels()
         h2, l2 = ax2.get_legend_handles_labels()
         ax.legend(h1 + h2, l1 + l2, fontsize=8)
 
-    save("fig8_option_a_adversarial")
+    save("fig8_known_neg_eval")
 
 
 #  7.  TABLES
@@ -872,7 +875,7 @@ def main():
     fig5_threshold_comparison(standard)
     fig6_dataset_scaling(standard)
     fig7_movielens_vs_spotify(standard)
-    fig8_option_a(standard, option_a)
+    fig8_known_neg_eval(standard, option_a)
 
     print()
     print("Generating tables...")

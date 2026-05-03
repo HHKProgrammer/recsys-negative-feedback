@@ -23,17 +23,19 @@ def cmd_prepare(args):
     if args.dataset == "spotify":
         from src.data.prepare_spotify import prepare_spotify
 
+        raw_dir = args.raw_dir or "data/raw/spotify/data"
         output_dir = args.output_dir or "data/processed/spotify"
         prepare_spotify(
-            raw_dir=args.raw_dir,
+            raw_dir=raw_dir,
             output_dir=output_dir,
         )
     else:
         from src.data.prepare_movielens import prepare_movielens
 
+        raw_dir = args.raw_dir or "data/raw/movielens"
         output_dir = args.output_dir or f"data/processed/movielens/ml-{args.dataset}"
         prepare_movielens(
-            raw_dir=args.raw_dir,
+            raw_dir=raw_dir,
             output_dir=output_dir,
             dataset=args.dataset,
             min_ratings=args.min_ratings,
@@ -76,7 +78,9 @@ def main():
     # ── prepare ──────────────────────────────────────────────────────────────
     p_prep = sub.add_parser("prepare", help="Prepare dataset splits")
     p_prep.add_argument("--dataset", choices=["100k", "1m", "10m", "20m", "spotify"], default="1m")
-    p_prep.add_argument("--raw_dir", default="data/raw/movielens")
+    p_prep.add_argument("--raw_dir", default=None,
+                        help="Path to raw data dir. "
+                             "Defaults to data/raw/movielens (ML) or data/raw/spotify/data (Spotify).")
     p_prep.add_argument("--output_dir", default=None)
     p_prep.add_argument("--min_ratings", type=int, default=5)
 
