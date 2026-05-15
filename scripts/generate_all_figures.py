@@ -156,34 +156,50 @@ def load_experiments(path: Path) -> list:
 
 def load_all_results():
     """
-    Load  results for all datasets.
-    Returns two dicts keyed by dataset name.
+    Load results for all datasets.
+    Returns three dicts keyed by dataset name:
+      standard        main grid (post-hoc variants: filter/rerank/weighted)
+      train_positive  training-time improvement (Hu et al. 2008)
+      known_neg_eval  adversarial evaluation with injected negative candidates
     """
-    standard  = {}
-    option_a  = {}
+    standard       = {}
+    train_positive = {}
+    known_neg_eval = {}
 
     for ds in ["ml-1m", "ml-10m", "ml-20m"]:
         folder = RESULTS_DIR / f"movielens/{ds}"
+
         exps = load_experiments(folder / "grid_summary.json")
         if exps:
             standard[ds] = exps
-            print(f"  {ds}: {len(exps)} experiments")
-        exps_a = load_experiments(folder / "grid_summary_known_neg_eval.json")
-        if exps_a:
-            option_a[ds] = exps_a
-            print(f"  {ds} known-neg eval: {len(exps_a)} experiments")
+            print(f"  {ds}: {len(exps)} experiments (standard)")
+
+        exps_tp = load_experiments(folder / "grid_summary_train_positive.json")
+        if exps_tp:
+            train_positive[ds] = exps_tp
+            print(f"  {ds}: {len(exps_tp)} experiments (train-positive)")
+
+        exps_kn = load_experiments(folder / "grid_summary_known_neg_eval.json")
+        if exps_kn:
+            known_neg_eval[ds] = exps_kn
+            print(f"  {ds}: {len(exps_kn)} experiments (known-neg eval)")
 
     exps_sp = load_experiments(RESULTS_DIR / "spotify/grid_summary.json")
     if exps_sp:
         standard["spotify"] = exps_sp
-        print(f"  spotify: {len(exps_sp)} experiments")
+        print(f"  spotify: {len(exps_sp)} experiments (standard)")
 
-    exps_sp_a = load_experiments(RESULTS_DIR / "spotify/grid_summary_known_neg_eval.json")
-    if exps_sp_a:
-        option_a["spotify"] = exps_sp_a
-        print(f"  spotify Option A: {len(exps_sp_a)} experiments")
+    exps_sp_tp = load_experiments(RESULTS_DIR / "spotify/grid_summary_train_positive.json")
+    if exps_sp_tp:
+        train_positive["spotify"] = exps_sp_tp
+        print(f"  spotify: {len(exps_sp_tp)} experiments (train-positive)")
 
-    return standard, option_a
+    exps_sp_kn = load_experiments(RESULTS_DIR / "spotify/grid_summary_known_neg_eval.json")
+    if exps_sp_kn:
+        known_neg_eval["spotify"] = exps_sp_kn
+        print(f"  spotify: {len(exps_sp_kn)} experiments (known-neg eval)")
+
+    return standard, train_positive, known_neg_eval
 
 
 def get_baseline(exps: list) -> dict:
@@ -763,8 +779,8 @@ def df_to_latex(df: "pd.DataFrame", path: Path, caption: str = "") -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def generate_tables(standard: dict, option_a: dict):
-    """Produce 4 tables: full results, baseline summary, Surprise comparison, key findings."""
+def generate_tables(standard: dict, train_positive: dict):
+    """Produce 5 tables: full results, baseline summary, Surprise comparison, key findings, v1 vs v2."""
 
     # table 1: everything  all experiments on all datasets
     rows = []
@@ -849,8 +865,110 @@ def generate_tables(standard: dict, option_a: dict):
         df_to_latex(df4, TABLES_DIR / "table4_key_findings.tex", "Best variant per dataset vs baseline")
         print("  table4_key_findings")
 
+    # table 5: v1 (post-hoc) vs v2 (train-positive) comparison
+    # shows side by side: best rerank NDCG vs best train-positive NDCG vs baseline
+    if train_positive:
+        cmp_rows = []
+        for ds in ["ml-1m", "ml-10m", "ml-20m", "spotify"]:
+            if ds not in standard or ds not in train_positive:
+                continue
+            b = get_baseline(standard[ds])
+            b_ndcg = m(b, "ndcg@10") if b else 0
 
-#  8.  MAIN 
+            best_rerank = max(
+                [e for e in standard[ds] if e["variant"] == "rerank"],
+                key=lambda e: m(e, "ndcg@10"), default=None
+            )
+            best_tp = max(train_positive[ds], key=lambda e: m(e, "ndcg@10"), default=None)
+
+            def delta_pct(val):
+                return round((val - b_ndcg) / b_ndcg * 100, 1) if b_ndcg else 0
+
+            rr_ndcg = m(best_rerank, "ndcg@10") if best_rerank else 0
+            tp_ndcg = m(best_tp, "ndcg@10") if best_tp else 0
+            cmp_rows.append({
+                "Dataset":                  ds,
+                "Baseline NDCG@10":         round(b_ndcg, 4),
+                "Best Rerank NDCG@10":      round(rr_ndcg, 4),
+                "Rerank Δ (%)":             delta_pct(rr_ndcg),
+                "Train-Positive NDCG@10":   round(tp_ndcg, 4),
+                "Train-Pos Δ (%)":          delta_pct(tp_ndcg),
+                "Better approach":          "train-pos" if tp_ndcg > rr_ndcg else "rerank",
+            })
+        if cmp_rows:
+            df5 = pd.DataFrame(cmp_rows)
+            df5.to_csv(TABLES_DIR / "table5_v1_vs_v2_comparison.csv", index=False)
+            df_to_latex(df5, TABLES_DIR / "table5_v1_vs_v2_comparison.tex",
+                        "Post-hoc reranking (v1) vs training-time negative removal (v2, Hu et al. 2008)")
+            print("  table5_v1_vs_v2_comparison")
+
+
+#  8.  MAIN
+
+def fig9_training_time_vs_posthoc(standard: dict, train_positive: dict):
+    # Research question: Does removing negative items from training help more than
+    # applying post-hoc penalties at inference time?
+    #
+    # Left panel: NDCG@10  baseline vs best post-hoc (rerank) vs train-positive
+    # Right panel: NDCG delta (%) over baseline for each approach and threshold
+    #
+    # Hypothesis (Hu et al. 2008): training-time approach should outperform post-hoc
+    # because the model learns cleaner representations without noisy negatives.
+    if not train_positive:
+        print("  skipping fig9: no train-positive results")
+        print("  run: python scripts/run_train_positive_grid.py --config configs/movielens_1m.yaml")
+        return
+
+    ds_list = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"]
+               if d in standard and d in train_positive]
+    if not ds_list:
+        print("  skipping fig9: no datasets with both standard and train-positive results")
+        return
+
+    fig, axes = plt.subplots(1, len(ds_list), figsize=(6 * len(ds_list), 5))
+    if len(ds_list) == 1:
+        axes = [axes]
+
+    for ax, ds in zip(axes, ds_list):
+        std_exps = standard[ds]
+        tp_exps  = train_positive[ds]
+        b = get_baseline(std_exps)
+        b_ndcg = m(b, "ndcg@10") if b else 0
+
+        # best post-hoc rerank NDCG (main grid)
+        best_rerank = max(
+            [e for e in std_exps if e["variant"] == "rerank"],
+            key=lambda e: m(e, "ndcg@10"),
+            default=None,
+        )
+        # best train-positive NDCG
+        best_tp = max(tp_exps, key=lambda e: m(e, "ndcg@10"), default=None)
+
+        approaches = ["Baseline\n(all ratings)", "Best Rerank\n(post-hoc)", "Train Positive\n(Hu et al. 2008)"]
+        ndcgs = [
+            b_ndcg,
+            m(best_rerank, "ndcg@10") if best_rerank else 0,
+            m(best_tp, "ndcg@10") if best_tp else 0,
+        ]
+        colors = [VARIANT_COLORS["baseline"], VARIANT_COLORS["rerank"], "#f39c12"]
+
+        bars = ax.bar(approaches, ndcgs, color=colors, edgecolor="white", linewidth=0.5)
+        ax.axhline(b_ndcg, color=VARIANT_COLORS["baseline"], lw=1.5, ls="--", alpha=0.6)
+
+        for bar, val in zip(bars, ndcgs):
+            delta = (val - b_ndcg) / b_ndcg * 100 if b_ndcg else 0
+            sign = "+" if delta >= 0 else ""
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.0005,
+                    f"{sign}{delta:.1f}%", ha="center", va="bottom", fontsize=8, fontweight="bold")
+
+        ax.set_ylim(0, max(ndcgs) * 1.15)
+        ax.set_ylabel("NDCG@10")
+        ax.set_title(f"Fig 9 — Post-hoc vs Training-Time ({ds.upper()})\n"
+                     "Orange: negative items removed before SVD training\n"
+                     "(Hu, Koren & Volinsky 2008, ICDM)")
+
+    save("fig9_training_time_vs_posthoc")
+
 
 def main():
     print("=" * 65)
@@ -858,7 +976,7 @@ def main():
     print("=" * 65)
     print()
     print("Loading experiment results...")
-    standard, option_a = load_all_results()
+    standard, train_positive, known_neg_eval = load_all_results()
 
     if not standard:
         print("No results found. Run experiments first:")
@@ -875,11 +993,12 @@ def main():
     fig5_threshold_comparison(standard)
     fig6_dataset_scaling(standard)
     fig7_movielens_vs_spotify(standard)
-    fig8_known_neg_eval(standard, option_a)
+    fig8_known_neg_eval(standard, known_neg_eval)
+    fig9_training_time_vs_posthoc(standard, train_positive)
 
     print()
     print("Generating tables...")
-    generate_tables(standard, option_a)
+    generate_tables(standard, train_positive)
 
     print()
     print(f"Figures → {FIGURES_DIR}/")

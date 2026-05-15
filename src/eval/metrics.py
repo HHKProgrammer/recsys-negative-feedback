@@ -110,3 +110,35 @@ def reciprocal_rank(recommended_items, target_item):
         return 1.0 / rank
     except ValueError:
         return 0.0
+
+
+#  Arm B: negative-detection metrics 
+# Arm B is a dislike-risk DETECTOR, not a recommender.
+# Its ranking output is evaluated differently: a HIGH rank for a disliked item
+# means Arm B correctly identified it as something the user dislikes.
+# These metrics use the same formulas as positive ranking metrics but the
+# semantic direction is reversed: higher rank = better dislike detection.
+
+def negative_detection_ndcg_at_k(arm_b_ranked: list, negative_target: int, k: int = 10) -> float:
+    # nDCG@k where negative_target is the "relevant" item for Arm B's output.
+    # A good Arm B detector places the held-out negative item at rank 1.
+    return ndcg_at_k(arm_b_ranked, {negative_target}, k)
+
+
+def negative_detection_hit_at_k(arm_b_ranked: list, negative_target: int, k: int = 10) -> int:
+    # 1 if negative_target appears in Arm B's top-k output, else 0.
+    return 1 if negative_target in arm_b_ranked[:k] else 0
+
+
+def mean_dislike_rank(arm_b_ranked: list, negative_items: set) -> float:
+    # Mean 1-based rank of all negative_items in Arm B's output.
+    # Lower = better detection. Items not found get rank len(list)+1 (penalized).
+    if not negative_items:
+        return float(len(arm_b_ranked) + 1)
+    ranks = []
+    for item in negative_items:
+        try:
+            ranks.append(arm_b_ranked.index(item) + 1)
+        except ValueError:
+            ranks.append(len(arm_b_ranked) + 1)
+    return float(np.mean(ranks))

@@ -28,7 +28,8 @@ class SVDBaseline:
         n_factors: int = 100,   # number of latent dimensions 100 found best in tuning
         n_epochs: int = 20,     # how many full passes through training data
         lr_all: float = 0.01,   # learning rate for sgd updates
-        reg_all: float = 0.05,  # l2 regularization pprevents overfitting
+        reg_all: float = 0.05,  # l2 regularization prevents overfitting
+        biased: bool = True,    # True=standard SVD with user/item biases, False=pure MF
         random_state: int = 42,
     ):
         # svd learns: pu (user latent matrix), qi (item latent matrix), bu, bi, global mean
@@ -37,6 +38,7 @@ class SVDBaseline:
         self.n_epochs = n_epochs
         self.lr_all = lr_all
         self.reg_all = reg_all
+        self.biased = biased
         self.random_state = random_state
 
         self._model: Optional[SVD] = None
@@ -54,6 +56,7 @@ class SVDBaseline:
             "n_epochs": self.n_epochs,
             "lr_all": self.lr_all,
             "reg_all": self.reg_all,
+            "biased": self.biased,
             "random_state": self.random_state,
         }
 
@@ -79,6 +82,7 @@ class SVDBaseline:
             n_epochs=self.n_epochs,
             lr_all=self.lr_all,
             reg_all=self.reg_all,
+            biased=self.biased,
             random_state=self.random_state,
         )
         self._model.fit(self._trainset)
