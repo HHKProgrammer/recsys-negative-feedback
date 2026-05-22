@@ -361,6 +361,8 @@ def main():
     parser.add_argument("--max_users", type=int, default=None,
                         help="Limit evaluation to first N users (for quick dev runs)")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--overwrite", action="store_true", default=False,
+                        help="Re-run tuning even if best_params.json already exists")
     args = parser.parse_args()
 
     # parse threshold
@@ -375,6 +377,10 @@ def main():
     out_dir = Path(config.output_dir).parent / "tuning" / f"arm_{args.arm}" / label
     out_dir.mkdir(parents=True, exist_ok=True)
     best_params_path = out_dir / "best_params.json"
+
+    if best_params_path.exists() and not args.overwrite:
+        print(f"SKIP: {best_params_path} already exists (use --overwrite to re-tune)")
+        sys.exit(0)
 
     print(f"\nHyperparameter Tuning — SVD Arm {args.arm.upper()}")
     print(f"  Dataset:   {config.data.name}")

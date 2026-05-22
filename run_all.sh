@@ -18,9 +18,13 @@
 # All phases are resume-safe — re-run if interrupted.
 
 set -e
+export PYTHONUNBUFFERED=1
 
 HPT_TRIALS=${HPT_TRIALS:-200}
 MAX_USERS=${MAX_USERS:-""}
+# HPT_MAX_USERS: separate limit for HPT evaluation only (keeps each trial fast)
+# Grid/Arm C use MAX_USERS (default: all users)
+HPT_MAX_USERS=${HPT_MAX_USERS:-5000}
 # Arm C workers per dataset: 48 cores / 4 datasets = 12
 # Reduce if memory is tight (each worker loads the full dataset + models)
 N_PARALLEL=${N_PARALLEL:-12}
@@ -49,6 +53,10 @@ run_bg() {
 
 max_users_flag() {
     [ -n "$MAX_USERS" ] && echo "--max_users $MAX_USERS" || echo ""
+}
+
+hpt_max_users_flag() {
+    [ -n "$HPT_MAX_USERS" ] && echo "--max_users $HPT_MAX_USERS" || echo ""
 }
 
 cfg_label() {
@@ -87,7 +95,7 @@ echo "=========================================================="
 echo " Phase 4: Hyperparameter tuning — all jobs in parallel"
 echo "          Arm A: ${#ARM_A_THRESHOLDS[@]} thresholds x ${#CONFIGS[@]} datasets = $((${#ARM_A_THRESHOLDS[@]} * ${#CONFIGS[@]})) jobs"
 echo "          Arm B: ${#ARM_B_THRESHOLDS[@]} thresholds x ${#CONFIGS[@]} datasets = $((${#ARM_B_THRESHOLDS[@]} * ${#CONFIGS[@]})) jobs"
-echo "          Trials: $HPT_TRIALS per job"
+echo "          Trials: $HPT_TRIALS per job  HPT_MAX_USERS: ${HPT_MAX_USERS:-all}"
 echo "=========================================================="
 
 for t in "${ARM_A_THRESHOLDS[@]}"; do
@@ -95,7 +103,7 @@ for t in "${ARM_A_THRESHOLDS[@]}"; do
         run_bg "hpt_a_t${t}_$(cfg_label $cfg)" \
             python scripts/run_hyperparameter_tuning.py \
                 --config "$cfg" --arm a --threshold "$t" \
-                --n_trials "$HPT_TRIALS" $(max_users_flag)
+                --n_trials "$HPT_TRIALS" $(hpt_max_users_flag)
     done
 done
 
@@ -104,11 +112,17 @@ for t in "${ARM_B_THRESHOLDS[@]}"; do
         run_bg "hpt_b_t${t}_$(cfg_label $cfg)" \
             python scripts/run_hyperparameter_tuning.py \
                 --config "$cfg" --arm b --threshold "$t" \
-                --n_trials "$HPT_TRIALS" $(max_users_flag)
+                --n_trials "$HPT_TRIALS" $(hpt_max_users_flag)
     done
 done
 
+set +e
 wait
+HPT_EXIT=$?
+set -e
+if [ $HPT_EXIT -ne 0 ]; then
+    echo "WARNING: one or more HPT jobs exited non-zero (exit $HPT_EXIT) — continuing pipeline"
+fi
 echo " Phase 4 complete"
 
 
