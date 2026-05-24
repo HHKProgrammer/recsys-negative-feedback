@@ -126,7 +126,7 @@ def filter_negative(
     # adaptive: per-user threshold from user_thresholds
     col = "median_rating" if threshold == "median" else "modus_rating"
     merged = train_df.merge(user_thresholds[["userId", col]], on="userId", how="left")
-    mask = merged["rating"] < merged[col]  
+    mask = (merged["rating"] < merged[col]).values   # .values: numpy array avoids index misalignment
     return train_df[mask].copy()
 
 
@@ -173,7 +173,7 @@ def build_arm_b_neg_val(
     excl = pd.DataFrame(holdout_pairs, columns=["userId", "movieId"])
     excl["_x"] = True
     merged = neg_df.merge(excl, on=["userId", "movieId"], how="left")
-    neg_train = neg_df[merged["_x"].isna()].copy()
+    neg_train = neg_df[merged["_x"].isna().values].copy()   # .values: numpy array avoids index misalignment
     return neg_train, neg_val
 
 
