@@ -129,6 +129,13 @@ parallelism:
 - all 4 datasets run simultaneously per phase (bash `&` + `wait`)
 - HPT: 32 background jobs at once (12 Arm A + 20 Arm B across all datasets)
 - Arm C: `--n_parallel 12` workers per dataset (ProcessPoolExecutor, initializer loads data once per worker)
+- known-neg eval: `--n_workers 12` threads per dataset (ThreadPoolExecutor, numpy releases GIL)
+
+evaluation speed design:
+- candidate set: 501 items per user (450 neutral + 50 injected + 1 test), not all items sampled eval (Krichene & Rendle 2020)
+- scoring: vectorized `predict_batch()` one numpy matmul per user instead of per-item predict() calls (~50× faster)
+- known-neg eval: SVD trained **once** per dataset, shared across all 36 grid configs (was: 36× redundant training)
+- HPT: `HPT_MAX_USERS=5000` limits each trial to 5000 users; final grid uses all users
 
 ---
 

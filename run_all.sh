@@ -171,11 +171,12 @@ echo " Phase 7 complete"
 echo "=========================================================="
 echo " Phase 8: Known-negative injection eval4 datasets in parallel"
 echo "          (Krichene & Rendle 2020)"
+echo "          SVD trained once per dataset, $N_PARALLEL eval threads"
 echo "=========================================================="
 for cfg in "${CONFIGS[@]}"; do
     run_bg "known_neg_$(cfg_label $cfg)" \
         python scripts/run_known_negative_eval.py \
-            --config "$cfg" $(max_users_flag)
+            --config "$cfg" --n_workers "$N_PARALLEL" $(max_users_flag)
 done
 wait
 echo " Phase 8 complete"
