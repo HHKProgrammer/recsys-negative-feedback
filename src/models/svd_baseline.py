@@ -25,12 +25,13 @@ from surprise import SVD, Dataset, Reader
 class SVDBaseline:
     def __init__(
         self,
-        n_factors: int = 100,   # number of latent dimensions 100 found best in tuning
-        n_epochs: int = 20,     # how many full passes through training data
-        lr_all: float = 0.01,   # learning rate for sgd updates
-        reg_all: float = 0.05,  # l2 regularization prevents overfitting
-        biased: bool = True,    # True=standard SVD with user/item biases, False=pure MF
+        n_factors: int = 100,
+        n_epochs: int = 20,
+        lr_all: float = 0.01,
+        reg_all: float = 0.05,
+        biased: bool = True,
         random_state: int = 42,
+        rating_scale: tuple = (1, 5),  # (0, 1) for Arm D binary targets
     ):
         # svd learns: pu (user latent matrix), qi (item latent matrix), bu, bi, global mean
         # prediction: r_hat(u,i) = mu + bu + bi + pu[u] dot qi[i]
@@ -40,6 +41,7 @@ class SVDBaseline:
         self.reg_all = reg_all
         self.biased = biased
         self.random_state = random_state
+        self.rating_scale = rating_scale
 
         self._model: Optional[SVD] = None
         self._trainset = None
@@ -62,6 +64,7 @@ class SVDBaseline:
             "reg_all": self.reg_all,
             "biased": self.biased,
             "random_state": self.random_state,
+            "rating_scale": list(self.rating_scale),
         }
 
     def fit(self, train_df: pd.DataFrame) -> "SVDBaseline":
@@ -70,7 +73,7 @@ class SVDBaseline:
         # Surprise treats IDs as strings internally; we store mappings
 
         # surprise requires string ids, convert our integers to strings first
-        reader = Reader(rating_scale=(1, 5))
+        reader = Reader(rating_scale=self.rating_scale)
         data = Dataset.load_from_df(
             train_df[["userId", "movieId", "rating"]].astype(
                 {"userId": str, "movieId": str}

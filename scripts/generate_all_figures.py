@@ -157,13 +157,14 @@ def load_experiments(path: Path) -> list:
 def load_all_results():
     """
     Load results for all datasets.
-    Returns six dicts keyed by dataset name:
+    Returns seven dicts keyed by dataset name:
       standard        main grid (post-hoc variants: filter/rerank/weighted)
       train_positive  training-time positive-only SVD (legacy v1)
       known_neg_eval  adversarial evaluation with injected negative candidates
       arm_a           Arm A — SVD trained on rating >= pos_threshold
       arm_b           Arm B — SVD trained on rating <= neg_threshold (dislike detector)
       arm_c           Arm C — hybrid: minmax(arm_a) - alpha * minmax(arm_b)
+      arm_d           Arm D — joint positive-negative SVD (binary targets)
     """
     standard       = {}
     train_positive = {}
@@ -171,6 +172,7 @@ def load_all_results():
     arm_a          = {}
     arm_b          = {}
     arm_c          = {}
+    arm_d          = {}
 
     ds_folders = {
         "ml-1m":   RESULTS_DIR / "movielens/ml-1m",
@@ -187,13 +189,14 @@ def load_all_results():
             ("arm_a",          "grid_summary_arm_a.json",          arm_a),
             ("arm_b",          "grid_summary_arm_b.json",          arm_b),
             ("arm_c",          "grid_summary_arm_c.json",          arm_c),
+            ("arm_d",          "grid_summary_arm_d.json",          arm_d),
         ]:
             exps = load_experiments(folder / fname)
             if exps:
                 store[ds] = exps
                 print(f"  {ds}: {len(exps):3d} experiments ({key})")
 
-    return standard, train_positive, known_neg_eval, arm_a, arm_b, arm_c
+    return standard, train_positive, known_neg_eval, arm_a, arm_b, arm_c, arm_d
 
 
 def get_baseline(exps: list) -> dict:
@@ -893,7 +896,8 @@ def table_arm_c_headline(arm_a: dict, arm_c: dict, standard: dict):
 
 
 def generate_tables(standard: dict, train_positive: dict,
-                    arm_a: dict = None, arm_b: dict = None, arm_c: dict = None):
+                    arm_a: dict = None, arm_b: dict = None, arm_c: dict = None,
+                    arm_d: dict = None):
     """Produce 5 tables: full results, baseline summary, Surprise comparison, key findings, v1 vs v2."""
 
     # table 1: everything  all experiments on all datasets
@@ -1024,6 +1028,11 @@ def generate_tables(standard: dict, train_positive: dict,
         table_arm_b_detection(arm_b)
     if arm_a and arm_c:
         table_arm_c_headline(arm_a, arm_c, standard)
+    if arm_d:
+        table_arm_d_headline(arm_d)
+    if arm_a and arm_d:
+        table_arm_d_vs_arm_a(arm_a, arm_d, standard)
+    table_strategy_summary()
 
 
 #  Three-Arm Architecture
@@ -1152,6 +1161,212 @@ def fig_arm_c_headline(arm_a: dict, arm_c: dict, standard: dict):
     save("fig_arm_c_headline")
 
 
+def fig_arm_d_comparison(arm_a: dict, arm_c: dict, arm_d: dict, standard: dict):
+    """Arm A vs Arm C (best) vs Arm D main new comparison for Arm D.
+
+    Two metrics panels: NDCG@10 and sim_to_neg@10.
+    Answers: does joint positive-negative training (Arm D) beat positive-only (Arm A)?
+    """
+    avail = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"]
+             if d in arm_a and d in arm_d]
+    if not avail:
+        print("  skipping fig_arm_d: no arm_d results (run run_arm_d.sh first)")
+        return
+
+    n = len(avail)
+    fig, axes = plt.subplots(2, n, figsize=(5 * n, 9))
+    if n == 1:
+        axes = axes.reshape(2, 1)
+
+    for col, ds in enumerate(avail):
+        std_baseline = get_baseline(standard.get(ds, []))
+        best_arm_a = max(arm_a[ds], key=lambda e: m(e, "ndcg@10"), default=None)
+        best_arm_c = max(arm_c.get(ds, []), key=lambda e: m(e, "ndcg@10"), default=None) if ds in arm_c else None
+        best_arm_d = max(arm_d[ds], key=lambda e: m(e, "ndcg@10"), default=None)
+
+        for row, metric in enumerate(["ndcg@10", "sim_to_neg@10"]):
+            ax = axes[row, col]
+            entries = {
+                "SVD\n(all ratings)": (m(std_baseline, metric) if std_baseline else 0, VARIANT_COLORS["baseline"]),
+                "Arm A\n(pos-only)":  (m(best_arm_a, metric) if best_arm_a else 0,  "#f39c12"),
+                "Arm D\n(joint)":     (m(best_arm_d, metric) if best_arm_d else 0,  "#e74c3c"),
+            }
+            if best_arm_c:
+                entries["Arm C\n(hybrid)"] = (m(best_arm_c, metric), "#8e44ad")
+
+            labels  = list(entries.keys())
+            values  = [v for v, _ in entries.values()]
+            colors  = [c for _, c in entries.values()]
+            bars = ax.bar(labels, values, color=colors, alpha=0.85)
+
+            b_val = entries["SVD\n(all ratings)"][0]
+            ax.axhline(b_val, color=VARIANT_COLORS["baseline"], lw=1.2, linestyle="--", alpha=0.6)
+
+            for bar, val in zip(bars, values):
+                delta = (val - b_val) / b_val * 100 if b_val else 0
+                sign = "+" if delta >= 0 else ""
+                ax.text(bar.get_x() + bar.get_width() / 2,
+                        bar.get_height() + 0.0003,
+                        f"{sign}{delta:.1f}%", ha="center", va="bottom",
+                        fontsize=8, fontweight="bold")
+                ax.text(bar.get_x() + bar.get_width() / 2,
+                        bar.get_height() / 2 if bar.get_height() > 0.002 else bar.get_height() + 0.001,
+                        f"{val:.4f}", ha="center", va="center",
+                        fontsize=7.5, color="white" if bar.get_height() > 0.01 else "black")
+
+            ylabel = ("NDCG@10 (↑ better)" if metric == "ndcg@10"
+                      else "sim_to_neg@10 (↓ further from dislikes)")
+            ax.set_ylabel(ylabel, fontsize=9)
+            if row == 0:
+                d_info = ""
+                if best_arm_d:
+                    pos = best_arm_d.get("pos_threshold", "?")
+                    neg = best_arm_d.get("neg_threshold", "?")
+                    d_info = f"\nBest Arm D: pos≥{pos}, neg≤{neg}"
+                ax.set_title(f"Arm A vs Arm D — {ds.upper()}{d_info}", fontsize=9)
+
+    fig.suptitle(
+        "Fig — Arm A vs Arm D: Does joint positive-negative training improve ranking?\n"
+        "Arm D trains SVD on binary targets (pos=1.0, neg=0.0). Δ% vs full-rating SVD baseline.",
+        fontsize=11,
+    )
+    save("fig_arm_d_comparison")
+
+
+def table_arm_d_headline(arm_d: dict):
+    """Table E: Arm D joint positive-negative SVD results per dataset."""
+    if not arm_d:
+        return
+    rows = []
+    for ds in ["ml-1m", "ml-10m", "ml-20m", "spotify"]:
+        if ds not in arm_d:
+            continue
+        for exp in arm_d[ds]:
+            me = exp["metrics"]
+            k  = 10
+            rows.append({
+                "Dataset":        ds,
+                "Pos≥": exp.get("pos_threshold", "?"),
+                "Neg≤": exp.get("neg_threshold", "?"),
+                "NDCG@10":       f"{me.get(f'ndcg@{k}', 0):.4f}",
+                "HR@10":         f"{me.get(f'hit@{k}', 0):.4f}",
+                "MRR":           f"{me.get('mrr', 0):.4f}",
+                "sim_neg@10":    f"{me.get(f'sim_to_neg@{k}', 0):.4f}",
+                "N_pos":         me.get("n_positives", "?"),
+                "N_neg":         me.get("n_negatives", "?"),
+            })
+    if not rows:
+        return
+    df = pd.DataFrame(rows)
+    df.to_csv(TABLES_DIR / "tableE_arm_d_headline.csv", index=False)
+    df_to_latex(df, TABLES_DIR / "tableE_arm_d_headline.tex",
+                caption="Arm D: Joint Positive-Negative SVD results. "
+                        "SVD trained on binary targets (pos=1.0, neg=0.0). "
+                        "Compared to Arm A (Table D) to test whether training-time negative "
+                        "feedback improves ranking quality.")
+    print("  tableE_arm_d_headline")
+
+
+def table_arm_d_vs_arm_a(arm_a: dict, arm_d: dict, standard: dict):
+    """Table F: Arm A vs Arm D headline — core training-time comparison."""
+    avail = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"]
+             if d in arm_a and d in arm_d]
+    if not avail:
+        return
+
+    rows = []
+    k = 10
+    for ds in avail:
+        std_b    = get_baseline(standard.get(ds, []))
+        best_a   = max(arm_a[ds], key=lambda e: m(e, "ndcg@10"), default=None)
+        best_d   = max(arm_d[ds], key=lambda e: m(e, "ndcg@10"), default=None)
+
+        base_ndcg = m(std_b, "ndcg@10") if std_b else 0
+        a_ndcg    = m(best_a, f"ndcg@{k}") if best_a else 0
+        d_ndcg    = m(best_d, f"ndcg@{k}") if best_d else 0
+
+        delta_d_vs_a   = d_ndcg - a_ndcg
+        delta_d_vs_base = d_ndcg - base_ndcg
+        d_label = (f"pos≥{best_d.get('pos_threshold','?')} neg≤{best_d.get('neg_threshold','?')}"
+                   if best_d else "—")
+
+        rows.append({
+            "Dataset":         ds,
+            "SVD (nDCG@10)":   f"{base_ndcg:.4f}",
+            "Arm A (nDCG@10)": f"{a_ndcg:.4f}",
+            "Arm D (nDCG@10)": f"{d_ndcg:.4f}",
+            "Δ D vs A":        f"{delta_d_vs_a:+.4f}",
+            "Δ D vs SVD":      f"{delta_d_vs_base:+.4f}",
+            "Best Arm D config": d_label,
+        })
+
+    if not rows:
+        return
+    df = pd.DataFrame(rows)
+    df.to_csv(TABLES_DIR / "tableF_arm_d_vs_arm_a.csv", index=False)
+    df_to_latex(df, TABLES_DIR / "tableF_arm_d_vs_arm_a.tex",
+                caption="Arm A (positive-only SVD) vs Arm D (joint positive-negative SVD). "
+                        "Arm D trains on binary targets to test whether incorporating negative "
+                        "feedback during training improves top-N ranking quality over "
+                        "positive-only training.")
+    print("  tableF_arm_d_vs_arm_a")
+
+
+def table_strategy_summary():
+    """Table G: Strategy overviewall approaches compared qualitatively."""
+    rows = [
+        {
+            "Strategy":              "Full-rating SVD (baseline)",
+            "Neg. in training":      "Yes (as raw ratings)",
+            "Neg. post-hoc":         "No",
+            "Main purpose":          "Baseline MF",
+            "Neg. feedback role":    "Implicit via rating scale",
+        },
+        {
+            "Strategy":              "Post-hoc filter/rerank/weighted",
+            "Neg. in training":      "Yes (as raw ratings)",
+            "Neg. post-hoc":         "Yes",
+            "Main purpose":          "Dislike avoidance at rank time",
+            "Neg. feedback role":    "Cosine penalty or candidate removal",
+        },
+        {
+            "Strategy":              "Arm A (positive-only SVD)",
+            "Neg. in training":      "No (removed)",
+            "Neg. post-hoc":         "No",
+            "Main purpose":          "Clean positive preference model",
+            "Neg. feedback role":    "None — noise removed",
+        },
+        {
+            "Strategy":              "Arm B (negative detector)",
+            "Neg. in training":      "Yes (negatives only)",
+            "Neg. post-hoc":         "No",
+            "Main purpose":          "Dislike-risk scoring",
+            "Neg. feedback role":    "Dedicated dislike latent space",
+        },
+        {
+            "Strategy":              "Arm C (hybrid A+B)",
+            "Neg. in training":      "Indirectly via Arm B",
+            "Neg. post-hoc":         "Yes (alpha blending)",
+            "Main purpose":          "Hybrid avoidance + preference",
+            "Neg. feedback role":    "norm(A) - alpha * norm(B)",
+        },
+        {
+            "Strategy":              "Arm D (joint pos-neg SVD)",
+            "Neg. in training":      "Yes (binary targets)",
+            "Neg. post-hoc":         "No",
+            "Main purpose":          "Joint preference learning",
+            "Neg. feedback role":    "Direct contrast: like=1.0, dislike=0.0",
+        },
+    ]
+    df = pd.DataFrame(rows)
+    df.to_csv(TABLES_DIR / "tableG_strategy_summary.csv", index=False)
+    df_to_latex(df, TABLES_DIR / "tableG_strategy_summary.tex",
+                caption="Summary of all negative-feedback strategies evaluated in this thesis. "
+                        "The table compares how and when negative feedback is incorporated "
+                        "across baseline, post-hoc, and training-time approaches.")
+    print("  tableG_strategy_summary")
+
+
 #  8.  MAIN
 
 
@@ -1226,7 +1441,7 @@ def main():
     print("=" * 65)
     print()
     print("Loading experiment results...")
-    standard, train_positive, known_neg_eval, arm_a, arm_b, arm_c = load_all_results()
+    standard, train_positive, known_neg_eval, arm_a, arm_b, arm_c, arm_d = load_all_results()
 
     if not standard:
         print("No results found. Run experiments first:")
@@ -1249,10 +1464,12 @@ def main():
     # three-arm architecture figures (generated once Phase 6 + 7 complete)
     fig_arm_b_detection(arm_b)
     fig_arm_c_headline(arm_a, arm_c, standard)
+    # Arm D: joint positive-negative SVD (generated once run_arm_d.sh completes)
+    fig_arm_d_comparison(arm_a, arm_c, arm_d, standard)
 
     print()
     print("Generating tables...")
-    generate_tables(standard, train_positive, arm_a=arm_a, arm_b=arm_b, arm_c=arm_c)
+    generate_tables(standard, train_positive, arm_a=arm_a, arm_b=arm_b, arm_c=arm_c, arm_d=arm_d)
 
     print()
     print(f"Figures → {FIGURES_DIR}/")

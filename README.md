@@ -20,7 +20,7 @@ reference: Fan et al. 2024 (random split conservative and honest for recsys)
 
 ---
 
-## architecture — three arms
+## architecture — four arms
 
 **task: top-N ranking, not rating regression.** ratings = preference signal, goal = rank quality (nDCG@10, HR@10, MRR)
 
@@ -44,6 +44,27 @@ reference: Fan et al. 2024 (random split conservative and honest for recsys)
 - flat score range → fallback to 0.5 (graceful degradation to Arm A)
 - alpha: `[0.05, 0.1, 0.2, 0.3, 0.5, 1.0]`
 - grid: 3 pos × 5 neg × 6 alpha = **90 combinations per dataset**
+
+### Arm D — Joint Positive-Negative SVD
+- trains SVD on **both** positives and negatives with binary targets
+- negative feedback incorporated directly into latent factors not post-hoc
+- rating transformation:
+
+| rating | target | meaning |
+|--------|--------|---------|
+| `>= pos_threshold` | `1.0` | explicit like |
+| `<= neg_threshold` | `0.0` | explicit dislike |
+| middle | dropped | ambiguous — excluded |
+
+- `rating_scale=(0, 1)` so SVD pushes liked items toward 1.0, disliked toward 0.0
+- grid: 4 (pos, neg) pairs  `(4,2)`, `(5,1)`, `(4,1)`, `(3,2)`
+- **core comparison: Arm A vs Arm D**  does joint training improve top-N over positive-only?
+  - Arm D > Arm A in nDCG@10 → training-time negatives help ranking
+  - Arm D ≈ Arm A but lower `sim_to_neg@10` → negatives improve avoidance, not accuracy
+  - Arm D < Arm A → binary signal loses information from full rating scale
+- vs Arm B: Arm B trains on negatives only (dislike detector); Arm D trains on both (joint preference model)
+- vs Arm C: Arm C penalises post-hoc; Arm D bakes negative signal into the latent factors themselves
+- ref: Cena et al. 2004, Paudel et al. 2016
 
 ### Post-hoc variants (baseline comparison)
 | variant | what |
@@ -84,16 +105,17 @@ reference: Fan et al. 2024 (random split conservative and honest for recsys)
 
 Optuna TPE Bayesian search, falls back to random search if Optuna not installed
 
-| param | Arm A search space | Arm B search space |
-|-------|-------------------|-------------------|
-| n_factors | 10–200 | 10–200 |
-| n_epochs | 20, 30, 50, 75, 100 | same |
-| lr_all | 0.001–0.02 | same |
-| reg_all | 0.005–0.2 | 0.03–0.5 (higher — sparser data) |
-| biased | True / False | True / False |
+| param | Arm A search space | Arm B search space | Arm D search space |
+|-------|-------------------|-------------------|--------------------|
+| n_factors | 10–200 | 10–200 | 10–200 |
+| n_epochs | 20, 30, 50, 75, 100 | same | same |
+| lr_all | 0.001–0.02 | same | same |
+| reg_all | 0.005–0.2 | 0.03–0.5 (higher — sparser data) | 0.005–0.2 |
+| biased | True / False | True / False | True / False |
 
 - Arm A objective: `nDCG@10` on val set
 - Arm B objective: `negative_detection_hit@10` on LNO val split
+- Arm D objective: `nDCG@10` on val set (binary-target model)
 - default: 200 trials per arm × threshold × dataset
 
 ---
@@ -130,6 +152,7 @@ parallelism:
 - HPT: 32 background jobs at once (12 Arm A + 20 Arm B across all datasets)
 - Arm C: `--n_parallel 12` workers per dataset (ProcessPoolExecutor, initializer loads data once per worker)
 - known-neg eval: `--n_workers 12` threads per dataset (ThreadPoolExecutor, numpy releases GIL)
+- Arm D HPT: 16 background jobs (4 pairs × 4 datasets), Arm D grid: 4 datasets in parallel
 
 evaluation speed design:
 - candidate set: 501 items per user (450 neutral + 50 injected + 1 test), not all items sampled eval (Krichene & Rendle 2020)
@@ -158,21 +181,43 @@ ps -p $(cat run_all.pid)      # check still running
 HPT_TRIALS=5 MAX_USERS=500 N_PARALLEL=2 nohup ./run_all.sh > test_run.log 2>&1 &
 ```
 
+### adding Arm D to an existing run (server)
+
+if Phases 1–9 are already complete, run only the new Arm D phases without repeating completed work:
+
+```bash
+# full Arm D (200 HPT trials, all users)
+HPT_TRIALS=200 HPT_MAX_USERS=5000 nohup ./run_arm_d.sh > arm_d_run.log 2>&1 &
+echo $! > arm_d_run.pid
+
+# monitor
+tail -f arm_d_run.log
+ps -p $(cat arm_d_run.pid)
+
+# quick local test first (5 trials, 500 users)
+HPT_TRIALS=5 MAX_USERS=500 ./run_arm_d.sh > arm_d_test.log 2>&1
+```
+
 resume-safe: re-run the same command if interrupted — all phases skip completed work.
 per-job logs written to `logs/<timestamp>/` so parallel output does not interleave.
 
 ### pipeline phases
 
 ```
-Phase 1  prepare all datasets
-Phase 2  snapshot v1 results (before new runs)
-Phase 3  post-hoc grid (36 experiments x dataset)
-Phase 4  HPT  Arm A (3 thresholds) + Arm B (5 thresholds), per dataset
-Phase 5  Arm A grid (3 runs x dataset, saves models)
-Phase 6  Arm B grid (5 runs x dataset, saves models)
-Phase 7  Arm C hybrid grid (90 combinations x dataset)
-Phase 8  known-negative injection eval (Krichene & Rendle 2020)
-Phase 9  generate all figures and tables
+Phase 1   prepare all datasets
+Phase 2   snapshot v1 results (before new runs)
+Phase 3   post-hoc grid (36 experiments x dataset)
+Phase 4   HPT  Arm A (3 thresholds) + Arm B (5 thresholds), per dataset
+Phase 5   Arm A grid (3 runs x dataset, saves models)
+Phase 6   Arm B grid (5 runs x dataset, saves models)
+Phase 7   Arm C hybrid grid (90 combinations x dataset)
+Phase 8   known-negative injection eval (Krichene & Rendle 2020)
+Phase 9   generate all figures and tables
+
+# run_arm_d.sh adds (assumes Phases 1–9 already complete):
+Phase 10  Arm D HPT (4 pairs x 4 datasets = 16 parallel jobs)
+Phase 11  Arm D joint SVD grid (4 configurations x 4 datasets)
+Phase 12  regenerate all figures and tables (includes Arm D comparison)
 ```
 
 ### individual scripts
@@ -188,11 +233,13 @@ python main.py grid --config configs/movielens_1m.yaml
 python scripts/run_hyperparameter_tuning.py --config configs/movielens_1m.yaml --arm a --threshold 4
 python scripts/run_hyperparameter_tuning.py --config configs/movielens_1m.yaml --arm b --threshold 2
 python scripts/run_hyperparameter_tuning.py --config configs/movielens_1m.yaml --arm b --threshold median
+python scripts/run_hyperparameter_tuning.py --config configs/movielens_1m.yaml --arm d --threshold 4 --neg_threshold 2
 
 # arm grids
 python scripts/run_arm_a_positive_svd_grid.py --config configs/movielens_1m.yaml
 python scripts/run_arm_b_negative_svd_grid.py --config configs/movielens_1m.yaml
 python scripts/run_arm_c_hybrid_grid.py       --config configs/movielens_1m.yaml
+python scripts/run_arm_d_joint_svd_grid.py    --config configs/movielens_1m.yaml
 
 # known-negative injection eval
 python scripts/run_known_negative_eval.py --config configs/movielens_1m.yaml
@@ -224,14 +271,18 @@ src/
     seed.py                 reproducible seeds
 
 scripts/
-  run_hyperparameter_tuning.py    Optuna HPT for Arm A / Arm B
+  run_hyperparameter_tuning.py    Optuna HPT for Arm A / Arm B / Arm D
   run_arm_a_positive_svd_grid.py  Arm A grid (pos-only SVD)
   run_arm_b_negative_svd_grid.py  Arm B grid (neg-only SVD, LNO eval)
   run_arm_c_hybrid_grid.py        Arm C grid (90 combinations)
+  run_arm_d_joint_svd_grid.py     Arm D grid (joint pos-neg SVD, binary targets)
   run_known_negative_eval.py      inject dislikes into candidate pool
   run_train_positive_grid.py      simple pos-only baseline (no HPT)
   snapshot_results.py             save current outputs before overwriting
   generate_all_figures.py         all figures and LaTeX tables
+
+run_all.sh      full pipeline Phases 1–9 (all arms including Arm C)
+run_arm_d.sh    Arm D only  Phases 10–12 (assumes Phases 1–9 done)
 
 configs/
   movielens_1m.yaml
@@ -245,11 +296,14 @@ outputs/
     grid_summary_arm_a.json         Arm A (3 thresholds)
     grid_summary_arm_b.json         Arm B (5 thresholds, LNO metrics)
     grid_summary_arm_c.json         Arm C (90 combinations)
+    grid_summary_arm_d.json         Arm D (4 pos/neg pairs, binary targets)
     grid_summary_known_neg_eval.json
     models/arm_a/<label>/model.pkl  saved for Arm C
     models/arm_b/<label>/model.pkl  saved for Arm C
+    models/arm_d/<label>/model.pkl  saved for potential Arm E
     tuning/arm_a/<label>/best_params.json
     tuning/arm_b/<label>/best_params.json
+    tuning/arm_d/<label>/best_params.json
   snapshots/v1_post_hoc/           results before new runs
 
 reports/
@@ -274,6 +328,7 @@ reports/
 | fig9 | post-hoc vs train-positive SVD (relabelled: not "Hu et al. 2008" — different method) |
 | fig_arm_b | Arm B dislike detection quality per threshold per dataset |
 | fig_arm_c | Arm A vs Arm C headline: NDCG and sim_to_neg per dataset |
+| fig_arm_d_comparison | Arm A vs Arm D vs Arm C: NDCG@10 and sim_to_neg@10 per dataset (Δ% vs baseline annotated on bars) |
 
 | table | what |
 |-------|------|
@@ -285,6 +340,9 @@ reports/
 | 5 | V1 post-hoc vs V2 train-positive SVD comparison |
 | C | Arm B detection quality per threshold (LNO evaluation) |
 | D | Arm A vs Arm C headline (main research question) |
+| E | Arm D headline: best joint pos-neg config per dataset (nDCG@10, HR@10, MRR, sim_to_neg@10) |
+| F | Arm A vs Arm D per dataset: absolute and relative delta for each metric |
+| G | strategy summary: all 6 strategies compared across all datasets |
 
 **known scientific limitations:**
 - significance tests not yet added requires per-user CSV output from grid runs
@@ -317,6 +375,6 @@ Koren, Bell, Volinsky (2009) — Matrix Factorization Techniques for Recommender
 | Krichene, Rendle 2020 (KDD) | sampled evaluation (500 candidates), known-neg injection |
 | Rendle et al. 2009 (BPR, UAI) | positive-only training (Arm A) |
 | He et al. 2017 (NCF, WWW) | positive-only training (Arm A) |
-| Cena et al. 2004 | explicit dislikes as recommendation constraints (Arm B) |
-| Paudel et al. 2016 | dislike-avoidance in top-N (Arm B / C) |
+| Cena et al. 2004 | explicit dislikes as recommendation constraints (Arm B, Arm D) |
+| Paudel et al. 2016 | dislike-avoidance in top-N (Arm B / C / D) |
 | Fan et al. 2024 | random split for MovieLens |

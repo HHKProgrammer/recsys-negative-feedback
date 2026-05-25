@@ -100,7 +100,17 @@ SEARCH_SPACE = {
         "n_factors":  [10, 20, 30, 50, 75, 100, 150, 200],
         "n_epochs":   [20, 30, 50, 75, 100],
         "lr_all":     [0.001, 0.002, 0.005, 0.01, 0.02],
-        "reg_all":    [0.03, 0.05, 0.1, 0.2, 0.5],  
+        "reg_all":    [0.03, 0.05, 0.1, 0.2, 0.5],
+        "biased":     [True, False],
+    },
+    # Arm D: joint positive-negative SVD with binary targets (0, 1).
+    # Same search space as Arm A the model structure is identical,
+    # only the training data distribution differs.
+    "d": {
+        "n_factors":  [10, 20, 30, 50, 75, 100, 150, 200],
+        "n_epochs":   [20, 30, 50, 75, 100],
+        "lr_all":     [0.001, 0.002, 0.005, 0.01, 0.02],
+        "reg_all":    [0.005, 0.01, 0.03, 0.05, 0.1, 0.2],
         "biased":     [True, False],
     },
 }
@@ -128,6 +138,25 @@ def filter_negative(
     merged = train_df.merge(user_thresholds[["userId", col]], on="userId", how="left")
     mask = (merged["rating"] < merged[col]).values   # .values: numpy array avoids index misalignment
     return train_df[mask].copy()
+
+
+def build_arm_d_train(
+    train_inner: pd.DataFrame,
+    pos_threshold: int,
+    neg_threshold: int,
+) -> pd.DataFrame:
+    """Build joint positive-negative binary-target training set for Arm D.
+
+    Ratings >= pos_threshold → target 1.0 (like)
+    Ratings <= neg_threshold → target 0.0 (dislike)
+    Middle ratings → dropped (ambiguous)
+    """
+    positives = train_inner[train_inner["rating"] >= pos_threshold][["userId", "movieId"]].copy()
+    positives["rating"] = 1.0
+    negatives = train_inner[train_inner["rating"] <= neg_threshold][["userId", "movieId"]].copy()
+    negatives["rating"] = 0.0
+    joint = pd.concat([positives, negatives], ignore_index=True)
+    return joint.sample(frac=1.0, random_state=42).reset_index(drop=True)
 
 
 def build_arm_a_val(
@@ -179,7 +208,7 @@ def build_arm_b_neg_val(
 
 # evaluatio
 
-def evaluate_arm_a(
+def evaluate_arm_a_or_d(
     model: SVDBaseline,
     val_df: pd.DataFrame,
     train_df: pd.DataFrame,
@@ -189,7 +218,9 @@ def evaluate_arm_a(
     max_users: Optional[int],
     seed: int,
 ) -> float:
-    """Evaluate Arm A with standard nDCG@10 (positive leave-one-out)."""
+    """Evaluate Arm A or Arm D with standard nDCG@10 (positive leave-one-out).
+    Both arms use the same evaluation protocol  only the training data differs.
+    """
     rng = random.Random(seed)
     user_seen = train_df.groupby("userId")["movieId"].apply(set).to_dict()
 
@@ -259,6 +290,7 @@ def make_objective(
     config: ExperimentConfig,
     max_users: Optional[int],
     seed: int,
+    neg_threshold=None,   # only for arm d
 ):
     space = SEARCH_SPACE[arm]
     rng = random.Random(seed)
@@ -266,17 +298,16 @@ def make_objective(
     if arm == "b":
         neg_train, neg_val = build_arm_b_neg_val(train_inner, threshold, user_thresholds, rng)
         neg_all_items = set(neg_train["movieId"].unique()) if len(neg_train) > 0 else all_items
-    else:
+    elif arm == "d":
+        joint_train = build_arm_d_train(train_inner, int(threshold), int(neg_threshold))
+    else:  # arm == "a"
         pos_train, std_val = build_arm_a_val(train_inner, val_df, threshold)
 
     def objective(trial):
-        params = {}
-        for name, choices in space.items():
-            if name == "biased":
-                params[name] = trial.suggest_categorical(name, choices)
-            else:
-                params[name] = trial.suggest_categorical(name, choices)
+        params = {name: trial.suggest_categorical(name, choices)
+                  for name, choices in space.items()}
 
+        rs = (0, 1) if arm == "d" else (1, 5)
         model = SVDBaseline(
             n_factors=params["n_factors"],
             n_epochs=params["n_epochs"],
@@ -284,17 +315,26 @@ def make_objective(
             reg_all=params["reg_all"],
             biased=params["biased"],
             random_state=seed,
+            rating_scale=rs,
         )
 
         if arm == "a":
             if len(pos_train) < 10:
                 return 0.0
             model.fit(pos_train)
-            return evaluate_arm_a(
+            return evaluate_arm_a_or_d(
                 model, std_val, pos_train, all_items,
                 config.eval.k, config.eval.n_candidates, max_users, seed,
             )
-        else:
+        elif arm == "d":
+            if len(joint_train) < 10:
+                return 0.0
+            model.fit(joint_train)
+            return evaluate_arm_a_or_d(
+                model, val_df, joint_train, all_items,
+                config.eval.k, config.eval.n_candidates, max_users, seed,
+            )
+        else:  # arm == "b"
             if len(neg_train) < 10:
                 return 0.0
             model.fit(neg_train)
@@ -307,11 +347,13 @@ def make_objective(
 
 
 def random_search_objective(arm, train_inner, val_df, user_thresholds, threshold,
-                             all_items, config, max_users, seed, space):
+                             all_items, config, max_users, seed, space,
+                             neg_threshold=None):
     """Single random trial — returns (params, score)."""
     rng_params = random.Random(seed)
     params = {k: rng_params.choice(v) for k, v in space.items()}
 
+    rs = (0, 1) if arm == "d" else (1, 5)
     model = SVDBaseline(
         n_factors=params["n_factors"],
         n_epochs=params["n_epochs"],
@@ -319,6 +361,7 @@ def random_search_objective(arm, train_inner, val_df, user_thresholds, threshold
         reg_all=params["reg_all"],
         biased=params["biased"],
         random_state=seed,
+        rating_scale=rs,
     )
 
     rng = random.Random(seed)
@@ -327,9 +370,16 @@ def random_search_objective(arm, train_inner, val_df, user_thresholds, threshold
         if len(pos_train) < 10:
             return params, 0.0
         model.fit(pos_train)
-        score = evaluate_arm_a(model, val_df, pos_train, all_items,
-                                config.eval.k, config.eval.n_candidates, max_users, seed)
-    else:
+        score = evaluate_arm_a_or_d(model, val_df, pos_train, all_items,
+                                     config.eval.k, config.eval.n_candidates, max_users, seed)
+    elif arm == "d":
+        joint_train = build_arm_d_train(train_inner, int(threshold), int(neg_threshold))
+        if len(joint_train) < 10:
+            return params, 0.0
+        model.fit(joint_train)
+        score = evaluate_arm_a_or_d(model, val_df, joint_train, all_items,
+                                     config.eval.k, config.eval.n_candidates, max_users, seed)
+    else:  # arm == "b"
         neg_train, neg_val = build_arm_b_neg_val(train_inner, threshold, user_thresholds, rng)
         if len(neg_train) < 10:
             return params, 0.0
@@ -339,10 +389,12 @@ def random_search_objective(arm, train_inner, val_df, user_thresholds, threshold
                                 config.eval.k, config.eval.n_candidates, max_users, seed)
     return params, score
 
-#main
-def threshold_label(arm: str, threshold) -> str:
+def threshold_label(arm: str, threshold, neg_threshold=None) -> str:
     if arm == "a":
         return f"pos_ge_{threshold}"
+    if arm == "d":
+        return f"pos_ge_{threshold}_neg_le_{neg_threshold}"
+    # arm == "b"
     if isinstance(threshold, int):
         return f"neg_le_{threshold}"
     return f"neg_{threshold}"
@@ -352,11 +404,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--config", required=True)
-    parser.add_argument("--arm", required=True, choices=["a", "b"],
-                        help="a = Arm A positive preference model, b = Arm B dislike-risk detector")
+    parser.add_argument("--arm", required=True, choices=["a", "b", "d"],
+                        help="a = Arm A positive-only, b = Arm B dislike detector, "
+                             "d = Arm D joint positive-negative")
     parser.add_argument("--threshold", required=True,
-                        help="Arm A: integer (e.g. 4 means train on rating>=4). "
-                             "Arm B: integer (e.g. 2 means train on rating<=2) or 'median'/'modus'.")
+                        help="Arm A/D: positive threshold integer (e.g. 4 → rating>=4). "
+                             "Arm B: integer (e.g. 2 → rating<=2) or 'median'/'modus'.")
+    parser.add_argument("--neg_threshold", default=None,
+                        help="Arm D only: negative threshold integer (e.g. 2 → rating<=2).")
     parser.add_argument("--n_trials", type=int, default=200)
     parser.add_argument("--max_users", type=int, default=None,
                         help="Limit evaluation to first N users (for quick dev runs)")
@@ -365,15 +420,21 @@ def main():
                         help="Re-run tuning even if best_params.json already exists")
     args = parser.parse_args()
 
-    # parse threshold
+    # parse thresholds
     threshold = args.threshold
     if threshold not in ("median", "modus"):
         threshold = int(threshold)
 
+    neg_threshold = None
+    if args.arm == "d":
+        if args.neg_threshold is None:
+            parser.error("--neg_threshold is required for --arm d")
+        neg_threshold = int(args.neg_threshold)
+
     config = ExperimentConfig.from_yaml(args.config)
     set_global_seed(args.seed)
 
-    label = threshold_label(args.arm, threshold)
+    label = threshold_label(args.arm, threshold, neg_threshold)
     out_dir = Path(config.output_dir).parent / "tuning" / f"arm_{args.arm}" / label
     out_dir.mkdir(parents=True, exist_ok=True)
     best_params_path = out_dir / "best_params.json"
@@ -382,21 +443,26 @@ def main():
         print(f"SKIP: {best_params_path} already exists (use --overwrite to re-tune)")
         sys.exit(0)
 
+    arm_desc = {
+        "a": "Positive Preference (positive-only SVD)",
+        "b": "Negative Dislike-Risk Detector",
+        "d": "Joint Positive-Negative SVD (binary targets)",
+    }
     print(f"\nHyperparameter Tuning — SVD Arm {args.arm.upper()}")
     print(f"  Dataset:   {config.data.name}")
-    print(f"  Arm:       {'Positive Preference' if args.arm == 'a' else 'Negative Dislike-Risk'}")
-    print(f"  Threshold: {label}")
+    print(f"  Arm:       {arm_desc[args.arm]}")
+    print(f"  Label:     {label}")
     print(f"  Trials:    {args.n_trials}")
     print(f"  Engine:    {'Optuna TPE' if HAS_OPTUNA else 'Random Search (install optuna for Bayesian)'}")
     print(f"  Output:    {best_params_path}")
     print()
 
     proc = config.data.processed_path
-    train_inner    = load_parquet(proc + config.splits.train_inner_file)
-    val_df         = load_parquet(proc + config.splits.val_file)
+    train_inner     = load_parquet(proc + config.splits.train_inner_file)
+    val_df          = load_parquet(proc + config.splits.val_file)
     user_thresholds = load_parquet(proc + config.splits.user_thresholds_file)
-    train_full     = load_parquet(proc + config.splits.train_file)
-    all_items      = set(train_full["movieId"].unique())
+    train_full      = load_parquet(proc + config.splits.train_file)
+    all_items       = set(train_full["movieId"].unique())
 
     space = SEARCH_SPACE[args.arm]
 
@@ -409,13 +475,13 @@ def main():
         objective = make_objective(
             args.arm, train_inner, val_df, user_thresholds, threshold,
             all_items, config, args.max_users, args.seed,
+            neg_threshold=neg_threshold,
         )
         study.optimize(objective, n_trials=args.n_trials, show_progress_bar=True)
 
         best_params = study.best_params
-        best_value = study.best_value
+        best_value  = study.best_value
 
-        # save Optuna study for later inspection
         import pickle
         with open(out_dir / "study.pkl", "wb") as f:
             pickle.dump(study, f)
@@ -428,32 +494,40 @@ def main():
             params, score = random_search_objective(
                 args.arm, train_inner, val_df, user_thresholds, threshold,
                 all_items, config, args.max_users, trial_seed, space,
+                neg_threshold=neg_threshold,
             )
             if score > best_value:
-                best_value = score
+                best_value  = score
                 best_params = params
             if (trial_i + 1) % 10 == 0:
-                metric = "nDCG@10" if args.arm == "a" else "neg_hit@10"
+                metric = "neg_hit@10" if args.arm == "b" else "nDCG@10"
                 print(f"  [{trial_i+1}/{args.n_trials}] best {metric}={best_value:.4f}")
 
-    metric_name = "nDCG@10 (val)" if args.arm == "a" else "negative_detection_hit@10 (neg-LOO val)"
+    metric_name = {
+        "a": "nDCG@10 (val)",
+        "b": "negative_detection_hit@10 (neg-LOO val)",
+        "d": "nDCG@10 (val, binary-target model)",
+    }[args.arm]
+
     print(f"\nBest {metric_name}: {best_value:.4f}")
     print(f"Best params: {best_params}")
 
     result = {
-        "arm": args.arm,
-        "threshold": str(threshold),
+        "arm":             args.arm,
+        "threshold":       str(threshold),
+        "neg_threshold":   str(neg_threshold) if neg_threshold is not None else None,
         "threshold_label": label,
-        "dataset": config.data.name,
-        "best_value": best_value,
-        "metric": metric_name,
-        "n_trials": args.n_trials,
-        "best_params": best_params,
-        "search_space": {k: [str(v) for v in vals] for k, vals in space.items()},
+        "dataset":         config.data.name,
+        "best_value":      best_value,
+        "metric":          metric_name,
+        "n_trials":        args.n_trials,
+        "best_params":     best_params,
+        "search_space":    {k: [str(v) for v in vals] for k, vals in space.items()},
         "note": (
             "Task is top-N ranking, not rating regression. "
-            "Arm A optimized for positive ranking quality (nDCG@10). "
-            "Arm B optimized for negative dislike detection (negative_hit@10)."
+            "Arm A/D optimized for positive ranking quality (nDCG@10). "
+            "Arm B optimized for negative dislike detection (negative_hit@10). "
+            "Arm D uses binary targets (1.0=like, 0.0=dislike) with rating_scale=(0,1)."
         ),
     }
     with open(best_params_path, "w") as f:
