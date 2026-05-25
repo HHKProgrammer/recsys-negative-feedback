@@ -152,7 +152,12 @@ def main():
     parser.add_argument("--config",    required=True)
     parser.add_argument("--max_users", type=int, default=None)
     parser.add_argument("--seed",      type=int, default=42)
+    parser.add_argument("--threshold", type=int, default=None,
+                        help="Run only this positive threshold (3, 4, or 5). Default: all.")
     args = parser.parse_args()
+
+    if args.threshold is not None and args.threshold not in POS_THRESHOLDS:
+        parser.error(f"--threshold must be one of {POS_THRESHOLDS}")
 
     config   = ExperimentConfig.from_yaml(args.config)
     base     = Path(config.output_dir).parent
@@ -169,20 +174,22 @@ def main():
         summary = {"experiments": [], "meta": {}}
         done = set()
 
+    thresholds = [args.threshold] if args.threshold is not None else POS_THRESHOLDS
+
     print(f"\nArm A — Positive Preference SVD Grid")
     print(f"  Dataset:    {config.data.name}")
-    print(f"  Thresholds: pos >= {POS_THRESHOLDS}")
+    print(f"  Thresholds: pos >= {thresholds}")
     print(f"  References: Rendle et al. 2009 (BPR), He et al. 2017 (NCF)")
     print(f"  Output:     {out_path}")
     print()
 
-    for i, pt in enumerate(POS_THRESHOLDS, 1):
+    for i, pt in enumerate(thresholds, 1):
         eid = f"arm_a_{pos_label(pt)}"
         if eid in done:
-            print(f"  [{i}/{len(POS_THRESHOLDS)}] SKIP (done): {eid}")
+            print(f"  [{i}/{len(thresholds)}] SKIP (done): {eid}")
             continue
 
-        print(f"  [{i}/{len(POS_THRESHOLDS)}] {eid}  (rating >= {pt})")
+        print(f"  [{i}/{len(thresholds)}] {eid}  (rating >= {pt})")
         metrics = run_one(config, pt, tuning, models, args.max_users, args.seed)
 
         k = config.eval.k

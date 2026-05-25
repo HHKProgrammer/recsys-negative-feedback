@@ -127,28 +127,32 @@ echo " Phase 4 complete"
 
 
 echo "=========================================================="
-echo " Phase 5: Arm A grid 4 datasets in parallel"
+echo " Phase 5: Arm A grid ${#ARM_A_THRESHOLDS[@]} thresholds x ${#CONFIGS[@]} datasets = $((${#ARM_A_THRESHOLDS[@]} * ${#CONFIGS[@]})) jobs in parallel"
 echo "          Trains SVD on rating >= pos_threshold"
 echo "          Saves models for Arm C"
 echo "=========================================================="
-for cfg in "${CONFIGS[@]}"; do
-    run_bg "arm_a_$(cfg_label $cfg)" \
-        python scripts/run_arm_a_positive_svd_grid.py \
-            --config "$cfg" $(max_users_flag)
+for pt in "${ARM_A_THRESHOLDS[@]}"; do
+    for cfg in "${CONFIGS[@]}"; do
+        run_bg "arm_a_t${pt}_$(cfg_label $cfg)" \
+            python scripts/run_arm_a_positive_svd_grid.py \
+                --config "$cfg" --threshold "$pt" $(max_users_flag)
+    done
 done
 wait
 echo " Phase 5 complete"
 
 
 echo "=========================================================="
-echo " Phase 6: Arm B grid4 datasets in parallel"
+echo " Phase 6: Arm B grid ${#ARM_B_THRESHOLDS[@]} thresholds x ${#CONFIGS[@]} datasets = $((${#ARM_B_THRESHOLDS[@]} * ${#CONFIGS[@]})) jobs in parallel"
 echo "          Trains SVD on rating <= neg_threshold"
 echo "          Saves models for Arm C"
 echo "=========================================================="
-for cfg in "${CONFIGS[@]}"; do
-    run_bg "arm_b_$(cfg_label $cfg)" \
-        python scripts/run_arm_b_negative_svd_grid.py \
-            --config "$cfg" $(max_users_flag)
+for t in "${ARM_B_THRESHOLDS[@]}"; do
+    for cfg in "${CONFIGS[@]}"; do
+        run_bg "arm_b_t${t}_$(cfg_label $cfg)" \
+            python scripts/run_arm_b_negative_svd_grid.py \
+                --config "$cfg" --threshold "$t" $(max_users_flag)
+    done
 done
 wait
 echo " Phase 6 complete"

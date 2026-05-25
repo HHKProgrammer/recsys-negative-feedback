@@ -274,6 +274,8 @@ def main():
     parser.add_argument("--config",    required=True)
     parser.add_argument("--max_users", type=int, default=None)
     parser.add_argument("--seed",      type=int, default=42)
+    parser.add_argument("--threshold", default=None,
+                        help="Run only one threshold: 1, 2, 3, median, or modus. Default: all.")
     args = parser.parse_args()
 
     config   = ExperimentConfig.from_yaml(args.config)
@@ -291,20 +293,29 @@ def main():
         summary = {"experiments": [], "meta": {}}
         done = set()
 
+    if args.threshold is not None:
+        value_map = {str(c["value"]): c for c in NEG_CONFIGS}
+        cfg = value_map.get(str(args.threshold))
+        if cfg is None:
+            parser.error(f"--threshold must be one of: 1 2 3 median modus")
+        configs_to_run = [cfg]
+    else:
+        configs_to_run = NEG_CONFIGS
+
     print(f"\nArm B — Negative Dislike-Risk Detector SVD Grid")
     print(f"  Dataset:    {config.data.name}")
-    print(f"  Thresholds: {[c['label'] for c in NEG_CONFIGS]}")
+    print(f"  Thresholds: {[c['label'] for c in configs_to_run]}")
     print(f"  Evaluation: leave-one-negative-out (LNO)")
     print(f"  Output:     {out_path}")
     print()
 
-    for i, neg_cfg in enumerate(NEG_CONFIGS, 1):
+    for i, neg_cfg in enumerate(configs_to_run, 1):
         eid = f"arm_b_{neg_cfg['label']}"
         if eid in done:
-            print(f"  [{i}/{len(NEG_CONFIGS)}] SKIP (done): {eid}")
+            print(f"  [{i}/{len(configs_to_run)}] SKIP (done): {eid}")
             continue
 
-        print(f"  [{i}/{len(NEG_CONFIGS)}] {eid}")
+        print(f"  [{i}/{len(configs_to_run)}] {eid}")
         metrics = run_one(config, neg_cfg, tuning, models, args.max_users, args.seed)
 
         k = config.eval.k
