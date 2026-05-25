@@ -1,0 +1,21 @@
+Dataset,Neg threshold,Detection HR@10,Detection NDCG@10,Mean dislike rank,n_users (LNO),Strength
+ml-1m,neg_le_1,0.1125,0.0582,128.7,3663,weak
+ml-1m,neg_le_2,0.0915,0.0444,145.8,5423,weak
+ml-1m,neg_le_3,0.0907,0.0437,119.3,6012,weak
+ml-1m,neg_median,0.1045,0.0526,114.2,6010,weak
+ml-1m,neg_modus,0.0998,0.048,113.6,5872,weak
+ml-10m,neg_le_1,0.1868,0.0918,98.3,37305,moderate
+ml-10m,neg_le_2,0.1696,0.0819,105.8,57511,moderate
+ml-10m,neg_le_3,0.0098,0.0037,226.5,69439,weak
+ml-10m,neg_median,0.0056,0.0021,255.5,68071,weak
+ml-10m,neg_modus,0.007,0.0028,263.7,65403,weak
+ml-20m,neg_le_1,0.2203,0.1042,81.4,72161,moderate
+ml-20m,neg_le_2,0.2081,0.0976,82.5,112396,moderate
+ml-20m,neg_le_3,0.0116,0.0045,221.2,136851,weak
+ml-20m,neg_median,0.0088,0.0035,246.8,135559,weak
+ml-20m,neg_modus,0.0128,0.0053,256.1,130710,weak
+spotify,neg_le_1,0.2784,0.1919,148.3,2083,moderate
+spotify,neg_le_2,0.4189,0.2858,113.2,3707,strong
+spotify,neg_le_3,0.3955,0.2479,106.3,4685,strong
+spotify,neg_median,0.3658,0.2258,129.2,3155,strong
+spotify,neg_modus,0.3651,0.2371,142.4,2112,strong

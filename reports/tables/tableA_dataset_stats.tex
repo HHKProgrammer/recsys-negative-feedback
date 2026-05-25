@@ -1,0 +1,14 @@
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrrr}
+\toprule
+Dataset & Users & Items & Ratings & Feedback & Split & Source \\
+\midrule
+MovieLens 1M & 6040 & 3416 & 993571 & Explicit (1–5 stars) & Random LOO & GroupLens \\
+MovieLens 10M & 69878 & 10196 & 9928938 & Explicit (1–5 stars) & Random LOO & GroupLens \\
+MovieLens 20M & 138493 & 18345 & 19845531 & Explicit (0.5–5 stars) & Random LOO & GroupLens \\
+Spotify MSSD & 6376 & 3490 & 74648 & Implicit (skip taxonomy → 1–5) & Random LOO & AIcrowd \\
+\bottomrule
+\end{tabular}
+\caption{Dataset statistics. Spotify skip taxonomy: skip-before-30s=1, skip-before-end=2, full-play=4, full-play+queue=5.}
+\end{table}

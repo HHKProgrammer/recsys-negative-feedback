@@ -112,6 +112,42 @@ ml-20m & weighted & median & 1.0 & 0.075 & 0.1309 & 0.0693 & 0.0131 & 0.3191 \\
 ml-20m & weighted & modus & 0.1 & 0.0819 & 0.1429 & 0.0751 & 0.0143 & 0.3185 \\
 ml-20m & weighted & modus & 0.3 & 0.0805 & 0.1405 & 0.0739 & 0.0141 & 0.3159 \\
 ml-20m & weighted & modus & 1.0 & 0.0754 & 0.1317 & 0.0697 & 0.0132 & 0.3084 \\
+spotify & baseline & N/A & nan & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0 \\
+spotify & filter & fixed≤1 & nan & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0202 \\
+spotify & filter & fixed≤2 & nan & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0523 \\
+spotify & filter & fixed≤3 & nan & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0797 \\
+spotify & filter & median & nan & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0416 \\
+spotify & filter & modus & nan & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0309 \\
+spotify & rerank & fixed≤1 & 0.1 & 0.0175 & 0.0358 & 0.021 & 0.0036 & 0.0168 \\
+spotify & rerank & fixed≤1 & 0.3 & 0.0178 & 0.0367 & 0.021 & 0.0037 & 0.0109 \\
+spotify & rerank & fixed≤1 & 1.0 & 0.0178 & 0.0362 & 0.021 & 0.0036 & -0.006 \\
+spotify & rerank & fixed≤2 & 0.1 & 0.0175 & 0.0356 & 0.021 & 0.0036 & 0.0465 \\
+spotify & rerank & fixed≤2 & 0.3 & 0.0176 & 0.0359 & 0.021 & 0.0036 & 0.0364 \\
+spotify & rerank & fixed≤2 & 1.0 & 0.0172 & 0.0348 & 0.0206 & 0.0035 & 0.0072 \\
+spotify & rerank & fixed≤3 & 0.1 & 0.0175 & 0.0354 & 0.0211 & 0.0035 & 0.073 \\
+spotify & rerank & fixed≤3 & 0.3 & 0.0179 & 0.0365 & 0.0211 & 0.0037 & 0.0606 \\
+spotify & rerank & fixed≤3 & 1.0 & 0.0171 & 0.0348 & 0.0205 & 0.0035 & 0.0249 \\
+spotify & rerank & median & 0.1 & 0.0176 & 0.0358 & 0.021 & 0.0036 & 0.0363 \\
+spotify & rerank & median & 0.3 & 0.0175 & 0.0362 & 0.0206 & 0.0036 & 0.0264 \\
+spotify & rerank & median & 1.0 & 0.0163 & 0.0342 & 0.0195 & 0.0034 & -0.0028 \\
+spotify & rerank & modus & 0.1 & 0.0176 & 0.0358 & 0.021 & 0.0036 & 0.0268 \\
+spotify & rerank & modus & 0.3 & 0.0173 & 0.0358 & 0.0206 & 0.0036 & 0.0192 \\
+spotify & rerank & modus & 1.0 & 0.0167 & 0.035 & 0.0199 & 0.0035 & -0.0032 \\
+spotify & weighted & fixed≤1 & 0.1 & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0182 \\
+spotify & weighted & fixed≤1 & 0.3 & 0.0176 & 0.0358 & 0.0212 & 0.0036 & 0.0147 \\
+spotify & weighted & fixed≤1 & 1.0 & 0.018 & 0.037 & 0.0211 & 0.0037 & 0.0042 \\
+spotify & weighted & fixed≤2 & 0.1 & 0.0176 & 0.0356 & 0.0211 & 0.0036 & 0.0495 \\
+spotify & weighted & fixed≤2 & 0.3 & 0.0176 & 0.0359 & 0.021 & 0.0036 & 0.0445 \\
+spotify & weighted & fixed≤2 & 1.0 & 0.0174 & 0.0356 & 0.0209 & 0.0036 & 0.0293 \\
+spotify & weighted & fixed≤3 & 0.1 & 0.0177 & 0.0356 & 0.0213 & 0.0036 & 0.0772 \\
+spotify & weighted & fixed≤3 & 0.3 & 0.0177 & 0.0361 & 0.0211 & 0.0036 & 0.0722 \\
+spotify & weighted & fixed≤3 & 1.0 & 0.0178 & 0.0367 & 0.0209 & 0.0037 & 0.0565 \\
+spotify & weighted & median & 0.1 & 0.0176 & 0.0354 & 0.0213 & 0.0035 & 0.0399 \\
+spotify & weighted & median & 0.3 & 0.0177 & 0.0359 & 0.0211 & 0.0036 & 0.0363 \\
+spotify & weighted & median & 1.0 & 0.0174 & 0.0353 & 0.0209 & 0.0035 & 0.0251 \\
+spotify & weighted & modus & 0.1 & 0.0175 & 0.0354 & 0.0212 & 0.0035 & 0.0295 \\
+spotify & weighted & modus & 0.3 & 0.0176 & 0.0356 & 0.0211 & 0.0036 & 0.027 \\
+spotify & weighted & modus & 1.0 & 0.0172 & 0.0353 & 0.0208 & 0.0035 & 0.0189 \\
 \bottomrule
 \end{tabular}
 \caption{All experiments across all datasets}

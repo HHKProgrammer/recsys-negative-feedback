@@ -1,0 +1,3 @@
+Dataset,SVD baseline NDCG@10,Arm A NDCG@10,Arm A Δ vs baseline (%),Arm C NDCG@10,Arm C Δ vs baseline (%),Best Arm C config,Arm A sim_neg@10,Arm C sim_neg@10
+ml-1m,0.0684,0.0811,18.6,0.0707,3.3,arm_c_pos_ge_3_neg_le_1_alpha_0.05,0.0,0.6369
+spotify,0.0176,0.3447,1858.7,0.3423,1844.9,arm_c_pos_ge_4_neg_le_1_alpha_0.05,0.0,0.2021

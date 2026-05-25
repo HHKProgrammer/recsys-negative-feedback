@@ -1,0 +1,12 @@
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Dataset & SVD baseline NDCG@10 & Arm A NDCG@10 & Arm A Δ vs baseline (\%) & Arm C NDCG@10 & Arm C Δ vs baseline (\%) & Best Arm C config & Arm A sim\_neg@10 & Arm C sim\_neg@10 \\
+\midrule
+ml-1m & 0.0684 & 0.0811 & 18.6 & 0.0707 & 3.3 & arm\_c\_pos\_ge\_3\_neg\_le\_1\_alpha\_0.05 & 0.0 & 0.6369 \\
+spotify & 0.0176 & 0.3447 & 1858.7 & 0.3423 & 1844.9 & arm\_c\_pos\_ge\_4\_neg\_le\_1\_alpha\_0.05 & 0.0 & 0.2021 \\
+\bottomrule
+\end{tabular}
+\caption{Arm A vs Arm C headline comparison. Best config = highest NDCG@10 over all (pos_threshold, neg_threshold, alpha). No significance tests — requires per-user data (future work).}
+\end{table}
