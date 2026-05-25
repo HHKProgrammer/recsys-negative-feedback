@@ -204,17 +204,19 @@ per-job logs written to `logs/<timestamp>/` so parallel output does not interlea
 ### pipeline phases
 
 ```
+# run_all.sh full reproducible pipeline (all four arms):
 Phase 1   prepare all datasets
 Phase 2   snapshot v1 results (before new runs)
 Phase 3   post-hoc grid (36 experiments x dataset)
-Phase 4   HPT  Arm A (3 thresholds) + Arm B (5 thresholds), per dataset
-Phase 5   Arm A grid (3 runs x dataset, saves models)
-Phase 6   Arm B grid (5 runs x dataset, saves models)
-Phase 7   Arm C hybrid grid (90 combinations x dataset)
+Phase 4   HPT Arm A (12 jobs) + Arm B (20 jobs) + Arm D (16 jobs) all in parallel
+Phase 5   Arm A grid (3 thresholds x 4 datasets = 12 jobs in parallel, saves models)
+Phase 6   Arm B grid (5 thresholds x 4 datasets = 20 jobs in parallel, saves models)
+Phase 7   Arm C hybrid grid (90 combinations x dataset, 12 workers per dataset)
 Phase 8   known-negative injection eval (Krichene & Rendle 2020)
-Phase 9   generate all figures and tables
+Phase 9   Arm D joint SVD grid (4 configurations x 4 datasets in parallel)
+Phase 10  generate all figures and tables (A / B / C / D comparison)
 
-# run_arm_d.sh adds (assumes Phases 1–9 already complete):
+# run_arm_d.sh Arm D only (when Phases 1–8 are already done on the server):
 Phase 10  Arm D HPT (4 pairs x 4 datasets = 16 parallel jobs)
 Phase 11  Arm D joint SVD grid (4 configurations x 4 datasets)
 Phase 12  regenerate all figures and tables (includes Arm D comparison)

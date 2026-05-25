@@ -1,10 +1,14 @@
 #!/bin/bash
-# Full experiment pipeline /server48 cores, 128 GB RAM, Debian 13)
+# Full experiment pipeline (server: 48 cores, 128 GB RAM, Debian 13)
+# Runs all four arms: A (pos-only SVD), B (neg-only SVD), C (hybrid), D (joint pos-neg SVD)
 #
 # Parallelism strategy:
 #    All 4 datasets run simultaneously for each phase
-#    HPT: all threshold x dataset combos launched at once (32 jobs)
+#    HPT: all threshold x dataset combos launched at once (48 jobs: 12 A + 20 B + 16 D)
 #    Arm C: --n_parallel 12 (48 cores / 4 datasets = 12 workers per dataset)
+#
+# To run ONLY Arm D (when Phases 1-9 are already done on the server):
+#    HPT_TRIALS=200 HPT_MAX_USERS=5000 nohup ./run_arm_d.sh > arm_d_run.log 2>&1 &
 #
 # Disconnect-safe:
 #   HPT_TRIALS=200 nohup ./run_all.sh > full_run.log 2>&1 &
@@ -37,6 +41,8 @@ CONFIGS=(
 )
 ARM_A_THRESHOLDS=(3 4 5)
 ARM_B_THRESHOLDS=(1 2 3 median modus)
+# Arm D grid: (pos_threshold, neg_threshold) pairs format "pos neg"
+ARM_D_PAIRS=("4 2" "5 1" "4 1" "3 2")
 
 # Per-job log directory so output doesn't interleave
 LOG_DIR="logs/$(date +%Y%m%d_%H%M%S)"
@@ -95,6 +101,7 @@ echo "=========================================================="
 echo " Phase 4: Hyperparameter tuning — all jobs in parallel"
 echo "          Arm A: ${#ARM_A_THRESHOLDS[@]} thresholds x ${#CONFIGS[@]} datasets = $((${#ARM_A_THRESHOLDS[@]} * ${#CONFIGS[@]})) jobs"
 echo "          Arm B: ${#ARM_B_THRESHOLDS[@]} thresholds x ${#CONFIGS[@]} datasets = $((${#ARM_B_THRESHOLDS[@]} * ${#CONFIGS[@]})) jobs"
+echo "          Arm D: ${#ARM_D_PAIRS[@]} pairs x ${#CONFIGS[@]} datasets = $((${#ARM_D_PAIRS[@]} * ${#CONFIGS[@]})) jobs"
 echo "          Trials: $HPT_TRIALS per job  HPT_MAX_USERS: ${HPT_MAX_USERS:-all}"
 echo "=========================================================="
 
@@ -112,6 +119,18 @@ for t in "${ARM_B_THRESHOLDS[@]}"; do
         run_bg "hpt_b_t${t}_$(cfg_label $cfg)" \
             python scripts/run_hyperparameter_tuning.py \
                 --config "$cfg" --arm b --threshold "$t" \
+                --n_trials "$HPT_TRIALS" $(hpt_max_users_flag)
+    done
+done
+
+for pair in "${ARM_D_PAIRS[@]}"; do
+    pos="${pair% *}"
+    neg="${pair#* }"
+    for cfg in "${CONFIGS[@]}"; do
+        run_bg "hpt_d_p${pos}_n${neg}_$(cfg_label $cfg)" \
+            python scripts/run_hyperparameter_tuning.py \
+                --config "$cfg" --arm d \
+                --threshold "$pos" --neg_threshold "$neg" \
                 --n_trials "$HPT_TRIALS" $(hpt_max_users_flag)
     done
 done
@@ -187,7 +206,21 @@ echo " Phase 8 complete"
 
 
 echo "=========================================================="
-echo " Phase 9: Generate all figures and tables"
+echo " Phase 9: Arm D joint SVD grid  4 datasets in parallel"
+echo "          Trains SVD on binary targets (pos=1.0, neg=0.0)"
+echo "          Skips configs already in grid_summary_arm_d.json"
+echo "=========================================================="
+for cfg in "${CONFIGS[@]}"; do
+    run_bg "arm_d_$(cfg_label $cfg)" \
+        python scripts/run_arm_d_joint_svd_grid.py \
+            --config "$cfg" $(max_users_flag)
+done
+wait
+echo " Phase 9 complete"
+
+
+echo "=========================================================="
+echo " Phase 10: Generate all figures and tables"
 echo "=========================================================="
 python scripts/generate_all_figures.py
 
@@ -203,10 +236,11 @@ echo "   outputs/*/grid_summary.json"
 echo "   outputs/*/grid_summary_arm_a.json"
 echo "   outputs/*/grid_summary_arm_b.json"
 echo "   outputs/*/grid_summary_arm_c.json"
+echo "   outputs/*/grid_summary_arm_d.json"
 echo "   outputs/*/grid_summary_known_neg_eval.json"
 echo ""
 echo " To push:"
-echo "   git add outputs/ reports/ scripts/ run_all.sh"
-echo "   git commit -m 'three-arm results'"
+echo "   git add outputs/ reports/ scripts/ run_all.sh run_arm_d.sh"
+echo "   git commit -m 'four-arm results'"
 echo "   git push"
 echo "=========================================================="
