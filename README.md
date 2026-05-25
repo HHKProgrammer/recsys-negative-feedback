@@ -259,6 +259,41 @@ reports/
 
 ---
 
+## figures and tables
+
+| figure | what |
+|--------|------|
+| fig1 | baseline sanity check: actual NDCG/HR vs random-ranker reference (was: estimated RMSE) |
+| fig2 | core tradeoff: sim_to_neg vs NDCG scatter per variant |
+| fig3 | best NDCG per variant per dataset |
+| fig4 | alpha sensitivity: any penalty level hurts NDCG |
+| fig5 | negative threshold comparison |
+| fig6 | dataset scaling (1M → 10M → 20M) |
+| fig7 | MovieLens vs Spotify (skip→rating: skip-before-30s=1, skip-before-end=2, full-play=4, +queue=5) |
+| fig8 | known-negative injection eval (hatched bars = 0 by construction, not measured) |
+| fig9 | post-hoc vs train-positive SVD (relabelled: not "Hu et al. 2008" — different method) |
+| fig_arm_b | Arm B dislike detection quality per threshold per dataset |
+| fig_arm_c | Arm A vs Arm C headline: NDCG and sim_to_neg per dataset |
+
+| table | what |
+|-------|------|
+| A | dataset statistics (users, items, ratings, feedback type, split) |
+| 1 | all experiments (appendix) |
+| 2 | baseline summary + quality verdict |
+| 3 | Surprise RMSE benchmark (rating prediction, different task) |
+| 4 | key findings: best variant per dataset + delta |
+| 5 | V1 post-hoc vs V2 train-positive SVD comparison |
+| C | Arm B detection quality per threshold (LNO evaluation) |
+| D | Arm A vs Arm C headline (main research question) |
+
+**known scientific limitations:**
+- significance tests not yet added requires per-user CSV output from grid runs
+- single seed  no variance across random seeds
+- plausibility range in fig1b is own estimate, not a published benchmark (labeled as such)
+- train-positive SVD ≠ Hu et al. 2008 (confidence-weighted ALS on all interactions)
+
+---
+
 ## papers
 Koren, Bell, Volinsky (2009) — Matrix Factorization Techniques for Recommender Systems
   https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf

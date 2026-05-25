@@ -157,49 +157,43 @@ def load_experiments(path: Path) -> list:
 def load_all_results():
     """
     Load results for all datasets.
-    Returns three dicts keyed by dataset name:
+    Returns six dicts keyed by dataset name:
       standard        main grid (post-hoc variants: filter/rerank/weighted)
-      train_positive  training-time improvement (Hu et al. 2008)
+      train_positive  training-time positive-only SVD (legacy v1)
       known_neg_eval  adversarial evaluation with injected negative candidates
+      arm_a           Arm A — SVD trained on rating >= pos_threshold
+      arm_b           Arm B — SVD trained on rating <= neg_threshold (dislike detector)
+      arm_c           Arm C — hybrid: minmax(arm_a) - alpha * minmax(arm_b)
     """
     standard       = {}
     train_positive = {}
     known_neg_eval = {}
+    arm_a          = {}
+    arm_b          = {}
+    arm_c          = {}
 
-    for ds in ["ml-1m", "ml-10m", "ml-20m"]:
-        folder = RESULTS_DIR / f"movielens/{ds}"
+    ds_folders = {
+        "ml-1m":   RESULTS_DIR / "movielens/ml-1m",
+        "ml-10m":  RESULTS_DIR / "movielens/ml-10m",
+        "ml-20m":  RESULTS_DIR / "movielens/ml-20m",
+        "spotify": RESULTS_DIR / "spotify",
+    }
 
-        exps = load_experiments(folder / "grid_summary.json")
-        if exps:
-            standard[ds] = exps
-            print(f"  {ds}: {len(exps)} experiments (standard)")
+    for ds, folder in ds_folders.items():
+        for key, fname, store in [
+            ("standard",       "grid_summary.json",                standard),
+            ("train_positive", "grid_summary_train_positive.json", train_positive),
+            ("known_neg_eval", "grid_summary_known_neg_eval.json", known_neg_eval),
+            ("arm_a",          "grid_summary_arm_a.json",          arm_a),
+            ("arm_b",          "grid_summary_arm_b.json",          arm_b),
+            ("arm_c",          "grid_summary_arm_c.json",          arm_c),
+        ]:
+            exps = load_experiments(folder / fname)
+            if exps:
+                store[ds] = exps
+                print(f"  {ds}: {len(exps):3d} experiments ({key})")
 
-        exps_tp = load_experiments(folder / "grid_summary_train_positive.json")
-        if exps_tp:
-            train_positive[ds] = exps_tp
-            print(f"  {ds}: {len(exps_tp)} experiments (train-positive)")
-
-        exps_kn = load_experiments(folder / "grid_summary_known_neg_eval.json")
-        if exps_kn:
-            known_neg_eval[ds] = exps_kn
-            print(f"  {ds}: {len(exps_kn)} experiments (known-neg eval)")
-
-    exps_sp = load_experiments(RESULTS_DIR / "spotify/grid_summary.json")
-    if exps_sp:
-        standard["spotify"] = exps_sp
-        print(f"  spotify: {len(exps_sp)} experiments (standard)")
-
-    exps_sp_tp = load_experiments(RESULTS_DIR / "spotify/grid_summary_train_positive.json")
-    if exps_sp_tp:
-        train_positive["spotify"] = exps_sp_tp
-        print(f"  spotify: {len(exps_sp_tp)} experiments (train-positive)")
-
-    exps_sp_kn = load_experiments(RESULTS_DIR / "spotify/grid_summary_known_neg_eval.json")
-    if exps_sp_kn:
-        known_neg_eval["spotify"] = exps_sp_kn
-        print(f"  spotify: {len(exps_sp_kn)} experiments (known-neg eval)")
-
-    return standard, train_positive, known_neg_eval
+    return standard, train_positive, known_neg_eval, arm_a, arm_b, arm_c
 
 
 def get_baseline(exps: list) -> dict:
@@ -284,27 +278,39 @@ def save(name: str):
 def fig1_is_my_baseline_correct(standard: dict):
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-    # left: RMSE vs Surprise
+    # left: actual NDCG@10 vs random-rank reference line
+    # NOTE: the old version showed an *estimated* RMSE bar alongside real Surprise numbers
+    # which was misleading (different metric, different dataset, not computed).
+    # Replaced with: actual NDCG@10 per dataset vs a random-ranker reference
+    # (random ranker on 501 candidates hits rank ~250.5 → expected NDCG ≈ log2(2)/log2(251) ≈ 0.0028)
     ax = axes[0]
-    names  = [r[0] for r in BENCHMARKS["surprise_rmse"]] + ["My SVD\n(n=100, ML-1M, estimated)"]
-    rmse   = [r[1] for r in BENCHMARKS["surprise_rmse"]] + [0.865]
-    colors = ["#cccccc"] * len(BENCHMARKS["surprise_rmse"]) + [VARIANT_COLORS["baseline"]]
-    bars = ax.barh(names, rmse, color=colors, edgecolor="white")
-    bars[-1].set_edgecolor("black")
-    bars[-1].set_linewidth(1.5)
-    ax.axvline(0.873, color="red", linestyle="--", lw=1.2, label="SVD default (0.873)")
-    for bar, val in zip(bars, rmse):
-        ax.text(val + 0.01, bar.get_y() + bar.get_height() / 2,
-                f"{val:.3f}", va="center", fontsize=9)
-    ax.set_xlabel("RMSE  (lower = better rating prediction)")
-    ax.set_title("Fig 1a — SVD RMSE vs Surprise Benchmarks\n"
-                 "(ML-100K, 5-fold CV from surpriselib.com)")
-    ax.legend(fontsize=9)
-    ax.text(0.03, 0.03,
-            "RMSE = how closely we predict the exact rating.\n"
-            "Our main results use NDCG@10 (ranking quality),\nnot RMSE.",
-            transform=ax.transAxes, fontsize=7.5, color="#666",
-            verticalalignment="bottom", style="italic")
+    ds_list_left = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"] if d in standard]
+    if ds_list_left:
+        ndcg_vals = [m(get_baseline(standard[ds]), "ndcg@10") for ds in ds_list_left]
+        hr_vals   = [m(get_baseline(standard[ds]), "hit@10")  for ds in ds_list_left]
+        x         = np.arange(len(ds_list_left))
+        w         = 0.35
+        bar_colors = [DATASET_COLORS.get(ds, "#888") for ds in ds_list_left]
+        ax.bar(x - w/2, ndcg_vals, w, color=bar_colors, alpha=0.85, label="NDCG@10 (measured)")
+        ax.bar(x + w/2, hr_vals,   w, color=bar_colors, alpha=0.45, label="HR@10 (measured)")
+        # random-rank reference: hit prob = k / n_candidates = 10 / 501 ≈ 0.020
+        random_hr = 10 / 501
+        ax.axhline(random_hr, color="red", lw=1.2, linestyle="--",
+                   label=f"Random ranker HR@10 ≈ {random_hr:.3f}")
+        for i, (nd, hr) in enumerate(zip(ndcg_vals, hr_vals)):
+            ax.text(i - w/2, nd + 0.001, f"{nd:.4f}", ha="center", fontsize=8)
+            ax.text(i + w/2, hr + 0.001, f"{hr:.4f}", ha="center", fontsize=8)
+        ax.set_xticks(x)
+        ax.set_xticklabels([DATASET_LABEL.get(ds, ds) for ds in ds_list_left], fontsize=8)
+        ax.set_ylabel("Metric value")
+        ax.set_title("Fig 1a — Baseline SVD: NDCG@10 and HR@10\n"
+                     "(501 sampled candidates, random LOO split)")
+        ax.legend(fontsize=9)
+        ax.text(0.03, 0.03,
+                "All values computed on held-out test set.\n"
+                "Random ranker reference: hit@10 = 10/501 ≈ 0.020.",
+                transform=ax.transAxes, fontsize=7.5, color="#666",
+                verticalalignment="bottom", style="italic")
 
     # right: NDCG vs expected range
     ax = axes[1]
@@ -327,12 +333,14 @@ def fig1_is_my_baseline_correct(standard: dict):
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL.get(ds, ds) for ds in ds_list], fontsize=8)
         ax.set_ylabel("NDCG@10")
-        ax.set_title("Fig 1b — My NDCG@10 vs Expected Range\n"
-                     "(green band = typical SVD with 500 sampled candidates)")
+        ax.set_title("Fig 1b — My NDCG@10 vs Plausibility Range\n"
+                     "(green band = heuristic estimate, not a published benchmark)")
 
         from matplotlib.patches import Patch
         ax.legend(handles=[
-            Patch(facecolor="green", alpha=0.25, label="Expected range (literature estimate)"),
+            Patch(facecolor="green", alpha=0.25,
+                  label="Plausibility range (own estimate: NCF He et al. 2017\n"
+                        "scaled to 500-candidate sampled eval — not a direct benchmark)"),
             Patch(facecolor=VARIANT_COLORS["baseline"], label="My baseline SVD"),
         ], fontsize=8)
 
@@ -667,14 +675,19 @@ def fig7_movielens_vs_spotify(standard: dict):
                    lw=1.5, linestyle="--", label=f"baseline = {b_val:.4f}")
         title_extra = ("MovieLens 1M — explicit star ratings"
                        if ds == "ml-1m" else
-                       "Spotify mini — implicit skip signals\n(session = user, ~16 plays/session)")
+                       "Spotify MSSD — implicit skip signals\n(session = user, ~16 plays/session)")
         ax.set_title(f"Fig 7 — {title_extra}")
         ax.set_xlabel("Variant")
         ax.set_ylabel("NDCG@10")
         ax.legend(fontsize=8)
 
-        note = ("rerank / weighted consistently lower NDCG\n"
-                "filter has zero effect (neg items already excluded)")
+        if ds == "spotify":
+            note = ("Skip→rating mapping: skip-before-30s=1, skip-before-end=2,\n"
+                    "full-play=4, full-play+add-to-queue=5.\n"
+                    "Sessions avg ~16 plays → sparse; results are generalization probe.")
+        else:
+            note = ("rerank / weighted consistently lower NDCG\n"
+                    "filter has zero effect (neg items already excluded from candidates)")
         ax.text(0.02, 0.02, note, transform=ax.transAxes,
                 fontsize=7.5, color="#555", verticalalignment="bottom", style="italic")
 
@@ -722,10 +735,16 @@ def fig8_known_neg_eval(standard: dict, option_a: dict):
 
         x, w = np.arange(len(variants)), 0.35
         colors = [VARIANT_COLORS.get(v, "#aaa") for v in variants]
-        ax.bar(x - w/2, [std_neg[v] for v in variants], w,
-               color=colors, alpha=0.4, label="Standard neg@10 (always ≈ 0)")
+        # standard neg@10 is structurally zero (known negatives excluded from candidate pool
+        # by construction not an empirical result). Use hatching to signal this.
+        std_bars = ax.bar(x - w/2, [max(std_neg[v], 0.001) for v in variants], w,
+                          color=colors, alpha=0.25, hatch="///",
+                          label="Standard neg@10 (= 0 by construction, not measured)")
         ax.bar(x + w/2, [inj_neg[v] for v in variants], w,
-               color=colors, alpha=0.85, label="Injected neg@10")
+               color=colors, alpha=0.85, label="Injected neg@10 (measured)")
+        ax.text(0.02, 0.97, "Hatched bars = 0 by construction\n(negatives excluded from candidate pool)",
+                transform=ax.transAxes, fontsize=7.5, color="#555",
+                verticalalignment="top", style="italic")
 
         ax2 = ax.twinx()
         ax2.plot(x, [std_ndcg[v] for v in variants], "o-",
@@ -779,7 +798,102 @@ def df_to_latex(df: "pd.DataFrame", path: Path, caption: str = "") -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def generate_tables(standard: dict, train_positive: dict):
+def table_dataset_stats():
+    """Table A Dataset statistics for the thesis methodology section."""
+    rows = [
+        {"Dataset": "MovieLens 1M",  "Users": 6_040,   "Items": 3_416,  "Ratings": 993_571,
+         "Feedback": "Explicit (1–5 stars)", "Split": "Random LOO",
+         "Source": "GroupLens"},
+        {"Dataset": "MovieLens 10M", "Users": 69_878,  "Items": 10_196, "Ratings": 9_928_938,
+         "Feedback": "Explicit (1–5 stars)", "Split": "Random LOO",
+         "Source": "GroupLens"},
+        {"Dataset": "MovieLens 20M", "Users": 138_493, "Items": 18_345, "Ratings": 19_845_531,
+         "Feedback": "Explicit (0.5–5 stars)", "Split": "Random LOO",
+         "Source": "GroupLens"},
+        {"Dataset": "Spotify MSSD",  "Users": 6_376,   "Items": 3_490,  "Ratings": 74_648,
+         "Feedback": "Implicit (skip taxonomy → 1–5)", "Split": "Random LOO",
+         "Source": "AIcrowd"},
+    ]
+    df = pd.DataFrame(rows)
+    df.to_csv(TABLES_DIR / "tableA_dataset_stats.csv", index=False)
+    df_to_latex(df, TABLES_DIR / "tableA_dataset_stats.tex",
+                "Dataset statistics. Spotify skip taxonomy: skip-before-30s=1, "
+                "skip-before-end=2, full-play=4, full-play+queue=5.")
+    print("  tableA_dataset_stats")
+
+
+def table_arm_b_detection(arm_b: dict):
+    """Table C  Arm B dislike detection quality (LNO evaluation)."""
+    if not arm_b:
+        return
+    rows = []
+    for ds, exps in arm_b.items():
+        for e in exps:
+            hit  = m(e, "neg_detection_hit@10")
+            ndcg = m(e, "neg_detection_ndcg@10")
+            rank = m(e, "mean_dislike_rank")
+            n    = e["metrics"].get("n_users", 0)
+            rows.append({
+                "Dataset":           ds,
+                "Neg threshold":     e.get("neg_label", "?"),
+                "Detection HR@10":   round(hit,  4),
+                "Detection NDCG@10": round(ndcg, 4),
+                "Mean dislike rank": round(rank, 1),
+                "n_users (LNO)":     n,
+                "Strength":          ("strong" if hit > 0.30 else
+                                      "moderate" if hit > 0.15 else "weak"),
+            })
+    if rows:
+        df = pd.DataFrame(rows)
+        df.to_csv(TABLES_DIR / "tableC_arm_b_detection.csv", index=False)
+        df_to_latex(df, TABLES_DIR / "tableC_arm_b_detection.tex",
+                    "Arm B dislike-detection quality (leave-one-negative-out). "
+                    "HR@10 > 0.30 = strong, > 0.15 = moderate, else weak.")
+        print("  tableC_arm_b_detection")
+
+
+def table_arm_c_headline(arm_a: dict, arm_c: dict, standard: dict):
+    """Table D  Arm A vs Arm C: headline comparison (the main research question)."""
+    avail = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"]
+             if d in arm_a and d in arm_c]
+    if not avail:
+        return
+    rows = []
+    for ds in avail:
+        std_b    = get_baseline(standard.get(ds, []))
+        best_a   = max(arm_a[ds],  key=lambda e: m(e, "ndcg@10"), default=None)
+        best_c   = max(arm_c[ds],  key=lambda e: m(e, "ndcg@10"), default=None)
+        b_ndcg   = m(std_b, "ndcg@10") if std_b else 0
+
+        def delta(val):
+            return round((val - b_ndcg) / b_ndcg * 100, 1) if b_ndcg else 0
+
+        row = {
+            "Dataset":         ds,
+            "SVD baseline NDCG@10":   round(b_ndcg, 4),
+            "Arm A NDCG@10":          round(m(best_a, "ndcg@10"), 4) if best_a else "—",
+            "Arm A Δ vs baseline (%)": delta(m(best_a, "ndcg@10")) if best_a else "—",
+            "Arm C NDCG@10":          round(m(best_c, "ndcg@10"), 4) if best_c else "—",
+            "Arm C Δ vs baseline (%)": delta(m(best_c, "ndcg@10")) if best_c else "—",
+            "Best Arm C config":      best_c["exp_id"] if best_c else "—",
+        }
+        if best_c:
+            row["Arm A sim_neg@10"] = round(m(best_a, "sim_to_neg@10"), 4) if best_a else "—"
+            row["Arm C sim_neg@10"] = round(m(best_c, "sim_to_neg@10"), 4)
+        rows.append(row)
+
+    if rows:
+        df = pd.DataFrame(rows)
+        df.to_csv(TABLES_DIR / "tableD_arm_c_headline.csv", index=False)
+        df_to_latex(df, TABLES_DIR / "tableD_arm_c_headline.tex",
+                    "Arm A vs Arm C headline comparison. "
+                    "Best config = highest NDCG@10 over all (pos_threshold, neg_threshold, alpha). "
+                    "No significance tests — requires per-user data (future work).")
+        print("  tableD_arm_c_headline")
+
+
+def generate_tables(standard: dict, train_positive: dict,
+                    arm_a: dict = None, arm_b: dict = None, arm_c: dict = None):
     """Produce 5 tables: full results, baseline summary, Surprise comparison, key findings, v1 vs v2."""
 
     # table 1: everything  all experiments on all datasets
@@ -899,11 +1013,147 @@ def generate_tables(standard: dict, train_positive: dict):
             df5 = pd.DataFrame(cmp_rows)
             df5.to_csv(TABLES_DIR / "table5_v1_vs_v2_comparison.csv", index=False)
             df_to_latex(df5, TABLES_DIR / "table5_v1_vs_v2_comparison.tex",
-                        "Post-hoc reranking (v1) vs training-time negative removal (v2, Hu et al. 2008)")
+                        "Post-hoc reranking (V1) vs train-positive SVD (V2). "
+                        "Train-positive: SVD trained on rating >= 4 only (differs from "
+                        "Hu et al. 2008 confidence-weighted ALS which uses all interactions).")
             print("  table5_v1_vs_v2_comparison")
+
+    # new tables: dataset stats, Arm B detection, Arm A vs C
+    table_dataset_stats()
+    if arm_b:
+        table_arm_b_detection(arm_b)
+    if arm_a and arm_c:
+        table_arm_c_headline(arm_a, arm_c, standard)
+
+
+#  Three-Arm Architecture
+# 
+def fig_arm_b_detection(arm_b: dict):
+    """Arm B detection quality: how well does the dislike-risk SVD find dislikes?
+
+    Plots neg_detection_hit@10 and neg_detection_ndcg@10 per threshold per dataset.
+    A weak Arm B explains weak Arm C: if the detector cannot find dislikes,
+    the hybrid penalty has nothing meaningful to subtract.
+    Evaluation: leave-one-negative-out (LNO) held-out disliked item vs 500 neutrals.
+    """
+    if not arm_b:
+        print("  skipping fig_arm_b: no arm_b results (run Phase 6)")
+        return
+
+    ds_list = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"] if d in arm_b]
+    n = len(ds_list)
+    fig, axes = plt.subplots(1, n, figsize=(5 * n, 5), sharey=False)
+    if n == 1:
+        axes = [axes]
+
+    THRESHOLD_ORDER = ["neg_le_1", "neg_le_2", "neg_le_3", "neg_median", "neg_modus"]
+    THRESHOLD_LABELS = {"neg_le_1": "≤1", "neg_le_2": "≤2", "neg_le_3": "≤3",
+                        "neg_median": "median", "neg_modus": "modus"}
+
+    for ax, ds in zip(axes, ds_list):
+        exps = arm_b[ds]
+        labels = [THRESHOLD_LABELS.get(e["neg_label"], e["neg_label"]) for e in exps]
+        hit_vals  = [m(e, "neg_detection_hit@10")  for e in exps]
+        ndcg_vals = [m(e, "neg_detection_ndcg@10") for e in exps]
+
+        x = np.arange(len(exps))
+        w = 0.35
+        ax.bar(x - w/2, hit_vals,  w, color="#e74c3c", alpha=0.85, label="HR@10 (detection)")
+        ax.bar(x + w/2, ndcg_vals, w, color="#c0392b", alpha=0.55, label="NDCG@10 (detection)")
+
+        ax.axhline(10/501, color="gray", lw=1.2, linestyle="--",
+                   label=f"Random chance ≈ {10/501:.3f}")
+
+        for i, (h, n_) in enumerate(zip(hit_vals, ndcg_vals)):
+            ax.text(i - w/2, h + 0.003, f"{h:.3f}", ha="center", fontsize=8)
+            ax.text(i + w/2, n_ + 0.003, f"{n_:.3f}", ha="center", fontsize=8)
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels, fontsize=9)
+        ax.set_xlabel("Negative threshold")
+        ax.set_ylabel("Detection metric (higher = better dislike detection)")
+        ax.set_title(f"Arm B — Dislike Detection Quality ({ds.upper()})\n"
+                     "LNO eval: held-out dislike vs 500 neutral items")
+        ax.legend(fontsize=8)
+        ax.text(0.02, 0.02,
+                "LNO = leave-one-negative-out. High rank for disliked item = correct detection.\n"
+                "501 candidates: 1 held-out dislike + 500 neutral unseen items.",
+                transform=ax.transAxes, fontsize=7, color="#555",
+                verticalalignment="bottom", style="italic")
+
+    save("fig_arm_b_detection")
+
+
+def fig_arm_c_headline(arm_a: dict, arm_c: dict, standard: dict):
+    """Arm A vs Arm C headline comparison the core research question for V2.
+
+    Two panels per dataset: NDCG@10 and sim_to_neg@10.
+    Shows whether the three-arm hybrid improves over positive-only SVD.
+    Also shows standard SVD baseline for reference.
+    Best Arm C config selected per dataset (best NDCG@10).
+    """
+    avail = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"]
+             if d in arm_a and d in arm_c]
+    if not avail:
+        print("  skipping fig_arm_c: no arm_c results (run Phase 7) or no arm_a")
+        return
+
+    n = len(avail)
+    fig, axes = plt.subplots(2, n, figsize=(5 * n, 9))
+    if n == 1:
+        axes = axes.reshape(2, 1)
+
+    for col, ds in enumerate(avail):
+        std_baseline = get_baseline(standard.get(ds, []))
+        best_arm_a   = max(arm_a[ds],  key=lambda e: m(e, "ndcg@10"), default=None)
+        best_arm_c   = max(arm_c[ds],  key=lambda e: m(e, "ndcg@10"), default=None)
+
+        for row, metric in enumerate(["ndcg@10", "sim_to_neg@10"]):
+            ax = axes[row, col]
+            vals = {
+                "SVD\n(all ratings)": m(std_baseline, metric) if std_baseline else 0,
+                "Arm A\n(pos-only SVD)": m(best_arm_a, metric) if best_arm_a else 0,
+                "Arm C\n(hybrid)":       m(best_arm_c, metric) if best_arm_c else 0,
+            }
+            bar_colors = [VARIANT_COLORS["baseline"], "#f39c12", "#8e44ad"]
+            bars = ax.bar(list(vals.keys()), list(vals.values()),
+                          color=bar_colors, alpha=0.85)
+
+            b_val = vals["SVD\n(all ratings)"]
+            ax.axhline(b_val, color=VARIANT_COLORS["baseline"],
+                       lw=1.2, linestyle="--", alpha=0.6)
+
+            for bar, val in zip(bars, vals.values()):
+                delta = (val - b_val) / b_val * 100 if b_val else 0
+                sign = "+" if delta >= 0 else ""
+                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.0003,
+                        f"{sign}{delta:.1f}%", ha="center", va="bottom",
+                        fontsize=8, fontweight="bold")
+                ax.text(bar.get_x() + bar.get_width() / 2,
+                        bar.get_height() / 2 if bar.get_height() > 0.002 else bar.get_height() + 0.001,
+                        f"{val:.4f}", ha="center", va="center", fontsize=7.5, color="white"
+                        if bar.get_height() > 0.01 else "black")
+
+            ylabel = ("NDCG@10 (↑ better)" if metric == "ndcg@10"
+                      else "sim_to_neg@10 (↓ further from dislikes)")
+            ax.set_ylabel(ylabel, fontsize=9)
+            if row == 0:
+                best_c_info = ""
+                if best_arm_c:
+                    pt   = best_arm_c.get("pos_threshold", "?")
+                    nl   = best_arm_c.get("neg_label",     "?")
+                    alph = best_arm_c.get("alpha",          "?")
+                    best_c_info = f"\nBest Arm C: pos≥{pt}, {nl}, α={alph}"
+                ax.set_title(f"Arm A vs Arm C — {ds.upper()}{best_c_info}", fontsize=9)
+
+    fig.suptitle("Fig — Arm A vs Arm C: Does the hybrid beat positive-only SVD?\n"
+                 "Δ% vs standard SVD baseline shown on bars. No significance testing yet.",
+                 fontsize=11)
+    save("fig_arm_c_headline")
 
 
 #  8.  MAIN
+
 
 def fig9_training_time_vs_posthoc(standard: dict, train_positive: dict):
     # Research question: Does removing negative items from training help more than
@@ -944,7 +1194,7 @@ def fig9_training_time_vs_posthoc(standard: dict, train_positive: dict):
         # best train-positive NDCG
         best_tp = max(tp_exps, key=lambda e: m(e, "ndcg@10"), default=None)
 
-        approaches = ["Baseline\n(all ratings)", "Best Rerank\n(post-hoc)", "Train Positive\n(Hu et al. 2008)"]
+        approaches = ["Baseline\n(all ratings)", "Best Rerank\n(post-hoc)", "Train-Positive SVD\n(positive-only training)"]
         ndcgs = [
             b_ndcg,
             m(best_rerank, "ndcg@10") if best_rerank else 0,
@@ -964,8 +1214,8 @@ def fig9_training_time_vs_posthoc(standard: dict, train_positive: dict):
         ax.set_ylim(0, max(ndcgs) * 1.15)
         ax.set_ylabel("NDCG@10")
         ax.set_title(f"Fig 9 — Post-hoc vs Training-Time ({ds.upper()})\n"
-                     "Orange: negative items removed before SVD training\n"
-                     "(Hu, Koren & Volinsky 2008, ICDM)")
+                     "Orange: SVD trained on rating ≥ 4 interactions only\n"
+                     "(positive-only training; differs from Hu et al. 2008 confidence-weighted ALS)")
 
     save("fig9_training_time_vs_posthoc")
 
@@ -976,7 +1226,7 @@ def main():
     print("=" * 65)
     print()
     print("Loading experiment results...")
-    standard, train_positive, known_neg_eval = load_all_results()
+    standard, train_positive, known_neg_eval, arm_a, arm_b, arm_c = load_all_results()
 
     if not standard:
         print("No results found. Run experiments first:")
@@ -986,6 +1236,7 @@ def main():
     print_quality_report(standard)
 
     print("Generating figures...")
+    # original V1 figures
     fig1_is_my_baseline_correct(standard)
     fig2_the_tradeoff(standard)
     fig3_best_variant_per_dataset(standard)
@@ -995,14 +1246,26 @@ def main():
     fig7_movielens_vs_spotify(standard)
     fig8_known_neg_eval(standard, known_neg_eval)
     fig9_training_time_vs_posthoc(standard, train_positive)
+    # three-arm architecture figures (generated once Phase 6 + 7 complete)
+    fig_arm_b_detection(arm_b)
+    fig_arm_c_headline(arm_a, arm_c, standard)
 
     print()
     print("Generating tables...")
-    generate_tables(standard, train_positive)
+    generate_tables(standard, train_positive, arm_a=arm_a, arm_b=arm_b, arm_c=arm_c)
 
     print()
     print(f"Figures → {FIGURES_DIR}/")
     print(f"Tables  → {TABLES_DIR}/")
+    print()
+    print("NOTES FOR THESIS:")
+    print("  Fig 1a: NDCG/HR vs random ranker (computed, not estimated)")
+    print("   Fig 1b: green band = heuristic plausibility range (not a published benchmark)")
+    print("   Fig 8:  hatched bars = negative@10 is 0 by construction, not measured")
+    print("  Fig 9:  'Train-Positive SVD' ≠ Hu et al. 2008 (different method)")
+    print("  Tables A/C/D: new — dataset stats, Arm B detection, Arm A vs C")
+    print("  Significance tests: not yet added — requires per-user CSV output")
+    print("    (run grid scripts with per-user saving to enable significance stars)")
     print("=" * 65)
 
 
