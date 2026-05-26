@@ -193,9 +193,9 @@ class SVDBaseline:
         # User lookup: O(1) array index, no try/except, no dict
         uid = int(user_id)
         if 0 <= uid < len(self._user_inner_arr) and self._user_inner_arr[uid] >= 0:
-            u_inner   = int(self._user_inner_arr[uid])
-            user_bias = float(self._model.bu[u_inner])
-            user_vec  = self._model.pu[u_inner]          # shape (n_factors,)
+            u_inner  = int(self._user_inner_arr[uid])
+            user_vec = self._model.pu[u_inner]            # shape (n_factors,)
+            user_bias = float(self._model.bu[u_inner]) if self.biased else 0.0
         else:
             user_bias = 0.0
             user_vec  = np.zeros(self.n_factors)
@@ -208,8 +208,11 @@ class SVDBaseline:
         unknown   = ~in_bounds | (i_inner < 0)
         i_inner_s = np.where(unknown, 0, i_inner)
 
-        item_biases = self._model.bi[i_inner_s]
-        item_vecs   = self._model.qi[i_inner_s]           # shape (n_items, n_factors)
+        item_vecs = self._model.qi[i_inner_s]             # shape (n_items, n_factors)
+        if self.biased:
+            item_biases = self._model.bi[i_inner_s]
+        else:
+            item_biases = np.zeros(len(i_inner_s), dtype=np.float64)
         preds = global_mean + user_bias + item_biases + item_vecs @ user_vec
         preds[unknown] = global_mean
         return preds
