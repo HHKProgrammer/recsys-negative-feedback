@@ -198,6 +198,41 @@ ps -p $(cat arm_d_run.pid)
 HPT_TRIALS=5 MAX_USERS=500 ./run_arm_d.sh > arm_d_test.log 2>&1
 ```
 
+### stop and restart
+
+```bash
+#
+kill $(cat run_all.pid)                         # stop the main script
+
+# also kill any background jobs still running (HPT jobs survive the main process being killed)
+pkill -f run_hyperparameter_tuning.py
+pkill -f run_arm_a_positive_svd_grid.py
+pkill -f run_arm_b_negative_svd_grid.py
+pkill -f run_arm_c_hybrid_grid.py
+pkill -f run_arm_d_joint_svd_grid.py
+pkill -f run_known_negative_eval.py
+
+# verify nothing is left running
+pgrep -fa "run_hyperparameter\|run_arm\|run_known" || echo "all clear"
+
+# RESTART
+HPT_TRIALS=200 nohup ./run_all.sh > full_run.log 2>&1 &
+echo $! > run_all.pid
+tail -f full_run.log
+```
+
+same pattern for `run_arm_d.sh`:
+
+```bash
+kill $(cat arm_d_run.pid)
+pkill -f run_hyperparameter_tuning.py
+pkill -f run_arm_d_joint_svd_grid.py
+
+# restart
+HPT_TRIALS=200 HPT_MAX_USERS=5000 nohup ./run_arm_d.sh > arm_d_run.log 2>&1 &
+echo $! > arm_d_run.pid
+```
+
 resume-safe: re-run the same command if interrupted — all phases skip completed work.
 per-job logs written to `logs/<timestamp>/` so parallel output does not interleave.
 

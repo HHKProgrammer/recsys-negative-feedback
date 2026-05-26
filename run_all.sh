@@ -19,6 +19,18 @@
 # Quick test:
 #   HPT_TRIALS=5 MAX_USERS=500 N_PARALLEL=2 nohup ./run_all.sh > test_run.log 2>&1 &
 #
+# Stop:
+#   kill $(cat run_all.pid)                          # stop the main process
+#   pkill -f run_hyperparameter_tuning.py            # stop any HPT jobs still running
+#   pkill -f run_arm_a_positive_svd_grid.py          # stop Arm A jobs
+#   pkill -f run_arm_b_negative_svd_grid.py          # stop Arm B jobs
+#   pkill -f run_arm_c_hybrid_grid.py                # stop Arm C jobs
+#   pkill -f run_arm_d_joint_svd_grid.py             # stop Arm D jobs
+#
+# Restart (resume-safe — all phases skip completed work):
+#   HPT_TRIALS=200 nohup ./run_all.sh > full_run.log 2>&1 &
+#   echo $! > run_all.pid
+#
 # All phases are resume-safe — re-run if interrupted.
 
 set -e
