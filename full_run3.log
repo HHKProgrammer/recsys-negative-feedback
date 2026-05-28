@@ -1,0 +1,200 @@
+nohup: ignoring input
+Per-job logs: logs/20260524_160303
+==========================================================
+ Phase 1: Prepare datasets (sequential )
+==========================================================
+
+============================================================
+Preparing MovieLens 1M
+============================================================
+Loading data/raw/movielens/ml-1m/ratings.dat ...
+  Loaded 1,000,209 ratings | 6,040 users | 3,706 items
+
+Filtering cold-start (min 5 ratings per user/item) ...
+  Iter 1: 999,611 ratings remaining
+  Iter 2: 999,611 ratings remaining
+  After filtering: 6,040 users | 3,416 items
+
+Remapping IDs to dense integers ...
+  Users: 0–6039 | Items: 0–3415
+
+Split (random): train=993,571 | test=6,040
+Split (random): train_inner=987,531 | val=6,040
+
+Computing per-user thresholds ...
+  Median mean=3.84 | Modus mean=3.99
+
+Saving files ...
+
+All files written to data/processed/movielens/ml-1m
+Done.
+
+============================================================
+Preparing MovieLens 10M
+============================================================
+Loading data/raw/movielens/ml-10m/ratings.dat ...
+  Loaded 10,000,054 ratings | 69,878 users | 10,677 items
+
+Filtering cold-start (min 5 ratings per user/item) ...
+  Iter 1: 9,998,816 ratings remaining
+  Iter 2: 9,998,816 ratings remaining
+  After filtering: 69,878 users | 10,196 items
+
+Remapping IDs to dense integers ...
+  Users: 0–69877 | Items: 0–10195
+
+Split (random): train=9,928,938 | test=69,878
+Split (random): train_inner=9,859,060 | val=69,878
+
+Computing per-user thresholds ...
+  Median mean=3.70 | Modus mean=3.79
+
+Saving files ...
+
+All files written to data/processed/movielens/ml-10m
+Done.
+
+============================================================
+Preparing MovieLens 20M
+============================================================
+Loading data/raw/movielens/ml-20m/ratings.csv ...
+  Loaded 20,000,263 ratings | 138,493 users | 26,744 items
+
+Filtering cold-start (min 5 ratings per user/item) ...
+  Iter 1: 19,984,024 ratings remaining
+  Iter 2: 19,984,024 ratings remaining
+  After filtering: 138,493 users | 18,345 items
+
+Remapping IDs to dense integers ...
+  Users: 0–138492 | Items: 0–18344
+
+Split (random): train=19,845,531 | test=138,493
+Split (random): train_inner=19,707,038 | val=138,493
+
+Computing per-user thresholds ...
+  Median mean=3.73 | Modus mean=3.83
+
+Saving files ...
+
+All files written to data/processed/movielens/ml-20m
+Done.
+
+============================================================
+Preparing Spotify MSSD
+============================================================
+Split: random leave-one-out per session, test_ratio=0.2
+(sessions are treated as users; one track held out per session for test/val)
+Loading data/raw/spotify/data/training_set/log_mini.csv ...
+  Loaded 167,880 track plays | 10,000 sessions
+
+Computing negative weights (skip level x context) ...
+  Skip (negative) rate: 66.7%
+  Search behavior rate: 1.9% (informational only)
+
+Filtering cold-start (min 5 plays per session/track) ...
+  Iter 1: 83,740 plays remaining
+  Iter 2: 76,818 plays remaining
+  Iter 3: 75,464 plays remaining
+  Iter 4: 75,029 plays remaining
+  Iter 5: 74,882 plays remaining
+  Iter 6: 74,779 plays remaining
+  Iter 7: 74,711 plays remaining
+  Iter 8: 74,680 plays remaining
+  Iter 9: 74,654 plays remaining
+  Iter 10: 74,648 plays remaining
+  Iter 11: 74,648 plays remaining
+  After filtering: 6,376 sessions | 3,490 tracks
+
+Remapping IDs to dense integers ...
+  Sessions: 0–6375 | Tracks: 0–3489
+  After min-3 filter: 6,376 sessions
+
+Split (random leave-one-out):
+  train=68,272 | test=6,376 (6,376 sessions)
+  train_inner=61,896 | val=6,376
+
+Computing per-session thresholds ...
+  Median mean=3.27 | Modus mean=3.13
+
+Saving files ...
+
+All files written to data/processed/spotify
+Done.
+==========================================================
+ Phase 2: Snapshot v1 results
+==========================================================
+  Copied outputs/movielens/ml-1m/grid_summary.json -> outputs/snapshots/v1_post_hoc/ml-1m_grid_summary.json
+  Copied outputs/movielens/ml-10m/grid_summary.json -> outputs/snapshots/v1_post_hoc/ml-10m_grid_summary.json
+  Copied outputs/movielens/ml-20m/grid_summary.json -> outputs/snapshots/v1_post_hoc/ml-20m_grid_summary.json
+  Copied outputs/spotify/grid_summary.json -> outputs/snapshots/v1_post_hoc/spotify_grid_summary.json
+
+Snapshot saved to: outputs/snapshots/v1_post_hoc
+Datasets captured: ['ml-1m', 'ml-10m', 'ml-20m', 'spotify']
+To compare: load outputs/snapshots/v1_post_hoc/ alongside the current outputs/
+==========================================================
+ Phase 3: Post-hoc grid4 datasets in parallel
+          36 experiments per dataset (cached runs skipped)
+==========================================================
+  [bg] phase3_movielens_1m  (log: logs/20260524_160258/phase3_movielens_1m.log)
+  [bg] phase3_movielens_10m  (log: logs/20260524_160258/phase3_movielens_10m.log)
+  [bg] phase3_movielens_20m  (log: logs/20260524_160258/phase3_movielens_20m.log)
+  [bg] phase3_spotify  (log: logs/20260524_160258/phase3_spotify.log)
+ Phase 3 complete
+==========================================================
+ Phase 4: Hyperparameter tuning — all jobs in parallel
+          Arm A: 3 thresholds x 4 datasets = 12 jobs
+          Arm B: 5 thresholds x 4 datasets = 20 jobs
+          Trials: 200 per job  HPT_MAX_USERS: 5000
+==========================================================
+  [bg] hpt_a_t3_movielens_1m  (log: logs/20260524_160258/hpt_a_t3_movielens_1m.log)
+  [bg] hpt_a_t3_movielens_10m  (log: logs/20260524_160258/hpt_a_t3_movielens_10m.log)
+  [bg] hpt_a_t3_movielens_20m  (log: logs/20260524_160258/hpt_a_t3_movielens_20m.log)
+  [bg] hpt_a_t3_spotify  (log: logs/20260524_160258/hpt_a_t3_spotify.log)
+  [bg] hpt_a_t4_movielens_1m  (log: logs/20260524_160258/hpt_a_t4_movielens_1m.log)
+  [bg] hpt_a_t4_movielens_10m  (log: logs/20260524_160258/hpt_a_t4_movielens_10m.log)
+  [bg] hpt_a_t4_movielens_20m  (log: logs/20260524_160258/hpt_a_t4_movielens_20m.log)
+  [bg] hpt_a_t4_spotify  (log: logs/20260524_160258/hpt_a_t4_spotify.log)
+  [bg] hpt_a_t5_movielens_1m  (log: logs/20260524_160258/hpt_a_t5_movielens_1m.log)
+  [bg] hpt_a_t5_movielens_10m  (log: logs/20260524_160258/hpt_a_t5_movielens_10m.log)
+  [bg] hpt_a_t5_movielens_20m  (log: logs/20260524_160258/hpt_a_t5_movielens_20m.log)
+  [bg] hpt_a_t5_spotify  (log: logs/20260524_160258/hpt_a_t5_spotify.log)
+  [bg] hpt_b_t1_movielens_1m  (log: logs/20260524_160258/hpt_b_t1_movielens_1m.log)
+  [bg] hpt_b_t1_movielens_10m  (log: logs/20260524_160258/hpt_b_t1_movielens_10m.log)
+  [bg] hpt_b_t1_movielens_20m  (log: logs/20260524_160258/hpt_b_t1_movielens_20m.log)
+  [bg] hpt_b_t1_spotify  (log: logs/20260524_160258/hpt_b_t1_spotify.log)
+  [bg] hpt_b_t2_movielens_1m  (log: logs/20260524_160258/hpt_b_t2_movielens_1m.log)
+  [bg] hpt_b_t2_movielens_10m  (log: logs/20260524_160258/hpt_b_t2_movielens_10m.log)
+  [bg] hpt_b_t2_movielens_20m  (log: logs/20260524_160258/hpt_b_t2_movielens_20m.log)
+  [bg] hpt_b_t2_spotify  (log: logs/20260524_160258/hpt_b_t2_spotify.log)
+  [bg] hpt_b_t3_movielens_1m  (log: logs/20260524_160258/hpt_b_t3_movielens_1m.log)
+  [bg] hpt_b_t3_movielens_10m  (log: logs/20260524_160258/hpt_b_t3_movielens_10m.log)
+  [bg] hpt_b_t3_movielens_20m  (log: logs/20260524_160258/hpt_b_t3_movielens_20m.log)
+  [bg] hpt_b_t3_spotify  (log: logs/20260524_160258/hpt_b_t3_spotify.log)
+  [bg] hpt_b_tmedian_movielens_1m  (log: logs/20260524_160258/hpt_b_tmedian_movielens_1m.log)
+  [bg] hpt_b_tmedian_movielens_10m  (log: logs/20260524_160258/hpt_b_tmedian_movielens_10m.log)
+  [bg] hpt_b_tmedian_movielens_20m  (log: logs/20260524_160258/hpt_b_tmedian_movielens_20m.log)
+  [bg] hpt_b_tmedian_spotify  (log: logs/20260524_160258/hpt_b_tmedian_spotify.log)
+  [bg] hpt_b_tmodus_movielens_1m  (log: logs/20260524_160258/hpt_b_tmodus_movielens_1m.log)
+  [bg] hpt_b_tmodus_movielens_10m  (log: logs/20260524_160258/hpt_b_tmodus_movielens_10m.log)
+  [bg] hpt_b_tmodus_movielens_20m  (log: logs/20260524_160258/hpt_b_tmodus_movielens_20m.log)
+  [bg] hpt_b_tmodus_spotify  (log: logs/20260524_160258/hpt_b_tmodus_spotify.log)
+ Phase 4 complete
+==========================================================
+ Phase 5: Arm A grid 4 datasets in parallel
+          Trains SVD on rating >= pos_threshold
+          Saves models for Arm C
+==========================================================
+  [bg] arm_a_movielens_1m  (log: logs/20260524_131324/arm_a_movielens_1m.log)
+  [bg] arm_a_movielens_10m  (log: logs/20260524_131324/arm_a_movielens_10m.log)
+  [bg] arm_a_movielens_20m  (log: logs/20260524_131324/arm_a_movielens_20m.log)
+  [bg] arm_a_spotify  (log: logs/20260524_131324/arm_a_spotify.log)
+ Phase 5 complete
+==========================================================
+ Phase 6: Arm B grid4 datasets in parallel
+          Trains SVD on rating <= neg_threshold
+          Saves models for Arm C
+==========================================================
+  [bg] arm_b_movielens_1m  (log: logs/20260524_131324/arm_b_movielens_1m.log)
+  [bg] arm_b_movielens_10m  (log: logs/20260524_131324/arm_b_movielens_10m.log)
+  [bg] arm_b_movielens_20m  (log: logs/20260524_131324/arm_b_movielens_20m.log)
+  [bg] arm_b_spotify  (log: logs/20260524_131324/arm_b_spotify.log)

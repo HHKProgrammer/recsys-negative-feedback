@@ -1,0 +1,30 @@
+nohup: ignoring input
+Per-job logs: logs/20260526_140645_arm_d
+==========================================================
+ Arm D: Joint Positive-Negative SVD
+ Phases 1-9 assumed complete — only running new Arm D work
+ HPT_TRIALS=200  HPT_MAX_USERS=5000
+==========================================================
+
+==========================================================
+ Phase 10: Arm D HPT
+           4 configs x 4 datasets = 16 jobs
+           Trials: 200 per job  HPT_MAX_USERS: 5000
+           Skips configs with existing best_params.json
+==========================================================
+  [bg] hpt_d_p4_n2_movielens_1m  (log: logs/20260526_140645_arm_d/hpt_d_p4_n2_movielens_1m.log)
+  [bg] hpt_d_p4_n2_movielens_10m  (log: logs/20260526_140645_arm_d/hpt_d_p4_n2_movielens_10m.log)
+  [bg] hpt_d_p4_n2_movielens_20m  (log: logs/20260526_140645_arm_d/hpt_d_p4_n2_movielens_20m.log)
+  [bg] hpt_d_p4_n2_spotify  (log: logs/20260526_140645_arm_d/hpt_d_p4_n2_spotify.log)
+  [bg] hpt_d_p5_n1_movielens_1m  (log: logs/20260526_140645_arm_d/hpt_d_p5_n1_movielens_1m.log)
+  [bg] hpt_d_p5_n1_movielens_10m  (log: logs/20260526_140645_arm_d/hpt_d_p5_n1_movielens_10m.log)
+  [bg] hpt_d_p5_n1_movielens_20m  (log: logs/20260526_140645_arm_d/hpt_d_p5_n1_movielens_20m.log)
+  [bg] hpt_d_p5_n1_spotify  (log: logs/20260526_140645_arm_d/hpt_d_p5_n1_spotify.log)
+  [bg] hpt_d_p4_n1_movielens_1m  (log: logs/20260526_140645_arm_d/hpt_d_p4_n1_movielens_1m.log)
+  [bg] hpt_d_p4_n1_movielens_10m  (log: logs/20260526_140645_arm_d/hpt_d_p4_n1_movielens_10m.log)
+  [bg] hpt_d_p4_n1_movielens_20m  (log: logs/20260526_140645_arm_d/hpt_d_p4_n1_movielens_20m.log)
+  [bg] hpt_d_p4_n1_spotify  (log: logs/20260526_140645_arm_d/hpt_d_p4_n1_spotify.log)
+  [bg] hpt_d_p3_n2_movielens_1m  (log: logs/20260526_140645_arm_d/hpt_d_p3_n2_movielens_1m.log)
+  [bg] hpt_d_p3_n2_movielens_10m  (log: logs/20260526_140645_arm_d/hpt_d_p3_n2_movielens_10m.log)
+  [bg] hpt_d_p3_n2_movielens_20m  (log: logs/20260526_140645_arm_d/hpt_d_p3_n2_movielens_20m.log)
+  [bg] hpt_d_p3_n2_spotify  (log: logs/20260526_140645_arm_d/hpt_d_p3_n2_spotify.log)

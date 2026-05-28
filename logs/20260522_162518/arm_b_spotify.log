@@ -1,0 +1,27 @@
+
+Arm B — Negative Dislike-Risk Detector SVD Grid
+  Dataset:    spotify-mssd-mini
+  Thresholds: ['neg_le_1', 'neg_le_2', 'neg_le_3', 'neg_median', 'neg_modus']
+  Evaluation: leave-one-negative-out (LNO)
+  Output:     outputs/spotify/grid_summary_arm_b.json
+
+  [1/5] arm_b_neg_le_1
+    11,632 negative interactions (17.0% of training data)
+scripts/run_arm_b_negative_svd_grid.py:127: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  neg_train = neg_df[merged["_x"].isna()].copy()
+Traceback (most recent call last):
+  File "scripts/run_arm_b_negative_svd_grid.py", line 344, in <module>
+    main()
+  File "scripts/run_arm_b_negative_svd_grid.py", line 308, in main
+    metrics = run_one(config, neg_cfg, tuning, models, args.max_users, args.seed)
+  File "scripts/run_arm_b_negative_svd_grid.py", line 229, in run_one
+    neg_train, neg_val = build_lno_split(neg_df, rng)
+  File "scripts/run_arm_b_negative_svd_grid.py", line 127, in build_lno_split
+    neg_train = neg_df[merged["_x"].isna()].copy()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/pandas/core/frame.py", line 3496, in __getitem__
+    return self._getitem_bool_array(key)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/pandas/core/frame.py", line 3549, in _getitem_bool_array
+    key = check_bool_indexer(self.index, key)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/pandas/core/indexing.py", line 2383, in check_bool_indexer
+    raise IndexingError(
+pandas.core.indexing.IndexingError: Unalignable boolean Series provided as indexer (index of the boolean Series and of the indexed object do not match).

@@ -1,0 +1,19 @@
+
+Arm B — Negative Dislike-Risk Detector SVD Grid
+  Dataset:    spotify-mssd-mini
+  Thresholds: ['neg_le_1', 'neg_le_2', 'neg_le_3', 'neg_median', 'neg_modus']
+  Evaluation: leave-one-negative-out (LNO)
+  Output:     outputs/spotify/grid_summary_arm_b.json
+
+  [1/5] arm_b_neg_le_1
+    11,632 negative interactions (17.0% of training data)
+    LNO split: 2,083 users have a held-out negative
+    Loaded tuned params (negative_detection_hit@10 (neg-LOO val)=0.2539)
+    Model saved → outputs/spotify/models/arm_b/neg_le_1/model.pkl
+Arm B LNO eval:   0%|          | 0/2083 [00:00<?, ?it/s]Arm B LNO eval:   4%|▍         | 88/2083 [00:00<00:02, 873.52it/s]Arm B LNO eval:   9%|▊         | 179/2083 [00:00<00:02, 891.08it/s]Arm B LNO eval:  13%|█▎        | 271/2083 [00:00<00:02, 900.33it/s]Arm B LNO eval:  17%|█▋        | 362/2083 [00:00<00:01, 903.86it/s]Arm B LNO eval:  22%|██▏       | 454/2083 [00:00<00:01, 906.68it/s]Arm B LNO eval:  26%|██▌       | 545/2083 [00:00<00:01, 902.12it/s]Arm B LNO eval:  31%|███       | 636/2083 [00:00<00:01, 898.68it/s]Arm B LNO eval:  35%|███▍      | 726/2083 [00:00<00:01, 892.76it/s]Arm B LNO eval:  39%|███▉      | 816/2083 [00:00<00:01, 891.48it/s]Arm B LNO eval:  44%|████▎     | 910/2083 [00:01<00:01, 905.18it/s]Arm B LNO eval:  48%|████▊     | 1001/2083 [00:01<00:01, 890.94it/s]Arm B LNO eval:  52%|█████▏    | 1092/2083 [00:01<00:01, 895.78it/s]Arm B LNO eval:  57%|█████▋    | 1183/2083 [00:01<00:01, 898.61it/s]Arm B LNO eval:  61%|██████    | 1274/2083 [00:01<00:00, 900.22it/s]Arm B LNO eval:  66%|██████▌   | 1365/2083 [00:01<00:00, 898.69it/s]Arm B LNO eval:  70%|███████   | 1459/2083 [00:01<00:00, 909.59it/s]Arm B LNO eval:  74%|███████▍  | 1551/2083 [00:01<00:00, 911.67it/s]Arm B LNO eval:  79%|███████▉  | 1644/2083 [00:01<00:00, 914.06it/s]Arm B LNO eval:  83%|████████▎ | 1737/2083 [00:01<00:00, 917.42it/s]Arm B LNO eval:  88%|████████▊ | 1829/2083 [00:02<00:00, 915.47it/s]Arm B LNO eval:  92%|█████████▏| 1921/2083 [00:02<00:00, 913.21it/s]Arm B LNO eval:  97%|█████████▋| 2013/2083 [00:02<00:00, 914.59it/s]                                                                        neg_hit@10=0.2784  neg_nDCG@10=0.1919  mean_rank=148.3
+  [2/5] arm_b_neg_le_2
+    23,167 negative interactions (33.9% of training data)
+    LNO split: 3,707 users have a held-out negative
+    Loaded tuned params (negative_detection_hit@10 (neg-LOO val)=0.3949)
+    Model saved → outputs/spotify/models/arm_b/neg_le_2/model.pkl
+Arm B LNO eval:   0%|          | 0/3707 [00:00<?, ?it/s]Arm B LNO eval:   2%|▏         | 80/3707 [00:00<00:04, 799.84it/s]Arm B LNO eval:   4%|▍         | 163/3707 [00:00<00:04, 813.44it/s]Arm B LNO eval:   7%|▋         | 245/3707 [00:00<00:04, 810.88it/s]Arm B LNO eval:   9%|▉         | 327/3707 [00:00<00:04, 811.26it/s]Arm B LNO eval:  11%|█         | 409/3707 [00:00<00:04, 812.54it/s]Arm B LNO eval:  13%|█▎        | 491/3707 [00:00<00:03, 811.51it/s]Arm B LNO eval:  15%|█▌        | 573/3707 [00:00<00:03, 805.59it/s]Arm B LNO eval:  18%|█▊        | 656/3707 [00:00<00:03, 810.71it/s]Arm B LNO eval:  20%|█▉        | 739/3707 [00:00<00:03, 814.60it/s]Arm B LNO eval:  22%|██▏       | 822/3707 [00:01<00:03, 819.11it/s]Arm B LNO eval:  24%|██▍       | 904/3707 [00:01<00:03, 813.72it/s]Arm B LNO eval:  27%|██▋       | 986/3707 [00:01<00:03, 809.60it/s]Arm B LNO eval:  29%|██▉       | 1068/3707 [00:01<00:03, 811.70it/s]

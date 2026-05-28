@@ -1,0 +1,35 @@
+
+Hyperparameter Tuning — SVD Arm A
+  Dataset:   spotify-mssd-mini
+  Arm:       Positive Preference
+  Threshold: pos_ge_4
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/spotify/tuning/arm_a/pos_ge_4/best_params.json
+
+  Running 200 random trials...
+  [10/200] best nDCG@10=0.3035
+  [20/200] best nDCG@10=0.3035
+  [30/200] best nDCG@10=0.3035
+  [40/200] best nDCG@10=0.3099
+  [50/200] best nDCG@10=0.3099
+  [60/200] best nDCG@10=0.3099
+  [70/200] best nDCG@10=0.3099
+  [80/200] best nDCG@10=0.3099
+  [90/200] best nDCG@10=0.3111
+  [100/200] best nDCG@10=0.3111
+  [110/200] best nDCG@10=0.3111
+  [120/200] best nDCG@10=0.3111
+  [130/200] best nDCG@10=0.3111
+  [140/200] best nDCG@10=0.3111
+  [150/200] best nDCG@10=0.3111
+  [160/200] best nDCG@10=0.3111
+  [170/200] best nDCG@10=0.3111
+  [180/200] best nDCG@10=0.3111
+  [190/200] best nDCG@10=0.3111
+  [200/200] best nDCG@10=0.3111
+
+Best nDCG@10 (val): 0.3111
+Best params: {'n_factors': 150, 'n_epochs': 50, 'lr_all': 0.01, 'reg_all': 0.2, 'biased': False}
+
+Saved to outputs/spotify/tuning/arm_a/pos_ge_4/best_params.json

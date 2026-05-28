@@ -1,0 +1,15 @@
+
+Hyperparameter Tuning — SVD Arm B
+  Dataset:   movielens-10m
+  Arm:       Negative Dislike-Risk
+  Threshold: neg_modus
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/movielens/ml-10m/tuning/arm_b/neg_modus/best_params.json
+
+  Running 200 random trials...
+  [10/200] best neg_hit@10=0.0666
+  [20/200] best neg_hit@10=0.0666
+  [30/200] best neg_hit@10=0.0666
+  [40/200] best neg_hit@10=0.0666
+  [50/200] best neg_hit@10=0.1026

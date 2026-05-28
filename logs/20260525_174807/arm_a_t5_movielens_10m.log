@@ -1,0 +1,10 @@
+
+Arm A — Positive Preference SVD Grid
+  Dataset:    movielens-10m
+  Thresholds: pos >= [5]
+  References: Rendle et al. 2009 (BPR), He et al. 2017 (NCF)
+  Output:     outputs/movielens/ml-10m/grid_summary_arm_a.json
+
+  [1/1] SKIP (done): arm_a_pos_ge_5
+
+Done. Results in outputs/movielens/ml-10m/grid_summary_arm_a.json

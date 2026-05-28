@@ -1,0 +1,25 @@
+
+Arm D — Joint Positive-Negative SVD Grid
+  Dataset:      movielens-20m
+  Grid:         [(4, 2), (5, 1), (4, 1), (3, 2)]
+  Approach:     binary targets (1.0=like, 0.0=dislike, middle=dropped)
+  rating_scale: (0, 1)
+  References:   Cena et al. 2004, Paudel et al. 2016
+  Output:       outputs/movielens/ml-20m/grid_summary_arm_d.json
+
+  [1/4] arm_d_pos_ge_4_neg_le_2  (rating>=4→1.0, rating<=2→0.0, middle=dropped)
+    Joint train: 9,915,548 positives + 2,610,450 negatives = 12,525,998 rows (63.1% of original)
+    No tuning found at outputs/movielens/ml-20m/tuning/arm_d/pos_ge_4_neg_le_2/best_params.json, using config defaults
+    Model saved → outputs/movielens/ml-20m/models/arm_d/pos_ge_4_neg_le_2/model.pkl
+Evaluating:   0%|          | 0/138493 [00:00<?, ?it/s]Evaluating:   0%|          | 1/138493 [00:00<32:44:13,  1.18it/s]Evaluating:   6%|▋         | 8695/138493 [00:00<00:10, 12436.00it/s]Evaluating:  12%|█▏        | 16811/138493 [00:01<00:05, 24095.58it/s]Evaluating:  17%|█▋        | 23203/138493 [00:01<00:03, 29324.10it/s]Evaluating:  22%|██▏       | 30106/138493 [00:01<00:02, 37317.81it/s]Evaluating:  29%|██▊       | 39707/138493 [00:01<00:01, 49662.88it/s]Evaluating:  34%|███▍      | 47233/138493 [00:01<00:01, 54599.82it/s]Evaluating:  39%|███▉      | 54208/138493 [00:01<00:01, 55177.31it/s]Evaluating:  46%|████▌     | 63732/138493 [00:01<00:01, 59618.34it/s]Evaluating:  51%|█████     | 70399/138493 [00:01<00:01, 57311.84it/s]Evaluating:  55%|█████▌    | 76610/138493 [00:02<00:01, 56780.05it/s]Evaluating:  60%|█████▉    | 83093/138493 [00:02<00:00, 58502.87it/s]Evaluating:  64%|██████▍   | 89309/138493 [00:02<00:00, 59477.77it/s]Evaluating:  71%|███████   | 98197/138493 [00:02<00:00, 67594.58it/s]Evaluating:  77%|███████▋  | 106498/138493 [00:02<00:00, 68080.82it/s]Evaluating:  82%|████████▏ | 113450/138493 [00:02<00:00, 68426.28it/s]Evaluating:  87%|████████▋ | 120396/138493 [00:02<00:00, 64988.91it/s]Evaluating:  92%|█████████▏| 126990/138493 [00:02<00:00, 59271.76it/s]Evaluating:  97%|█████████▋| 133964/138493 [00:02<00:00, 62035.27it/s]Evaluating: 100%|██████████| 138493/138493 [00:05<00:00, 27493.80it/s]
+    nDCG@10=0.0009  HR@10=0.0025  MRR=0.0103  sim_neg@10=0.0000
+  [2/4] arm_d_pos_ge_5_neg_le_1  (rating>=5→1.0, rating<=1→0.0, middle=dropped)
+    Joint train: 2,871,557 positives + 912,445 negatives = 3,784,002 rows (19.1% of original)
+    No tuning found at outputs/movielens/ml-20m/tuning/arm_d/pos_ge_5_neg_le_1/best_params.json, using config defaults
+    Model saved → outputs/movielens/ml-20m/models/arm_d/pos_ge_5_neg_le_1/model.pkl
+Evaluating:   0%|          | 0/138493 [00:00<?, ?it/s]Evaluating:   0%|          | 1/138493 [00:00<31:02:19,  1.24it/s]Evaluating:   5%|▌         | 7363/138493 [00:00<00:12, 10924.63it/s]Evaluating:   8%|▊         | 11640/138493 [00:01<00:07, 16494.07it/s]Evaluating:  14%|█▎        | 19004/138493 [00:01<00:04, 27880.69it/s]Evaluating:  20%|█▉        | 27644/138493 [00:01<00:02, 40865.88it/s]Evaluating:  25%|██▍       | 34196/138493 [00:01<00:02, 46357.94it/s]Evaluating:  32%|███▏      | 44596/138493 [00:01<00:01, 61002.14it/s]Evaluating:  39%|███▉      | 54647/138493 [00:01<00:01, 71522.03it/s]Evaluating:  46%|████▌     | 63132/138493 [00:01<00:01, 63509.50it/s]Evaluating:  52%|█████▏    | 71901/138493 [00:01<00:00, 69542.57it/s]Evaluating:  58%|█████▊    | 79739/138493 [00:01<00:00, 65263.19it/s]Evaluating:  63%|██████▎   | 86911/138493 [00:02<00:00, 62868.78it/s]Evaluating:  69%|██████▉   | 95755/138493 [00:02<00:00, 69249.51it/s]Evaluating:  76%|███████▌  | 104698/138493 [00:02<00:00, 73438.35it/s]Evaluating:  81%|████████▏ | 112771/138493 [00:02<00:00, 75189.99it/s]Evaluating:  87%|████████▋ | 120749/138493 [00:02<00:00, 75264.97it/s]Evaluating:  93%|█████████▎| 128452/138493 [00:02<00:00, 63833.11it/s]Evaluating:  98%|█████████▊| 135511/138493 [00:02<00:00, 65544.69it/s]Evaluating: 100%|██████████| 138493/138493 [00:03<00:00, 37902.21it/s]
+    nDCG@10=0.0100  HR@10=0.0285  MRR=0.0196  sim_neg@10=0.0000
+  [3/4] arm_d_pos_ge_4_neg_le_1  (rating>=4→1.0, rating<=1→0.0, middle=dropped)
+    Joint train: 9,915,548 positives + 912,445 negatives = 10,827,993 rows (54.6% of original)
+    No tuning found at outputs/movielens/ml-20m/tuning/arm_d/pos_ge_4_neg_le_1/best_params.json, using config defaults
+    Model saved → outputs/movielens/ml-20m/models/arm_d/pos_ge_4_neg_le_1/model.pkl

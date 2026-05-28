@@ -1,0 +1,35 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:   movielens-1m
+  Arm:       Joint Positive-Negative SVD (binary targets)
+  Label:     pos_ge_4_neg_le_1
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/movielens/ml-1m/tuning/arm_d/pos_ge_4_neg_le_1/best_params.json
+
+  Running 200 random trials...
+  [10/200] best nDCG@10=0.0621
+  [20/200] best nDCG@10=0.1061
+  [30/200] best nDCG@10=0.1061
+  [40/200] best nDCG@10=0.1061
+  [50/200] best nDCG@10=0.1061
+  [60/200] best nDCG@10=0.1061
+  [70/200] best nDCG@10=0.1061
+  [80/200] best nDCG@10=0.1061
+  [90/200] best nDCG@10=0.1061
+  [100/200] best nDCG@10=0.1061
+  [110/200] best nDCG@10=0.1061
+  [120/200] best nDCG@10=0.1061
+  [130/200] best nDCG@10=0.1061
+  [140/200] best nDCG@10=0.1061
+  [150/200] best nDCG@10=0.1103
+  [160/200] best nDCG@10=0.1103
+  [170/200] best nDCG@10=0.1103
+  [180/200] best nDCG@10=0.1103
+  [190/200] best nDCG@10=0.1103
+  [200/200] best nDCG@10=0.1103
+
+Best nDCG@10 (val, binary-target model): 0.1103
+Best params: {'n_factors': 20, 'n_epochs': 20, 'lr_all': 0.001, 'reg_all': 0.03, 'biased': False}
+
+Saved to outputs/movielens/ml-1m/tuning/arm_d/pos_ge_4_neg_le_1/best_params.json

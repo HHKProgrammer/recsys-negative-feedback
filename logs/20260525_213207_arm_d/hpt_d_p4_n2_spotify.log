@@ -1,0 +1,35 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:   spotify-mssd-mini
+  Arm:       Joint Positive-Negative SVD (binary targets)
+  Label:     pos_ge_4_neg_le_2
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/spotify/tuning/arm_d/pos_ge_4_neg_le_2/best_params.json
+
+  Running 200 random trials...
+  [10/200] best nDCG@10=0.2534
+  [20/200] best nDCG@10=0.2534
+  [30/200] best nDCG@10=0.2534
+  [40/200] best nDCG@10=0.2534
+  [50/200] best nDCG@10=0.2534
+  [60/200] best nDCG@10=0.2534
+  [70/200] best nDCG@10=0.2534
+  [80/200] best nDCG@10=0.2534
+  [90/200] best nDCG@10=0.2534
+  [100/200] best nDCG@10=0.2534
+  [110/200] best nDCG@10=0.2534
+  [120/200] best nDCG@10=0.2534
+  [130/200] best nDCG@10=0.2534
+  [140/200] best nDCG@10=0.2534
+  [150/200] best nDCG@10=0.2534
+  [160/200] best nDCG@10=0.2534
+  [170/200] best nDCG@10=0.2534
+  [180/200] best nDCG@10=0.2534
+  [190/200] best nDCG@10=0.2534
+  [200/200] best nDCG@10=0.2534
+
+Best nDCG@10 (val, binary-target model): 0.2534
+Best params: {'n_factors': 100, 'n_epochs': 30, 'lr_all': 0.02, 'reg_all': 0.2, 'biased': False}
+
+Saved to outputs/spotify/tuning/arm_d/pos_ge_4_neg_le_2/best_params.json

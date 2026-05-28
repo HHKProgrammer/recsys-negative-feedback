@@ -1,0 +1,10 @@
+
+Arm B — Negative Dislike-Risk Detector SVD Grid
+  Dataset:    movielens-10m
+  Thresholds: ['neg_le_3']
+  Evaluation: leave-one-negative-out (LNO)
+  Output:     outputs/movielens/ml-10m/grid_summary_arm_b.json
+
+  [1/1] SKIP (done): arm_b_neg_le_3
+
+Done. Results in outputs/movielens/ml-10m/grid_summary_arm_b.json

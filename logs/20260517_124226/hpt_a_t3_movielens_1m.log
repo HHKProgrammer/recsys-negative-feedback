@@ -1,0 +1,35 @@
+
+Hyperparameter Tuning — SVD Arm A
+  Dataset:   movielens-1m
+  Arm:       Positive Preference
+  Threshold: pos_ge_3
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/movielens/ml-1m/tuning/arm_a/pos_ge_3/best_params.json
+
+  Running 200 random trials...
+  [10/200] best nDCG@10=0.0517
+  [20/200] best nDCG@10=0.0604
+  [30/200] best nDCG@10=0.0724
+  [40/200] best nDCG@10=0.0724
+  [50/200] best nDCG@10=0.0754
+  [60/200] best nDCG@10=0.0754
+  [70/200] best nDCG@10=0.0754
+  [80/200] best nDCG@10=0.0754
+  [90/200] best nDCG@10=0.0754
+  [100/200] best nDCG@10=0.0754
+  [110/200] best nDCG@10=0.0788
+  [120/200] best nDCG@10=0.0788
+  [130/200] best nDCG@10=0.0798
+  [140/200] best nDCG@10=0.0798
+  [150/200] best nDCG@10=0.0798
+  [160/200] best nDCG@10=0.0798
+  [170/200] best nDCG@10=0.0798
+  [180/200] best nDCG@10=0.0798
+  [190/200] best nDCG@10=0.0798
+  [200/200] best nDCG@10=0.0798
+
+Best nDCG@10 (val): 0.0798
+Best params: {'n_factors': 200, 'n_epochs': 100, 'lr_all': 0.002, 'reg_all': 0.05, 'biased': False}
+
+Saved to outputs/movielens/ml-1m/tuning/arm_a/pos_ge_3/best_params.json

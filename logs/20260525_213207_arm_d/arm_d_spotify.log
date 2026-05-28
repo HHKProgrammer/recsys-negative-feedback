@@ -1,0 +1,35 @@
+
+Arm D — Joint Positive-Negative SVD Grid
+  Dataset:      spotify-mssd-mini
+  Grid:         [(4, 2), (5, 1), (4, 1), (3, 2)]
+  Approach:     binary targets (1.0=like, 0.0=dislike, middle=dropped)
+  rating_scale: (0, 1)
+  References:   Cena et al. 2004, Paudel et al. 2016
+  Output:       outputs/spotify/grid_summary_arm_d.json
+
+  [1/4] arm_d_pos_ge_4_neg_le_2  (rating>=4→1.0, rating<=2→0.0, middle=dropped)
+    Joint train: 37,614 positives + 23,167 negatives = 60,781 rows (89.0% of original)
+    Loaded tuned params (nDCG@10 (val, binary-target model)=0.2534)
+    Model saved → outputs/spotify/models/arm_d/pos_ge_4_neg_le_2/model.pkl
+Evaluating:   0%|          | 0/6376 [00:00<?, ?it/s]Evaluating:  60%|█████▉    | 3811/6376 [00:00<00:00, 34851.41it/s]Evaluating: 100%|██████████| 6376/6376 [00:02<00:00, 2861.56it/s] 
+    nDCG@10=0.2679  HR@10=0.3982  MRR=0.2383  sim_neg@10=0.0000
+  [2/4] arm_d_pos_ge_5_neg_le_1  (rating>=5→1.0, rating<=1→0.0, middle=dropped)
+    Joint train: 23,924 positives + 11,632 negatives = 35,556 rows (52.1% of original)
+    Loaded tuned params (nDCG@10 (val, binary-target model)=0.2228)
+    Model saved → outputs/spotify/models/arm_d/pos_ge_5_neg_le_1/model.pkl
+Evaluating:   0%|          | 0/6376 [00:00<?, ?it/s]Evaluating:  71%|███████   | 4541/6376 [00:00<00:00, 44748.26it/s]Evaluating: 100%|██████████| 6376/6376 [00:01<00:00, 3596.65it/s] 
+    nDCG@10=0.2474  HR@10=0.3681  MRR=0.2196  sim_neg@10=0.0000
+  [3/4] arm_d_pos_ge_4_neg_le_1  (rating>=4→1.0, rating<=1→0.0, middle=dropped)
+    Joint train: 37,614 positives + 11,632 negatives = 49,246 rows (72.1% of original)
+    Loaded tuned params (nDCG@10 (val, binary-target model)=0.2913)
+    Model saved → outputs/spotify/models/arm_d/pos_ge_4_neg_le_1/model.pkl
+Evaluating:   0%|          | 0/6376 [00:00<?, ?it/s]Evaluating:  30%|███       | 1929/6376 [00:00<00:00, 17967.68it/s]Evaluating:  58%|█████▊    | 3726/6376 [00:01<00:01, 1855.99it/s] Evaluating:  71%|███████   | 4532/6376 [00:02<00:01, 1592.98it/s]Evaluating:  79%|███████▉  | 5022/6376 [00:02<00:00, 1467.21it/s]Evaluating:  84%|████████▍ | 5362/6376 [00:03<00:00, 1389.98it/s]Evaluating:  88%|████████▊ | 5619/6376 [00:03<00:00, 1356.79it/s]Evaluating:  91%|█████████▏| 5829/6376 [00:03<00:00, 1309.37it/s]Evaluating:  94%|█████████▍| 6006/6376 [00:03<00:00, 1295.97it/s]Evaluating:  97%|█████████▋| 6166/6376 [00:03<00:00, 1250.04it/s]Evaluating:  99%|█████████▉| 6309/6376 [00:04<00:00, 1232.28it/s]Evaluating: 100%|██████████| 6376/6376 [00:04<00:00, 1567.28it/s]
+    nDCG@10=0.3117  HR@10=0.4412  MRR=0.2812  sim_neg@10=0.0000
+  [4/4] arm_d_pos_ge_3_neg_le_2  (rating>=3→1.0, rating<=2→0.0, middle=dropped)
+    Joint train: 45,105 positives + 23,167 negatives = 68,272 rows (100.0% of original)
+    Loaded tuned params (nDCG@10 (val, binary-target model)=0.2600)
+    Model saved → outputs/spotify/models/arm_d/pos_ge_3_neg_le_2/model.pkl
+Evaluating:   0%|          | 0/6376 [00:00<?, ?it/s]Evaluating:  54%|█████▍    | 3433/6376 [00:00<00:00, 31283.37it/s]Evaluating: 100%|██████████| 6376/6376 [00:02<00:00, 2385.63it/s] 
+    nDCG@10=0.2719  HR@10=0.3987  MRR=0.2439  sim_neg@10=0.0000
+
+Done. Results in outputs/spotify/grid_summary_arm_d.json

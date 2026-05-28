@@ -1,0 +1,103 @@
+
+Arm C  Hybrid Recommender Grid
+  Dataset:     spotify-mssd-mini
+  Pos:         [3, 4, 5]
+  Neg:         ['neg_le_1', 'neg_le_2', 'neg_le_3', 'neg_median', 'neg_modus']
+  Alpha:       [0.05, 0.1, 0.2, 0.3, 0.5, 1.0]
+  Total:       90 combinations  (90 remaining)
+  Workers:     12
+  Output:      outputs/spotify/grid_summary_arm_c.json
+
+Arm C combinations:   0%|          | 0/90 [00:00<?, ?it/s]Arm C combinations:   1%|          | 1/90 [00:00<00:26,  3.32it/s]                                                                  Arm C combinations:   1%|          | 1/90 [00:00<00:26,  3.32it/s]                                                                  Arm C combinations:   2%|▏         | 2/90 [00:00<00:26,  3.32it/s]                                                                  Arm C combinations:   3%|▎         | 3/90 [00:00<00:26,  3.32it/s]                                                                  Arm C combinations:   4%|▍         | 4/90 [00:00<00:25,  3.32it/s]                                                                  Arm C combinations:   6%|▌         | 5/90 [00:00<00:25,  3.32it/s]                                                                  Arm C combinations:   7%|▋         | 6/90 [00:00<00:25,  3.32it/s]                                                                  Arm C combinations:   8%|▊         | 7/90 [00:00<00:24,  3.32it/s]                                                                  Arm C combinations:   9%|▉         | 8/90 [00:00<00:24,  3.32it/s]                                                                  Arm C combinations:  10%|█         | 9/90 [00:00<00:24,  3.32it/s]                                                                  Arm C combinations:  11%|█         | 10/90 [00:00<00:24,  3.32it/s]                                                                   Arm C combinations:  12%|█▏        | 11/90 [00:00<00:23,  3.32it/s]                                                                   Arm C combinations:  13%|█▎        | 12/90 [00:00<00:23,  3.32it/s]                                                                   Arm C combinations:  14%|█▍        | 13/90 [00:00<00:23,  3.32it/s]                                                                   Arm C combinations:  16%|█▌        | 14/90 [00:00<00:22,  3.32it/s]                                                                   Arm C combinations:  17%|█▋        | 15/90 [00:00<00:22,  3.32it/s]                                                                   Arm C combinations:  18%|█▊        | 16/90 [00:00<00:22,  3.32it/s]                                                                   Arm C combinations:  19%|█▉        | 17/90 [00:00<00:21,  3.32it/s]                                                                   Arm C combinations:  20%|██        | 18/90 [00:00<00:21,  3.32it/s]                                                                   Arm C combinations:  21%|██        | 19/90 [00:00<00:21,  3.32it/s]                                                                   Arm C combinations:  22%|██▏       | 20/90 [00:00<00:21,  3.32it/s]                                                                   Arm C combinations:  23%|██▎       | 21/90 [00:00<00:20,  3.32it/s]                                                                   Arm C combinations:  24%|██▍       | 22/90 [00:00<00:20,  3.32it/s]                                                                   Arm C combinations:  26%|██▌       | 23/90 [00:00<00:20,  3.32it/s]                                                                   Arm C combinations:  27%|██▋       | 24/90 [00:00<00:19,  3.32it/s]                                                                   Arm C combinations:  28%|██▊       | 25/90 [00:00<00:19,  3.32it/s]                                                                   Arm C combinations:  29%|██▉       | 26/90 [00:00<00:19,  3.32it/s]                                                                   Arm C combinations:  30%|███       | 27/90 [00:00<00:18,  3.32it/s]                                                                   Arm C combinations:  31%|███       | 28/90 [00:00<00:18,  3.32it/s]                                                                   Arm C combinations:  32%|███▏      | 29/90 [00:00<00:18,  3.32it/s]                                                                   Arm C combinations:  33%|███▎      | 30/90 [00:00<00:18,  3.32it/s]                                                                   Arm C combinations:  34%|███▍      | 31/90 [00:00<00:17,  3.32it/s]                                                                   Arm C combinations:  36%|███▌      | 32/90 [00:00<00:17,  3.32it/s]                                                                   Arm C combinations:  37%|███▋      | 33/90 [00:00<00:17,  3.32it/s]                                                                   Arm C combinations:  38%|███▊      | 34/90 [00:00<00:16,  3.32it/s]                                                                   Arm C combinations:  39%|███▉      | 35/90 [00:00<00:16,  3.32it/s]Arm C combinations:  40%|████      | 36/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  40%|████      | 36/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  41%|████      | 37/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  42%|████▏     | 38/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  43%|████▎     | 39/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  44%|████▍     | 40/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  46%|████▌     | 41/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  47%|████▋     | 42/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  48%|████▊     | 43/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  49%|████▉     | 44/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  50%|█████     | 45/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  51%|█████     | 46/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  52%|█████▏    | 47/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  53%|█████▎    | 48/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  54%|█████▍    | 49/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  56%|█████▌    | 50/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  57%|█████▋    | 51/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  58%|█████▊    | 52/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  59%|█████▉    | 53/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  60%|██████    | 54/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  61%|██████    | 55/90 [00:00<00:00, 114.85it/s]                                                                    Arm C combinations:  62%|██████▏   | 56/90 [00:00<00:00, 114.85it/s]Arm C combinations:  63%|██████▎   | 57/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  63%|██████▎   | 57/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  64%|██████▍   | 58/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  66%|██████▌   | 59/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  67%|██████▋   | 60/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  68%|██████▊   | 61/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  69%|██████▉   | 62/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  70%|███████   | 63/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  71%|███████   | 64/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  72%|███████▏  | 65/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  73%|███████▎  | 66/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  74%|███████▍  | 67/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  76%|███████▌  | 68/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  77%|███████▋  | 69/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  78%|███████▊  | 70/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  79%|███████▉  | 71/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  80%|████████  | 72/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  81%|████████  | 73/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  82%|████████▏ | 74/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  83%|████████▎ | 75/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  84%|████████▍ | 76/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  86%|████████▌ | 77/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  87%|████████▋ | 78/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  88%|████████▊ | 79/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  89%|████████▉ | 80/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  90%|█████████ | 81/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  91%|█████████ | 82/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  92%|█████████▏| 83/90 [00:00<00:00, 142.77it/s]                                                                    Arm C combinations:  93%|█████████▎| 84/90 [00:00<00:00, 142.77it/s]Arm C combinations:  94%|█████████▍| 85/90 [00:00<00:00, 180.24it/s]                                                                    Arm C combinations:  94%|█████████▍| 85/90 [00:00<00:00, 180.24it/s]                                                                    Arm C combinations:  96%|█████████▌| 86/90 [00:00<00:00, 180.24it/s]                                                                    Arm C combinations:  97%|█████████▋| 87/90 [00:00<00:00, 180.24it/s]                                                                    Arm C combinations:  98%|█████████▊| 88/90 [00:00<00:00, 180.24it/s]                                                                    Arm C combinations:  99%|█████████▉| 89/90 [00:00<00:00, 180.24it/s]                                                                    Arm C combinations: 100%|██████████| 90/90 [00:00<00:00, 180.24it/s]Arm C combinations: 100%|██████████| 90/90 [00:00<00:00, 90.48it/s] 
+  SKIP arm_c_pos_ge_3_neg_le_1_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_2_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_3_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_3_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_3_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_3_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_3_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_3_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_median_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_median_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_median_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_median_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_median_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_median_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_modus_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_modus_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_1_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_modus_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_modus_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_modus_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_modus_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_1_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_1_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_1_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_2_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_1_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_2_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_2_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_2_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_2_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_2_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_3_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_3_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_3_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_3_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_1_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_3_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_median_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_3_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_1_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_median_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_median_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_median_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_median_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_median_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_modus_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_modus_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_modus_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_modus_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_modus_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_modus_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_1_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_2_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_2_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_2_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_1_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_2_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_1_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_2_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_2_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_2_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_3_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_3_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_3_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_3_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_3_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_3_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_median_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_median_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_median_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_median_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_median_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_median_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_modus_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_modus_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_1_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_modus_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_modus_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_modus_alpha_1.00 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_2_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_2_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_3_neg_le_2_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_4_neg_le_1_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_2_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_1_alpha_0.05 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_1_alpha_0.30 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_1_alpha_0.10 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_1_alpha_0.50 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_le_1_alpha_0.20 (model missing: arm_b)
+  SKIP arm_c_pos_ge_5_neg_modus_alpha_0.50 (model missing: arm_b)
+
+Done. Results in outputs/spotify/grid_summary_arm_c.json

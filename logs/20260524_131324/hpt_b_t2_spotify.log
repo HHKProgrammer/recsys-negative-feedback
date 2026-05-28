@@ -1,0 +1,35 @@
+
+Hyperparameter Tuning — SVD Arm B
+  Dataset:   spotify-mssd-mini
+  Arm:       Negative Dislike-Risk
+  Threshold: neg_le_2
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/spotify/tuning/arm_b/neg_le_2/best_params.json
+
+  Running 200 random trials...
+  [10/200] best neg_hit@10=0.3643
+  [20/200] best neg_hit@10=0.3913
+  [30/200] best neg_hit@10=0.3913
+  [40/200] best neg_hit@10=0.3913
+  [50/200] best neg_hit@10=0.3913
+  [60/200] best neg_hit@10=0.3913
+  [70/200] best neg_hit@10=0.3913
+  [80/200] best neg_hit@10=0.3949
+  [90/200] best neg_hit@10=0.3949
+  [100/200] best neg_hit@10=0.3949
+  [110/200] best neg_hit@10=0.3949
+  [120/200] best neg_hit@10=0.3949
+  [130/200] best neg_hit@10=0.3949
+  [140/200] best neg_hit@10=0.3949
+  [150/200] best neg_hit@10=0.3949
+  [160/200] best neg_hit@10=0.3949
+  [170/200] best neg_hit@10=0.3949
+  [180/200] best neg_hit@10=0.3949
+  [190/200] best neg_hit@10=0.3949
+  [200/200] best neg_hit@10=0.3949
+
+Best negative_detection_hit@10 (neg-LOO val): 0.3949
+Best params: {'n_factors': 200, 'n_epochs': 100, 'lr_all': 0.02, 'reg_all': 0.1, 'biased': False}
+
+Saved to outputs/spotify/tuning/arm_b/neg_le_2/best_params.json

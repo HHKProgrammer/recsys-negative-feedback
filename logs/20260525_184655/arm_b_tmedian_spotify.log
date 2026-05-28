@@ -1,0 +1,10 @@
+
+Arm B — Negative Dislike-Risk Detector SVD Grid
+  Dataset:    spotify-mssd-mini
+  Thresholds: ['neg_median']
+  Evaluation: leave-one-negative-out (LNO)
+  Output:     outputs/spotify/grid_summary_arm_b.json
+
+  [1/1] SKIP (done): arm_b_neg_median
+
+Done. Results in outputs/spotify/grid_summary_arm_b.json

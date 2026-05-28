@@ -1,0 +1,13 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:   movielens-10m
+  Arm:       Joint Positive-Negative SVD (binary targets)
+  Label:     pos_ge_3_neg_le_2
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/movielens/ml-10m/tuning/arm_d/pos_ge_3_neg_le_2/best_params.json
+
+  Running 200 random trials...
+  [10/200] best nDCG@10=0.1782
+  [20/200] best nDCG@10=0.2267
+  [30/200] best nDCG@10=0.2575

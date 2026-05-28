@@ -1,0 +1,104 @@
+
+Arm C  Hybrid Recommender Grid
+  Dataset:     spotify-mssd-mini
+  Pos:         [3, 4, 5]
+  Neg:         ['neg_le_1', 'neg_le_2', 'neg_le_3', 'neg_median', 'neg_modus']
+  Alpha:       [0.05, 0.1, 0.2, 0.3, 0.5, 1.0]
+  Total:       90 combinations  (90 remaining)
+  Workers:     12
+  Strategy:    15 model pairs, each scored once, 6 alphas applied per pair
+  Output:      outputs/spotify/grid_summary_arm_c.json
+
+Arm C grid:   0%|          | 0/90 [00:00<?, ?it/s]                                                    arm_c_pos_ge_5_neg_le_1_alpha_0.05: nDCG@10=0.2961  HR@10=0.4108  sim_neg@10=0.1795
+Arm C grid:   0%|          | 0/90 [01:03<?, ?it/s]Arm C grid:   1%|          | 1/90 [01:03<1:34:55, 63.99s/it]                                                              arm_c_pos_ge_5_neg_le_1_alpha_0.10: nDCG@10=0.2937  HR@10=0.4090  sim_neg@10=0.1779
+Arm C grid:   1%|          | 1/90 [01:04<1:34:55, 63.99s/it]                                                              arm_c_pos_ge_5_neg_le_1_alpha_0.20: nDCG@10=0.2854  HR@10=0.4029  sim_neg@10=0.1736
+Arm C grid:   2%|▏         | 2/90 [01:04<1:33:51, 63.99s/it]                                                              arm_c_pos_ge_5_neg_le_1_alpha_0.30: nDCG@10=0.2735  HR@10=0.3894  sim_neg@10=0.1686
+Arm C grid:   3%|▎         | 3/90 [01:04<1:32:47, 63.99s/it]                                                              arm_c_pos_ge_5_neg_le_1_alpha_0.50: nDCG@10=0.2592  HR@10=0.3636  sim_neg@10=0.1588
+Arm C grid:   4%|▍         | 4/90 [01:04<1:31:43, 63.99s/it]                                                              arm_c_pos_ge_5_neg_le_1_alpha_1.00: nDCG@10=0.2470  HR@10=0.3443  sim_neg@10=0.1452
+Arm C grid:   6%|▌         | 5/90 [01:04<1:30:39, 63.99s/it]                                                              arm_c_pos_ge_3_neg_modus_alpha_0.05: nDCG@10=0.3391  HR@10=0.4907  sim_neg@10=0.2755
+Arm C grid:   7%|▋         | 6/90 [01:06<1:29:35, 63.99s/it]Arm C grid:   8%|▊         | 7/90 [01:06<09:39,  6.99s/it]                                                              arm_c_pos_ge_3_neg_modus_alpha_0.10: nDCG@10=0.3285  HR@10=0.4821  sim_neg@10=0.2726
+Arm C grid:   8%|▊         | 7/90 [01:06<09:39,  6.99s/it]                                                            arm_c_pos_ge_3_neg_modus_alpha_0.20: nDCG@10=0.2995  HR@10=0.4506  sim_neg@10=0.2658
+Arm C grid:   9%|▉         | 8/90 [01:06<09:32,  6.99s/it]                                                            arm_c_pos_ge_3_neg_modus_alpha_0.30: nDCG@10=0.2752  HR@10=0.4100  sim_neg@10=0.2592
+Arm C grid:  10%|█         | 9/90 [01:06<09:25,  6.99s/it]                                                            arm_c_pos_ge_3_neg_modus_alpha_0.50: nDCG@10=0.2499  HR@10=0.3720  sim_neg@10=0.2499
+Arm C grid:  11%|█         | 10/90 [01:06<09:18,  6.99s/it]                                                             arm_c_pos_ge_3_neg_modus_alpha_1.00: nDCG@10=0.2205  HR@10=0.3305  sim_neg@10=0.2337
+Arm C grid:  12%|█▏        | 11/90 [01:06<09:11,  6.99s/it]                                                             arm_c_pos_ge_4_neg_le_1_alpha_0.05: nDCG@10=0.3423  HR@10=0.4790  sim_neg@10=0.2021
+Arm C grid:  13%|█▎        | 12/90 [01:08<09:05,  6.99s/it]Arm C grid:  14%|█▍        | 13/90 [01:08<04:12,  3.27s/it]                                                             arm_c_pos_ge_4_neg_le_1_alpha_0.10: nDCG@10=0.3384  HR@10=0.4744  sim_neg@10=0.2000
+Arm C grid:  14%|█▍        | 13/90 [01:08<04:12,  3.27s/it]                                                             arm_c_pos_ge_4_neg_le_1_alpha_0.20: nDCG@10=0.3289  HR@10=0.4658  sim_neg@10=0.1945
+Arm C grid:  16%|█▌        | 14/90 [01:08<04:08,  3.27s/it]                                                             arm_c_pos_ge_4_neg_le_1_alpha_0.30: nDCG@10=0.3167  HR@10=0.4514  sim_neg@10=0.1883
+Arm C grid:  17%|█▋        | 15/90 [01:08<04:05,  3.27s/it]                                                             arm_c_pos_ge_4_neg_le_1_alpha_0.50: nDCG@10=0.2983  HR@10=0.4214  sim_neg@10=0.1768
+Arm C grid:  18%|█▊        | 16/90 [01:08<04:02,  3.27s/it]                                                             arm_c_pos_ge_4_neg_le_1_alpha_1.00: nDCG@10=0.2833  HR@10=0.3966  sim_neg@10=0.1608
+Arm C grid:  19%|█▉        | 17/90 [01:08<03:59,  3.27s/it]                                                             arm_c_pos_ge_3_neg_le_1_alpha_0.05: nDCG@10=0.3423  HR@10=0.4901  sim_neg@10=0.2239
+Arm C grid:  20%|██        | 18/90 [01:11<03:55,  3.27s/it]Arm C grid:  21%|██        | 19/90 [01:11<02:27,  2.08s/it]                                                             arm_c_pos_ge_3_neg_le_1_alpha_0.10: nDCG@10=0.3392  HR@10=0.4868  sim_neg@10=0.2216
+Arm C grid:  21%|██        | 19/90 [01:11<02:27,  2.08s/it]                                                             arm_c_pos_ge_3_neg_le_1_alpha_0.20: nDCG@10=0.3263  HR@10=0.4727  sim_neg@10=0.2160
+Arm C grid:  22%|██▏       | 20/90 [01:11<02:25,  2.08s/it]                                                             arm_c_pos_ge_3_neg_le_1_alpha_0.30: nDCG@10=0.3124  HR@10=0.4519  sim_neg@10=0.2099
+Arm C grid:  23%|██▎       | 21/90 [01:11<02:23,  2.08s/it]                                                             arm_c_pos_ge_3_neg_le_1_alpha_0.50: nDCG@10=0.2965  HR@10=0.4269  sim_neg@10=0.2010
+Arm C grid:  24%|██▍       | 22/90 [01:11<02:21,  2.08s/it]                                                             arm_c_pos_ge_3_neg_le_1_alpha_1.00: nDCG@10=0.2820  HR@10=0.4039  sim_neg@10=0.1875
+Arm C grid:  26%|██▌       | 23/90 [01:11<02:19,  2.08s/it]                                                             arm_c_pos_ge_4_neg_modus_alpha_0.05: nDCG@10=0.3406  HR@10=0.4798  sim_neg@10=0.2598
+Arm C grid:  27%|██▋       | 24/90 [01:13<02:17,  2.08s/it]Arm C grid:  28%|██▊       | 25/90 [01:13<01:28,  1.35s/it]                                                             arm_c_pos_ge_4_neg_modus_alpha_0.10: nDCG@10=0.3354  HR@10=0.4766  sim_neg@10=0.2575
+Arm C grid:  28%|██▊       | 25/90 [01:13<01:28,  1.35s/it]                                                             arm_c_pos_ge_4_neg_modus_alpha_0.20: nDCG@10=0.3150  HR@10=0.4624  sim_neg@10=0.2508
+Arm C grid:  29%|██▉       | 26/90 [01:13<01:26,  1.35s/it]                                                             arm_c_pos_ge_4_neg_modus_alpha_0.30: nDCG@10=0.2873  HR@10=0.4242  sim_neg@10=0.2420
+Arm C grid:  30%|███       | 27/90 [01:13<01:25,  1.35s/it]                                                             arm_c_pos_ge_4_neg_modus_alpha_0.50: nDCG@10=0.2564  HR@10=0.3737  sim_neg@10=0.2280
+Arm C grid:  31%|███       | 28/90 [01:13<01:23,  1.35s/it]                                                             arm_c_pos_ge_4_neg_modus_alpha_1.00: nDCG@10=0.2241  HR@10=0.3267  sim_neg@10=0.2081
+Arm C grid:  32%|███▏      | 29/90 [01:13<01:22,  1.35s/it]                                                             arm_c_pos_ge_4_neg_median_alpha_0.05: nDCG@10=0.3410  HR@10=0.4791  sim_neg@10=0.3563
+Arm C grid:  33%|███▎      | 30/90 [01:16<01:21,  1.35s/it]Arm C grid:  34%|███▍      | 31/90 [01:16<01:02,  1.06s/it]                                                             arm_c_pos_ge_4_neg_median_alpha_0.10: nDCG@10=0.3353  HR@10=0.4751  sim_neg@10=0.3525
+Arm C grid:  34%|███▍      | 31/90 [01:16<01:02,  1.06s/it]                                                             arm_c_pos_ge_4_neg_median_alpha_0.20: nDCG@10=0.3148  HR@10=0.4586  sim_neg@10=0.3412
+Arm C grid:  36%|███▌      | 32/90 [01:16<01:01,  1.06s/it]                                                             arm_c_pos_ge_4_neg_median_alpha_0.30: nDCG@10=0.2769  HR@10=0.4195  sim_neg@10=0.3259
+Arm C grid:  37%|███▋      | 33/90 [01:16<01:00,  1.06s/it]                                                             arm_c_pos_ge_4_neg_median_alpha_0.50: nDCG@10=0.2211  HR@10=0.3209  sim_neg@10=0.2991
+Arm C grid:  38%|███▊      | 34/90 [01:16<00:59,  1.06s/it]                                                             arm_c_pos_ge_4_neg_median_alpha_1.00: nDCG@10=0.1809  HR@10=0.2619  sim_neg@10=0.2692
+Arm C grid:  39%|███▉      | 35/90 [01:16<00:58,  1.06s/it]                                                             arm_c_pos_ge_5_neg_le_2_alpha_0.05: nDCG@10=0.2906  HR@10=0.4068  sim_neg@10=0.3630
+Arm C grid:  40%|████      | 36/90 [01:20<00:57,  1.06s/it]Arm C grid:  41%|████      | 37/90 [01:20<00:48,  1.09it/s]                                                             arm_c_pos_ge_5_neg_le_2_alpha_0.10: nDCG@10=0.2796  HR@10=0.3984  sim_neg@10=0.3597
+Arm C grid:  41%|████      | 37/90 [01:20<00:48,  1.09it/s]                                                             arm_c_pos_ge_5_neg_le_2_alpha_0.20: nDCG@10=0.2457  HR@10=0.3683  sim_neg@10=0.3508
+Arm C grid:  42%|████▏     | 38/90 [01:20<00:47,  1.09it/s]                                                             arm_c_pos_ge_5_neg_le_2_alpha_0.30: nDCG@10=0.2087  HR@10=0.3160  sim_neg@10=0.3394
+Arm C grid:  43%|████▎     | 39/90 [01:20<00:46,  1.09it/s]                                                             arm_c_pos_ge_5_neg_le_2_alpha_0.50: nDCG@10=0.1740  HR@10=0.2528  sim_neg@10=0.3166
+Arm C grid:  44%|████▍     | 40/90 [01:20<00:45,  1.09it/s]                                                             arm_c_pos_ge_5_neg_le_2_alpha_1.00: nDCG@10=0.1471  HR@10=0.2083  sim_neg@10=0.2832
+Arm C grid:  46%|████▌     | 41/90 [01:20<00:44,  1.09it/s]                                                             arm_c_pos_ge_3_neg_median_alpha_0.05: nDCG@10=0.3375  HR@10=0.4879  sim_neg@10=0.3797
+Arm C grid:  47%|████▋     | 42/90 [01:22<00:43,  1.09it/s]Arm C grid:  48%|████▊     | 43/90 [01:22<00:36,  1.29it/s]                                                             arm_c_pos_ge_3_neg_median_alpha_0.10: nDCG@10=0.3268  HR@10=0.4777  sim_neg@10=0.3751
+Arm C grid:  48%|████▊     | 43/90 [01:22<00:36,  1.29it/s]                                                             arm_c_pos_ge_3_neg_median_alpha_0.20: nDCG@10=0.2923  HR@10=0.4428  sim_neg@10=0.3629
+Arm C grid:  49%|████▉     | 44/90 [01:22<00:35,  1.29it/s]                                                             arm_c_pos_ge_3_neg_median_alpha_0.30: nDCG@10=0.2511  HR@10=0.3795  sim_neg@10=0.3493
+Arm C grid:  50%|█████     | 45/90 [01:22<00:34,  1.29it/s]                                                             arm_c_pos_ge_3_neg_median_alpha_0.50: nDCG@10=0.2138  HR@10=0.3159  sim_neg@10=0.3320
+Arm C grid:  51%|█████     | 46/90 [01:22<00:34,  1.29it/s]                                                             arm_c_pos_ge_3_neg_median_alpha_1.00: nDCG@10=0.1785  HR@10=0.2660  sim_neg@10=0.3081
+Arm C grid:  52%|█████▏    | 47/90 [01:22<00:33,  1.29it/s]                                                             arm_c_pos_ge_3_neg_le_2_alpha_0.05: nDCG@10=0.3320  HR@10=0.4812  sim_neg@10=0.4255
+Arm C grid:  53%|█████▎    | 48/90 [01:30<00:32,  1.29it/s]Arm C grid:  54%|█████▍    | 49/90 [01:30<00:39,  1.05it/s]                                                             arm_c_pos_ge_3_neg_le_2_alpha_0.10: nDCG@10=0.3162  HR@10=0.4636  sim_neg@10=0.4211
+Arm C grid:  54%|█████▍    | 49/90 [01:30<00:39,  1.05it/s]                                                             arm_c_pos_ge_3_neg_le_2_alpha_0.20: nDCG@10=0.2733  HR@10=0.4109  sim_neg@10=0.4102
+Arm C grid:  56%|█████▌    | 50/90 [01:30<00:38,  1.05it/s]                                                             arm_c_pos_ge_3_neg_le_2_alpha_0.30: nDCG@10=0.2351  HR@10=0.3479  sim_neg@10=0.3982
+Arm C grid:  57%|█████▋    | 51/90 [01:30<00:37,  1.05it/s]                                                             arm_c_pos_ge_3_neg_le_2_alpha_0.50: nDCG@10=0.2026  HR@10=0.2980  sim_neg@10=0.3808
+Arm C grid:  58%|█████▊    | 52/90 [01:31<00:36,  1.05it/s]                                                             arm_c_pos_ge_3_neg_le_2_alpha_1.00: nDCG@10=0.1728  HR@10=0.2481  sim_neg@10=0.3525
+Arm C grid:  59%|█████▉    | 53/90 [01:31<00:35,  1.05it/s]                                                             arm_c_pos_ge_4_neg_le_2_alpha_0.05: nDCG@10=0.3372  HR@10=0.4743  sim_neg@10=0.3939
+Arm C grid:  60%|██████    | 54/90 [01:32<00:34,  1.05it/s]Arm C grid:  61%|██████    | 55/90 [01:32<00:25,  1.40it/s]                                                             arm_c_pos_ge_4_neg_le_2_alpha_0.10: nDCG@10=0.3270  HR@10=0.4660  sim_neg@10=0.3898
+Arm C grid:  61%|██████    | 55/90 [01:32<00:25,  1.40it/s]                                                             arm_c_pos_ge_4_neg_le_2_alpha_0.20: nDCG@10=0.2929  HR@10=0.4343  sim_neg@10=0.3789
+Arm C grid:  62%|██████▏   | 56/90 [01:32<00:24,  1.40it/s]                                                             arm_c_pos_ge_4_neg_le_2_alpha_0.30: nDCG@10=0.2485  HR@10=0.3706  sim_neg@10=0.3643
+Arm C grid:  63%|██████▎   | 57/90 [01:32<00:23,  1.40it/s]                                                             arm_c_pos_ge_4_neg_le_2_alpha_0.50: nDCG@10=0.2072  HR@10=0.2999  sim_neg@10=0.3391
+Arm C grid:  64%|██████▍   | 58/90 [01:32<00:22,  1.40it/s]                                                             arm_c_pos_ge_4_neg_le_2_alpha_1.00: nDCG@10=0.1729  HR@10=0.2423  sim_neg@10=0.3036
+Arm C grid:  66%|██████▌   | 59/90 [01:32<00:22,  1.40it/s]Arm C grid:  67%|██████▋   | 60/90 [01:32<00:15,  1.89it/s]                                                             arm_c_pos_ge_4_neg_le_3_alpha_0.05: nDCG@10=0.3388  HR@10=0.4774  sim_neg@10=0.4931
+Arm C grid:  67%|██████▋   | 60/90 [01:33<00:15,  1.89it/s]                                                             arm_c_pos_ge_4_neg_le_3_alpha_0.10: nDCG@10=0.3327  HR@10=0.4716  sim_neg@10=0.4878
+Arm C grid:  68%|██████▊   | 61/90 [01:33<00:15,  1.89it/s]Arm C grid:  69%|██████▉   | 62/90 [01:33<00:14,  1.94it/s]                                                             arm_c_pos_ge_4_neg_le_3_alpha_0.20: nDCG@10=0.3111  HR@10=0.4511  sim_neg@10=0.4726
+Arm C grid:  69%|██████▉   | 62/90 [01:33<00:14,  1.94it/s]                                                             arm_c_pos_ge_4_neg_le_3_alpha_0.30: nDCG@10=0.2686  HR@10=0.4075  sim_neg@10=0.4505
+Arm C grid:  70%|███████   | 63/90 [01:33<00:13,  1.94it/s]                                                             arm_c_pos_ge_4_neg_le_3_alpha_0.50: nDCG@10=0.1891  HR@10=0.2704  sim_neg@10=0.4005
+Arm C grid:  71%|███████   | 64/90 [01:33<00:13,  1.94it/s]                                                             arm_c_pos_ge_4_neg_le_3_alpha_1.00: nDCG@10=0.1392  HR@10=0.1904  sim_neg@10=0.3469
+Arm C grid:  72%|███████▏  | 65/90 [01:33<00:12,  1.94it/s]                                                             arm_c_pos_ge_3_neg_le_3_alpha_0.05: nDCG@10=0.3352  HR@10=0.4837  sim_neg@10=0.5380
+Arm C grid:  73%|███████▎  | 66/90 [01:39<00:12,  1.94it/s]Arm C grid:  74%|███████▍  | 67/90 [01:39<00:17,  1.29it/s]                                                             arm_c_pos_ge_3_neg_le_3_alpha_0.10: nDCG@10=0.3229  HR@10=0.4711  sim_neg@10=0.5313
+Arm C grid:  74%|███████▍  | 67/90 [01:39<00:17,  1.29it/s]                                                             arm_c_pos_ge_3_neg_le_3_alpha_0.20: nDCG@10=0.2801  HR@10=0.4244  sim_neg@10=0.5130
+Arm C grid:  76%|███████▌  | 68/90 [01:39<00:17,  1.29it/s]                                                             arm_c_pos_ge_3_neg_le_3_alpha_0.30: nDCG@10=0.2291  HR@10=0.3483  sim_neg@10=0.4889
+Arm C grid:  77%|███████▋  | 69/90 [01:39<00:16,  1.29it/s]                                                             arm_c_pos_ge_3_neg_le_3_alpha_0.50: nDCG@10=0.1768  HR@10=0.2524  sim_neg@10=0.4516
+Arm C grid:  78%|███████▊  | 70/90 [01:39<00:15,  1.29it/s]                                                             arm_c_pos_ge_3_neg_le_3_alpha_1.00: nDCG@10=0.1355  HR@10=0.1863  sim_neg@10=0.4070
+Arm C grid:  79%|███████▉  | 71/90 [01:39<00:14,  1.29it/s]                                                             arm_c_pos_ge_5_neg_modus_alpha_0.05: nDCG@10=0.2933  HR@10=0.4115  sim_neg@10=0.2533
+Arm C grid:  80%|████████  | 72/90 [01:51<00:13,  1.29it/s]Arm C grid:  81%|████████  | 73/90 [01:51<00:20,  1.18s/it]                                                             arm_c_pos_ge_5_neg_modus_alpha_0.10: nDCG@10=0.2875  HR@10=0.4087  sim_neg@10=0.2512
+Arm C grid:  81%|████████  | 73/90 [01:51<00:20,  1.18s/it]                                                             arm_c_pos_ge_5_neg_modus_alpha_0.20: nDCG@10=0.2628  HR@10=0.3927  sim_neg@10=0.2450
+Arm C grid:  82%|████████▏ | 74/90 [01:51<00:18,  1.18s/it]                                                             arm_c_pos_ge_5_neg_modus_alpha_0.30: nDCG@10=0.2348  HR@10=0.3505  sim_neg@10=0.2366
+Arm C grid:  83%|████████▎ | 75/90 [01:51<00:17,  1.18s/it]                                                             arm_c_pos_ge_5_neg_modus_alpha_0.50: nDCG@10=0.2086  HR@10=0.3046  sim_neg@10=0.2234
+Arm C grid:  84%|████████▍ | 76/90 [01:51<00:16,  1.18s/it]                                                             arm_c_pos_ge_5_neg_modus_alpha_1.00: nDCG@10=0.1828  HR@10=0.2673  sim_neg@10=0.2043
+Arm C grid:  86%|████████▌ | 77/90 [01:51<00:15,  1.18s/it]                                                             arm_c_pos_ge_5_neg_median_alpha_0.05: nDCG@10=0.2947  HR@10=0.4114  sim_neg@10=0.3433
+Arm C grid:  87%|████████▋ | 78/90 [01:53<00:14,  1.18s/it]Arm C grid:  88%|████████▊ | 79/90 [01:53<00:10,  1.06it/s]                                                             arm_c_pos_ge_5_neg_median_alpha_0.10: nDCG@10=0.2896  HR@10=0.4082  sim_neg@10=0.3400
+Arm C grid:  88%|████████▊ | 79/90 [01:53<00:10,  1.06it/s]                                                             arm_c_pos_ge_5_neg_median_alpha_0.20: nDCG@10=0.2651  HR@10=0.3938  sim_neg@10=0.3299
+Arm C grid:  89%|████████▉ | 80/90 [01:53<00:09,  1.06it/s]                                                             arm_c_pos_ge_5_neg_median_alpha_0.30: nDCG@10=0.2253  HR@10=0.3540  sim_neg@10=0.3159
+Arm C grid:  90%|█████████ | 81/90 [01:53<00:08,  1.06it/s]                                                             arm_c_pos_ge_5_neg_median_alpha_0.50: nDCG@10=0.1769  HR@10=0.2618  sim_neg@10=0.2905
+Arm C grid:  91%|█████████ | 82/90 [01:53<00:07,  1.06it/s]                                                             arm_c_pos_ge_5_neg_median_alpha_1.00: nDCG@10=0.1447  HR@10=0.2105  sim_neg@10=0.2615
+Arm C grid:  92%|█████████▏| 83/90 [01:53<00:06,  1.06it/s]                                                             arm_c_pos_ge_5_neg_le_3_alpha_0.05: nDCG@10=0.2935  HR@10=0.4087  sim_neg@10=0.4534
+Arm C grid:  93%|█████████▎| 84/90 [02:17<00:05,  1.06it/s]Arm C grid:  94%|█████████▍| 85/90 [02:17<00:09,  1.93s/it]                                                             arm_c_pos_ge_5_neg_le_3_alpha_0.10: nDCG@10=0.2859  HR@10=0.4040  sim_neg@10=0.4488
+Arm C grid:  94%|█████████▍| 85/90 [02:17<00:09,  1.93s/it]                                                             arm_c_pos_ge_5_neg_le_3_alpha_0.20: nDCG@10=0.2622  HR@10=0.3805  sim_neg@10=0.4361
+Arm C grid:  96%|█████████▌| 86/90 [02:17<00:07,  1.93s/it]                                                             arm_c_pos_ge_5_neg_le_3_alpha_0.30: nDCG@10=0.2219  HR@10=0.3421  sim_neg@10=0.4176
+Arm C grid:  97%|█████████▋| 87/90 [02:17<00:05,  1.93s/it]                                                             arm_c_pos_ge_5_neg_le_3_alpha_0.50: nDCG@10=0.1559  HR@10=0.2243  sim_neg@10=0.3742
+Arm C grid:  98%|█████████▊| 88/90 [02:17<00:03,  1.93s/it]                                                             arm_c_pos_ge_5_neg_le_3_alpha_1.00: nDCG@10=0.1164  HR@10=0.1579  sim_neg@10=0.3233
+Arm C grid:  99%|█████████▉| 89/90 [02:17<00:01,  1.93s/it]Arm C grid: 100%|██████████| 90/90 [02:17<00:00,  1.53s/it]
+
+Done. Results in outputs/spotify/grid_summary_arm_c.json

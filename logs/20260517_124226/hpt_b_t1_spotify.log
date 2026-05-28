@@ -1,0 +1,28 @@
+scripts/run_hyperparameter_tuning.py:176: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  neg_train = neg_df[merged["_x"].isna()].copy()
+
+Hyperparameter Tuning — SVD Arm B
+  Dataset:   spotify-mssd-mini
+  Arm:       Negative Dislike-Risk
+  Threshold: neg_le_1
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/spotify/tuning/arm_b/neg_le_1/best_params.json
+
+  Running 200 random trials...
+Traceback (most recent call last):
+  File "scripts/run_hyperparameter_tuning.py", line 460, in <module>
+    main()
+  File "scripts/run_hyperparameter_tuning.py", line 422, in main
+    params, score = random_search_objective(
+  File "scripts/run_hyperparameter_tuning.py", line 333, in random_search_objective
+    neg_train, neg_val = build_arm_b_neg_val(train_inner, threshold, user_thresholds, rng)
+  File "scripts/run_hyperparameter_tuning.py", line 176, in build_arm_b_neg_val
+    neg_train = neg_df[merged["_x"].isna()].copy()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/pandas/core/frame.py", line 3496, in __getitem__
+    return self._getitem_bool_array(key)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/pandas/core/frame.py", line 3549, in _getitem_bool_array
+    key = check_bool_indexer(self.index, key)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/pandas/core/indexing.py", line 2383, in check_bool_indexer
+    raise IndexingError(
+pandas.core.indexing.IndexingError: Unalignable boolean Series provided as indexer (index of the boolean Series and of the indexed object do not match).

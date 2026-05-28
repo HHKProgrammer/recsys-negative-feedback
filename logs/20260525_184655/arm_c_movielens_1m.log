@@ -1,0 +1,14 @@
+
+Arm C  Hybrid Recommender Grid
+  Dataset:     movielens-1m
+  Pos:         [3, 4, 5]
+  Neg:         ['neg_le_1', 'neg_le_2', 'neg_le_3', 'neg_median', 'neg_modus']
+  Alpha:       [0.05, 0.1, 0.2, 0.3, 0.5, 1.0]
+  Total:       90 combinations  (0 remaining)
+  Workers:     12
+  Strategy:    15 model pairs, each scored once, 6 alphas applied per pair
+  Output:      outputs/movielens/ml-1m/grid_summary_arm_c.json
+
+Arm C grid: 0it [00:00, ?it/s]Arm C grid: 0it [00:01, ?it/s]
+
+Done. Results in outputs/movielens/ml-1m/grid_summary_arm_c.json

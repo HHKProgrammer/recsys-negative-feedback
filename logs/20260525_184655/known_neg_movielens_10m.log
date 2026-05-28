@@ -1,0 +1,10 @@
+
+Known-Negative Candidate Injection Evaluation
+  config:    configs/movielens_10m.yaml
+  output:    outputs/movielens/ml-10m/grid_summary_known_neg_eval.json
+  protocol:  50 known-disliked items injected per user
+             + 450 neutral unseen items + 1 true test item
+  workers:   12 threads (ThreadPoolExecutor)
+  paper:     Krichene & Rendle 2020 (KDD) — sampled evaluation
+
+Loading data...

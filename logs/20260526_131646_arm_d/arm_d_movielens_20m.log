@@ -1,0 +1,14 @@
+
+Arm D — Joint Positive-Negative SVD Grid
+  Dataset:      movielens-20m
+  Grid:         [(4, 2), (5, 1), (4, 1), (3, 2)]
+  Approach:     binary targets (1.0=like, 0.0=dislike, middle=dropped)
+  rating_scale: (0, 1)
+  References:   Cena et al. 2004, Paudel et al. 2016
+  Output:       outputs/movielens/ml-20m/grid_summary_arm_d.json
+
+  [1/4] SKIP (done): arm_d_pos_ge_4_neg_le_2
+  [2/4] SKIP (done): arm_d_pos_ge_5_neg_le_1
+  [3/4] arm_d_pos_ge_4_neg_le_1  (rating>=4→1.0, rating<=1→0.0, middle=dropped)
+    Joint train: 9,915,548 positives + 912,445 negatives = 10,827,993 rows (54.6% of original)
+    No tuning found at outputs/movielens/ml-20m/tuning/arm_d/pos_ge_4_neg_le_1/best_params.json, using config defaults

@@ -1,0 +1,35 @@
+
+Hyperparameter Tuning — SVD Arm B
+  Dataset:   movielens-1m
+  Arm:       Negative Dislike-Risk
+  Threshold: neg_le_1
+  Trials:    200
+  Engine:    Random Search (install optuna for Bayesian)
+  Output:    outputs/movielens/ml-1m/tuning/arm_b/neg_le_1/best_params.json
+
+  Running 200 random trials...
+  [10/200] best neg_hit@10=0.0731
+  [20/200] best neg_hit@10=0.0731
+  [30/200] best neg_hit@10=0.0967
+  [40/200] best neg_hit@10=0.0967
+  [50/200] best neg_hit@10=0.0967
+  [60/200] best neg_hit@10=0.0967
+  [70/200] best neg_hit@10=0.0967
+  [80/200] best neg_hit@10=0.0967
+  [90/200] best neg_hit@10=0.0967
+  [100/200] best neg_hit@10=0.0967
+  [110/200] best neg_hit@10=0.0967
+  [120/200] best neg_hit@10=0.0967
+  [130/200] best neg_hit@10=0.1019
+  [140/200] best neg_hit@10=0.1019
+  [150/200] best neg_hit@10=0.1019
+  [160/200] best neg_hit@10=0.1019
+  [170/200] best neg_hit@10=0.1019
+  [180/200] best neg_hit@10=0.1019
+  [190/200] best neg_hit@10=0.1019
+  [200/200] best neg_hit@10=0.1019
+
+Best negative_detection_hit@10 (neg-LOO val): 0.1019
+Best params: {'n_factors': 10, 'n_epochs': 20, 'lr_all': 0.01, 'reg_all': 0.03, 'biased': False}
+
+Saved to outputs/movielens/ml-1m/tuning/arm_b/neg_le_1/best_params.json

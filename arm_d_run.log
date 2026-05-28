@@ -1,0 +1,154 @@
+nohup: ignoring input
+Per-job logs: logs/20260525_213207_arm_d
+==========================================================
+ Arm D: Joint Positive-Negative SVD
+ Phases 1-9 assumed complete — only running new Arm D work
+ HPT_TRIALS=200  HPT_MAX_USERS=5000
+==========================================================
+
+==========================================================
+ Phase 10: Arm D HPT
+           4 configs x 4 datasets = 16 jobs
+           Trials: 200 per job  HPT_MAX_USERS: 5000
+           Skips configs with existing best_params.json
+==========================================================
+  [bg] hpt_d_p4_n2_movielens_1m  (log: logs/20260525_213207_arm_d/hpt_d_p4_n2_movielens_1m.log)
+  [bg] hpt_d_p4_n2_movielens_10m  (log: logs/20260525_213207_arm_d/hpt_d_p4_n2_movielens_10m.log)
+  [bg] hpt_d_p4_n2_movielens_20m  (log: logs/20260525_213207_arm_d/hpt_d_p4_n2_movielens_20m.log)
+  [bg] hpt_d_p4_n2_spotify  (log: logs/20260525_213207_arm_d/hpt_d_p4_n2_spotify.log)
+  [bg] hpt_d_p5_n1_movielens_1m  (log: logs/20260525_213207_arm_d/hpt_d_p5_n1_movielens_1m.log)
+  [bg] hpt_d_p5_n1_movielens_10m  (log: logs/20260525_213207_arm_d/hpt_d_p5_n1_movielens_10m.log)
+  [bg] hpt_d_p5_n1_movielens_20m  (log: logs/20260525_213207_arm_d/hpt_d_p5_n1_movielens_20m.log)
+  [bg] hpt_d_p5_n1_spotify  (log: logs/20260525_213207_arm_d/hpt_d_p5_n1_spotify.log)
+  [bg] hpt_d_p4_n1_movielens_1m  (log: logs/20260525_213207_arm_d/hpt_d_p4_n1_movielens_1m.log)
+  [bg] hpt_d_p4_n1_movielens_10m  (log: logs/20260525_213207_arm_d/hpt_d_p4_n1_movielens_10m.log)
+  [bg] hpt_d_p4_n1_movielens_20m  (log: logs/20260525_213207_arm_d/hpt_d_p4_n1_movielens_20m.log)
+  [bg] hpt_d_p4_n1_spotify  (log: logs/20260525_213207_arm_d/hpt_d_p4_n1_spotify.log)
+  [bg] hpt_d_p3_n2_movielens_1m  (log: logs/20260525_213207_arm_d/hpt_d_p3_n2_movielens_1m.log)
+  [bg] hpt_d_p3_n2_movielens_10m  (log: logs/20260525_213207_arm_d/hpt_d_p3_n2_movielens_10m.log)
+  [bg] hpt_d_p3_n2_movielens_20m  (log: logs/20260525_213207_arm_d/hpt_d_p3_n2_movielens_20m.log)
+  [bg] hpt_d_p3_n2_spotify  (log: logs/20260525_213207_arm_d/hpt_d_p3_n2_spotify.log)
+ Phase 10 complete
+
+==========================================================
+ Phase 11: Arm D joint SVD grid 4 datasets in parallel
+           Trains SVD on binary targets (pos=1.0, neg=0.0)
+           Skips configs already in grid_summary_arm_d.json
+==========================================================
+  [bg] arm_d_movielens_1m  (log: logs/20260525_213207_arm_d/arm_d_movielens_1m.log)
+  [bg] arm_d_movielens_10m  (log: logs/20260525_213207_arm_d/arm_d_movielens_10m.log)
+  [bg] arm_d_movielens_20m  (log: logs/20260525_213207_arm_d/arm_d_movielens_20m.log)
+  [bg] arm_d_spotify  (log: logs/20260525_213207_arm_d/arm_d_spotify.log)
+ Phase 11 complete
+
+==========================================================
+ Phase 12: Regenerate all figures and tables
+           Includes Arm A vs Arm C vs Arm D comparison
+==========================================================
+=================================================================
+THESIS FIGURE GENERATOR — Negative Feedback in Recommender Systems
+=================================================================
+
+Loading experiment results...
+  ml-1m:  36 experiments (standard)
+  ml-1m:  21 experiments (known_neg_eval)
+  ml-1m:   3 experiments (arm_a)
+  ml-1m:   5 experiments (arm_b)
+  ml-1m:  90 experiments (arm_c)
+  ml-1m:   4 experiments (arm_d)
+  ml-10m:  36 experiments (standard)
+  ml-10m:  21 experiments (known_neg_eval)
+  ml-10m:   3 experiments (arm_a)
+  ml-10m:   5 experiments (arm_b)
+  ml-10m:   4 experiments (arm_d)
+  ml-20m:  36 experiments (standard)
+  ml-20m:  21 experiments (known_neg_eval)
+  ml-20m:   3 experiments (arm_a)
+  ml-20m:   5 experiments (arm_b)
+  ml-20m:   2 experiments (arm_d)
+  spotify:  36 experiments (standard)
+  spotify:  21 experiments (known_neg_eval)
+  spotify:   3 experiments (arm_a)
+  spotify:   5 experiments (arm_b)
+  spotify:  90 experiments (arm_c)
+  spotify:   4 experiments (arm_d)
+
+BASELINE QUALITY REPORT
+─────────────────────────────────────────────────────────────────
+  ML-1M       AVERAGE     0.0684  (within expected range 0.05–0.12)
+             NDCG@10=0.0684 expect 0.05–0.12  HR@10=0.1303 expect 0.09–0.18
+  ML-10M      AVERAGE     0.0872  (within expected range 0.06–0.13)
+             NDCG@10=0.0872 expect 0.06–0.13  HR@10=0.1500 expect 0.10–0.20
+  ML-20M      AVERAGE     0.0826  (within expected range 0.06–0.13)
+             NDCG@10=0.0826 expect 0.06–0.13  HR@10=0.1441 expect 0.10–0.20
+  SPOTIFY     AVERAGE     0.0176  (within expected range 0.01–0.06)
+             NDCG@10=0.0176 expect 0.01–0.06  HR@10=0.0354 expect 0.02–0.10
+
+NOTES:
+  Surprise benchmarks use RMSE (rating prediction), not NDCG (ranking).
+  They measure different things and cannot be directly compared.
+  Our SVD RMSE on ML-1M is estimated to be ~0.87, matching Surprise default.
+
+  Fan et al 2024 warn: many high ML results come from temporal splits on
+  unreliable timestamps. Our random split is conservative and honest.
+
+  KEY FINDING: rerank and weighted variants reduce sim_to_neg@10
+  (they do push recommendations away from disliked items in latent space),
+  but this consistently LOWERS NDCG@10  the tradeoff is not beneficial.
+  This suggests negative feedback helps only when built into training
+  (e.g. iALS, Hu et al. 2008), not when applied post-hoc at ranking time.
+─────────────────────────────────────────────────────────────────
+Generating figures...
+  fig1_is_baseline_correct
+  fig2_core_tradeoff
+  fig3_best_variant_per_dataset
+  fig4_alpha_sensitivity
+  fig5_threshold_comparison
+  fig6_dataset_scaling
+  fig7_movielens_vs_spotify
+  fig8_known_neg_eval
+  skipping fig9: no train-positive results
+  run: python scripts/run_train_positive_grid.py --config configs/movielens_1m.yaml
+  fig_arm_b_detection
+  fig_arm_c_headline
+  fig_arm_d_comparison
+
+Generating tables...
+  table1_all_results
+  table2_baseline_summary
+  table3_surprise_comparison
+  table4_key_findings
+  tableA_dataset_stats
+  tableC_arm_b_detection
+  tableD_arm_c_headline
+  tableE_arm_d_headline
+  tableF_arm_d_vs_arm_a
+  tableG_strategy_summary
+
+Figures → reports/figures/
+Tables  → reports/tables/
+
+NOTES FOR THESIS:
+  Fig 1a: NDCG/HR vs random ranker (computed, not estimated)
+   Fig 1b: green band = heuristic plausibility range (not a published benchmark)
+   Fig 8:  hatched bars = negative@10 is 0 by construction, not measured
+  Fig 9:  'Train-Positive SVD' ≠ Hu et al. 2008 (different method)
+  Tables A/C/D: new — dataset stats, Arm B detection, Arm A vs C
+  Significance tests: not yet added — requires per-user CSV output
+    (run grid scripts with per-user saving to enable significance stars)
+=================================================================
+ Phase 12 complete
+==========================================================
+ Arm D DONE
+
+ Logs:    logs/20260525_213207_arm_d/
+ Results: outputs/*/grid_summary_arm_d.json
+ Models:  outputs/*/models/arm_d/*/model.pkl
+ Tuning:  outputs/*/tuning/arm_d/*/best_params.json
+ Figures: reports/figures/
+ Tables:  reports/tables/
+
+ Review results, then commit:
+   git add outputs/ reports/
+   git commit -m 'add Arm D joint pos-neg SVD results'
+==========================================================

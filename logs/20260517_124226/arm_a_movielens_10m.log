@@ -1,0 +1,27 @@
+
+Arm A — Positive Preference SVD Grid
+  Dataset:    movielens-10m
+  Thresholds: pos >= [3, 4, 5]
+  References: Rendle et al. 2009 (BPR), He et al. 2017 (NCF)
+  Output:     outputs/movielens/ml-10m/grid_summary_arm_a.json
+
+  [1/3] arm_a_pos_ge_3  (rating >= 3)
+    8,181,474 rows kept (removed 1,747,464 / 17.6%)
+    Loaded tuned params (nDCG@10 (val)=0.1274)
+    Model saved → outputs/movielens/ml-10m/models/arm_a/pos_ge_3/model.pkl
+Evaluating:   0%|          | 0/69878 [00:00<?, ?it/s]Evaluating:   0%|          | 1/69878 [00:00<7:06:04,  2.73it/s]Evaluating:   4%|▍         | 2767/69878 [00:00<00:08, 7718.57it/s]Evaluating:  12%|█▏        | 8521/69878 [00:00<00:03, 19666.13it/s]Evaluating:  23%|██▎       | 15764/69878 [00:00<00:01, 31417.87it/s]Evaluating:  28%|██▊       | 19653/69878 [00:00<00:01, 31502.37it/s]Evaluating:  37%|███▋      | 25569/69878 [00:00<00:01, 38371.48it/s]Evaluating:  45%|████▌     | 31449/69878 [00:01<00:00, 42665.44it/s]Evaluating:  56%|█████▌    | 38815/69878 [00:01<00:00, 46938.42it/s]Evaluating:  66%|██████▋   | 46296/69878 [00:01<00:00, 52044.92it/s]Evaluating:  75%|███████▍  | 52328/69878 [00:01<00:00, 54111.33it/s]Evaluating:  85%|████████▍ | 59174/69878 [00:01<00:00, 58045.84it/s]Evaluating:  93%|█████████▎| 65145/69878 [00:01<00:00, 49397.18it/s]Evaluating: 100%|██████████| 69878/69878 [00:04<00:00, 16297.29it/s]
+    nDCG@10=0.1214  HR@10=0.2172  MRR=0.1115
+  [2/3] arm_a_pos_ge_4  (rating >= 4)
+    4,967,292 rows kept (removed 4,961,646 / 50.0%)
+    Loaded tuned params (nDCG@10 (val)=0.1712)
+    Model saved → outputs/movielens/ml-10m/models/arm_a/pos_ge_4/model.pkl
+Evaluating:   0%|          | 0/69878 [00:00<?, ?it/s]Evaluating:   0%|          | 1/69878 [00:00<5:52:16,  3.31it/s]Evaluating:   8%|▊         | 5872/69878 [00:00<00:03, 18834.84it/s]Evaluating:  15%|█▍        | 10330/69878 [00:00<00:02, 26783.20it/s]Evaluating:  20%|██        | 14209/69878 [00:00<00:01, 29448.61it/s]Evaluating:  29%|██▉       | 20297/69878 [00:00<00:01, 38317.82it/s]Evaluating:  40%|███▉      | 27848/69878 [00:00<00:00, 48170.11it/s]Evaluating:  47%|████▋     | 33178/69878 [00:01<00:00, 40650.15it/s]Evaluating:  65%|██████▍   | 45146/69878 [00:01<00:00, 60393.85it/s]Evaluating:  74%|███████▍  | 51983/69878 [00:01<00:00, 57892.91it/s]Evaluating:  83%|████████▎ | 58326/69878 [00:01<00:00, 51834.07it/s]Evaluating:  96%|█████████▌| 66807/69878 [00:01<00:00, 54899.58it/s]Evaluating: 100%|██████████| 69878/69878 [00:02<00:00, 25142.38it/s]
+    nDCG@10=0.1737  HR@10=0.3148  MRR=0.1515
+  [3/3] arm_a_pos_ge_5  (rating >= 5)
+    1,530,604 rows kept (removed 8,398,334 / 84.6%)
+    Loaded tuned params (nDCG@10 (val)=0.1952)
+    Model saved → outputs/movielens/ml-10m/models/arm_a/pos_ge_5/model.pkl
+Evaluating:   0%|          | 0/69878 [00:00<?, ?it/s]Evaluating:   0%|          | 1/69878 [00:00<9:18:22,  2.09it/s]Evaluating:   8%|▊         | 5755/69878 [00:00<00:04, 13063.08it/s]Evaluating:  19%|█▉        | 13126/69878 [00:00<00:02, 27591.14it/s]Evaluating:  31%|███▏      | 21849/69878 [00:00<00:01, 42815.83it/s]Evaluating:  42%|████▏     | 29366/69878 [00:00<00:00, 49364.38it/s]Evaluating:  51%|█████     | 35806/69878 [00:01<00:00, 53342.45it/s]Evaluating:  60%|██████    | 42237/69878 [00:01<00:00, 44071.93it/s]Evaluating:  68%|██████▊   | 47613/69878 [00:01<00:00, 46267.08it/s]Evaluating:  76%|███████▌  | 52974/69878 [00:01<00:00, 47570.18it/s]Evaluating:  94%|█████████▎| 65493/69878 [00:01<00:00, 53415.79it/s]Evaluating: 100%|██████████| 69878/69878 [00:06<00:00, 11597.30it/s]
+    nDCG@10=0.2219  HR@10=0.3857  MRR=0.1914
+
+Done. Results in outputs/movielens/ml-10m/grid_summary_arm_a.json
