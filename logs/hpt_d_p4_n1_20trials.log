@@ -1,0 +1,40 @@
+nohup: ignoring input
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:  movielens-20m
+  Arm:      Joint Positive-Negative SVD (binary targets)
+  Label:    pos_ge_4_neg_le_1
+  Trials:   20
+  Engine:   Optuna TPE
+  Output:   outputs/movielens/ml-20m/tuning/arm_d/pos_ge_4_neg_le_1/best_params.json
+
+  Preparing training data (once)...
+  Joint train: 9,839,296 positives + 906,200 negatives = 10,745,496 rows
+
+  Preparing candidate cache (once)...
+    Candidate cache loaded  (5,000 users) ← candidates_n500_u5000_s42.parquet
+    Evaluation users: 5,000
+
+  Resuming Optuna study (2/20 trials done)
+  [3/20] nDCG@10=0.0241  best=0.0241  trial_time=1242.7s  ETA=5.87h
+  [4/20] nDCG@10=0.0009  best=0.0241  trial_time=1199.3s  ETA=5.43h
+  [5/20] nDCG@10=0.0001  best=0.0241  trial_time=711.3s  ETA=4.38h
+  [6/20] nDCG@10=0.0515  best=0.0515  trial_time=956.2s  ETA=4.00h
+  [7/20] nDCG@10=0.1323  best=0.1323  trial_time=313.7s  ETA=3.19h
+  [8/20] nDCG@10=0.0004  best=0.1323  trial_time=909.2s  ETA=2.96h
+  [9/20] nDCG@10=0.0024  best=0.1323  trial_time=520.7s  ETA=2.55h
+  [10/20] nDCG@10=0.2549  best=0.2549  trial_time=698.0s  ETA=2.27h
+  [11/20] nDCG@10=0.0911  best=0.2549  trial_time=4489.2s  ETA=3.07h
+  [12/20] nDCG@10=0.2536  best=0.2549  trial_time=306.5s  ETA=2.52h
+  [13/20] nDCG@10=0.1798  best=0.2549  trial_time=682.9s  ETA=2.13h
+  [14/20] nDCG@10=0.1043  best=0.2549  trial_time=2417.9s  ETA=2.01h
+  [15/20] nDCG@10=0.1395  best=0.2549  trial_time=783.5s  ETA=1.63h
+  [16/20] nDCG@10=0.2549  best=0.2549  trial_time=765.6s  ETA=1.27h
+  [17/20] nDCG@10=0.2549  best=0.2549  trial_time=763.3s  ETA=0.93h
+  [18/20] nDCG@10=0.2229  best=0.2549  trial_time=1455.0s  ETA=0.63h
+  [23/20] nDCG@10=0.1945  best=0.2549  trial_time=2334.6s  ETA=-1.01h
+  [26/20] nDCG@10=0.2822  best=0.2822  trial_time=728.3s  ETA=-1.97h
+
+  Best nDCG@10 (val, binary-target model): 0.2822
+  Best params: {'n_factors': 10, 'n_epochs': 50, 'lr_all': 0.002, 'reg_all': 0.05, 'biased': False}
+  Saved → outputs/movielens/ml-20m/tuning/arm_d/pos_ge_4_neg_le_1/best_params.json

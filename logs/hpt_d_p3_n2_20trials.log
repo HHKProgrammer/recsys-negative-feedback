@@ -1,0 +1,41 @@
+nohup: ignoring input
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:  movielens-20m
+  Arm:      Joint Positive-Negative SVD (binary targets)
+  Label:    pos_ge_3_neg_le_2
+  Trials:   20
+  Engine:   Optuna TPE
+  Output:   outputs/movielens/ml-20m/tuning/arm_d/pos_ge_3_neg_le_2/best_params.json
+
+  Preparing training data (once)...
+  Joint train: 16,239,577 positives + 2,594,130 negatives = 18,833,707 rows
+
+  Preparing candidate cache (once)...
+    Candidate cache loaded  (5,000 users) ← candidates_n500_u5000_s42.parquet
+    Evaluation users: 5,000
+
+  Resuming Optuna study (1/20 trials done)
+  [2/20] nDCG@10=0.0115  best=0.0115  trial_time=2215.9s  ETA=11.08h
+  [3/20] nDCG@10=0.0033  best=0.0115  trial_time=2124.2s  ETA=10.25h
+  [4/20] nDCG@10=0.0000  best=0.0115  trial_time=1244.3s  ETA=8.27h
+  [5/20] nDCG@10=0.0018  best=0.0115  trial_time=1672.1s  ETA=7.56h
+  [6/20] nDCG@10=0.0081  best=0.0115  trial_time=607.0s  ETA=6.12h
+  [7/20] nDCG@10=0.0001  best=0.0115  trial_time=1663.9s  ETA=5.73h
+  [8/20] nDCG@10=0.0022  best=0.0115  trial_time=977.1s  ETA=5.00h
+  [9/20] nDCG@10=0.0816  best=0.0816  trial_time=1236.4s  ETA=4.48h
+  [10/20] nDCG@10=0.0005  best=0.0816  trial_time=6432.1s  ETA=5.61h
+  [11/20] nDCG@10=0.0067  best=0.0816  trial_time=4162.9s  ETA=5.58h
+  [12/20] nDCG@10=0.0397  best=0.0816  trial_time=4609.6s  ETA=5.44h
+  [13/20] nDCG@10=0.0679  best=0.0816  trial_time=3224.4s  ETA=4.89h
+  [14/20] nDCG@10=0.0679  best=0.0816  trial_time=3134.3s  ETA=4.27h
+  [15/20] nDCG@10=0.0679  best=0.0816  trial_time=3306.3s  ETA=3.63h
+  [16/20] nDCG@10=0.0816  best=0.0816  trial_time=1395.6s  ETA=2.82h
+  [17/20] nDCG@10=0.1623  best=0.1623  trial_time=2690.3s  ETA=2.12h
+  [18/20] nDCG@10=0.1623  best=0.1623  trial_time=2242.5s  ETA=1.40h
+  [19/20] nDCG@10=0.1623  best=0.1623  trial_time=2289.2s  ETA=0.70h
+  [20/20] nDCG@10=0.0974  best=0.1623  trial_time=5051.4s  ETA=0.00h
+
+  Best nDCG@10 (val, binary-target model): 0.1623
+  Best params: {'n_factors': 10, 'n_epochs': 100, 'lr_all': 0.002, 'reg_all': 0.01, 'biased': False}
+  Saved → outputs/movielens/ml-20m/tuning/arm_d/pos_ge_3_neg_le_2/best_params.json

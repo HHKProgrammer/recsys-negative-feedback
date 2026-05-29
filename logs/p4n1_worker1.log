@@ -1,0 +1,8 @@
+nohup: ignoring input
+usage: run_hyperparameter_tuning.py [-h] --config CONFIG --arm {a,b,d}
+                                    --threshold THRESHOLD
+                                    [--neg_threshold NEG_THRESHOLD]
+                                    [--n_trials N_TRIALS]
+                                    [--max_users MAX_USERS] [--seed SEED]
+                                    [--overwrite]
+run_hyperparameter_tuning.py: error: unrecognized arguments: --storage sqlite:///p4n1_100trials.db
