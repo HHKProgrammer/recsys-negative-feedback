@@ -6,10 +6,13 @@
 # positive-negative training experiment WITHOUT rerunning completed work.
 #
 # Disconnect-safe (run on server):
-#   HPT_TRIALS=200 HPT_MAX_USERS=5000 nohup ./run_arm_d.sh > arm_d_run.log 2>&1 &
+#   HPT_TRIALS=200 HPT_MAX_USERS=5000 nohup ./run_arm_d.sh &
 #   echo $! > arm_d_run.pid
-#   tail -f arm_d_run.log
-#   ps -p $(cat arm_d_run.pid)   # check still running
+#   tail -f logs/arm_d_run_latest.log   # symlink to timestamped log
+#   ps -p $(cat arm_d_run.pid)           # check still running
+#
+# Each run writes its own logs/arm_d_run_YYYYMMDD_HHMMSS.log — never overwrites.
+# Summarize all results:  python scripts/summarize_hpt_arm_d.py [--verbose]
 #
 # Quick local test first:
 #   HPT_TRIALS=5 MAX_USERS=500 ./run_arm_d.sh > arm_d_test.log 2>&1
@@ -19,6 +22,19 @@
 
 set -e
 export PYTHONUNBUFFERED=1
+
+# ── Timestamped master log (never overwrites a previous run) ──────────────
+# Usage:  HPT_TRIALS=200 HPT_MAX_USERS=5000 nohup ./run_arm_d.sh 2>&1 &
+#         tail -f logs/arm_d_run_latest.log
+#
+# The script writes its own timestamped copy so you can safely re-run
+# without losing the previous output.  "arm_d_run_latest.log" is a symlink
+# to the current run's log.
+_MASTER_LOG="logs/arm_d_run_$(date +%Y%m%d_%H%M%S).log"
+mkdir -p logs
+exec > >(tee -a "$_MASTER_LOG") 2>&1
+ln -sf "$_MASTER_LOG" logs/arm_d_run_latest.log
+echo "Master log: $_MASTER_LOG  (symlink: logs/arm_d_run_latest.log)"
 
 HPT_TRIALS=${HPT_TRIALS:-200}
 MAX_USERS=${MAX_USERS:-""}

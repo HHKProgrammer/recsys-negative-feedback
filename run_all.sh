@@ -36,6 +36,12 @@
 set -e
 export PYTHONUNBUFFERED=1
 
+_MASTER_LOG="logs/full_run_$(date +%Y%m%d_%H%M%S).log"
+mkdir -p logs
+exec > >(tee -a "$_MASTER_LOG") 2>&1
+ln -sf "$_MASTER_LOG" logs/full_run_latest.log
+echo "Master log: $_MASTER_LOG"
+
 HPT_TRIALS=${HPT_TRIALS:-200}
 MAX_USERS=${MAX_USERS:-""}
 # HPT_MAX_USERS: separate limit for HPT evaluation only (keeps each trial fast)
