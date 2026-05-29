@@ -1,13 +1,18 @@
 \begin{table}[ht]
 \centering
-\begin{tabular}{lrrrrrr}
+\caption{Arm~A (positive-only SVD) versus Arm~D (joint positive-negative SVD) and the
+full-rating SVD baseline. Arm~D nDCG@10 is the best test-split result per dataset across
+four threshold configurations. $\Delta$ values are absolute differences.
+ML-10M Arm~D values are from incomplete tuning and should be treated as lower bounds ($\dagger$).}
+\label{tab:arm_d_vs_arm_a}
+\begin{tabular}{lrrrrrl}
 \toprule
-Dataset & SVD (nDCG@10) & Arm A (nDCG@10) & Arm D (nDCG@10) & Δ D vs A & Δ D vs SVD & Best Arm D config \\
+Dataset & SVD & Arm~A & Arm~D & $\Delta$ D$-$A & $\Delta$ D$-$SVD & Best Arm~D config \\
 \midrule
-ml-1m & 0.0684 & 0.0811 & 0.1122 & +0.0310 & +0.0438 & pos≥5 neg≤1 \\
-ml-10m & 0.0872 & 0.2219 & 0.0026 & -0.2193 & -0.0846 & pos≥5 neg≤1 \\
-ml-20m & 0.0826 & 0.2405 & 0.2595 & +0.0190 & +0.1769 & pos≥4 neg≤2 \\
+ML-1M   & 0.0684 & 0.0811 & 0.1122           & $+$0.0310 & $+$0.0438 & $p5/n1$ \\
+ML-10M  & 0.0872 & 0.2219 & 0.0026$^\dagger$  & $-$0.2193 & $-$0.0846 & $p5/n1$$^\dagger$ \\
+ML-20M  & 0.0826 & 0.2405 & 0.2595           & $+$0.0190 & $+$0.1769 & $p4/n2$ \\
+Spotify & 0.0176 & 0.3447 & 0.3117           & $-$0.0330 & $+$0.2941 & $p4/n1$ \\
 \bottomrule
 \end{tabular}
-\caption{Arm A (positive-only SVD) vs Arm D (joint positive-negative SVD). Arm D trains on binary targets to test whether incorporating negative feedback during training improves top-N ranking quality over positive-only training.}
 \end{table}
