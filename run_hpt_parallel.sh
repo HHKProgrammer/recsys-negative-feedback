@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Parallel Arm D HPT using Optuna shared SQLite storage for some last comparisons 
 #
 
