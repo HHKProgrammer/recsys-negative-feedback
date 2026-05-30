@@ -1,36 +1,22 @@
 \begin{table}[ht]
 \centering
-\caption{Arm~D joint positive-negative SVD: test-split nDCG@10 per threshold configuration
-and dataset. SVD is trained on binary targets ($y{=}1$ for rating~${\geq}t^+$,
-$y{=}0$ for rating~${\leq}t^-$, others discarded) with rating\_scale$(0,1)$.
-$N_\text{pos}$/$N_\text{neg}$ are training-set interaction counts.
-ML-1M and Spotify used fully converged 200-trial tuning; ML-10M and the ML-20M
-configurations marked $\dagger$ used hyperparameters from incomplete tuning runs
-and should be treated as lower bounds, not final estimates (see Section~5.5).}
-\label{tab:arm_d_headline}
-\begin{tabular}{llrrrrr}
+\begin{tabular}{lrrrrrrrr}
 \toprule
-Dataset & Config ($t^+$/$t^-$) & nDCG@10 & HR@10 & MRR & $N_\text{pos}$ & $N_\text{neg}$ \\
+Dataset & Pos≥ & Neg≤ & NDCG@10 & HR@10 & MRR & sim\_neg@10 & N\_pos & N\_neg \\
 \midrule
-ML-1M & $p4/n2$ ($\geq$4/$\leq$2) & 0.1080 & 0.2065 & 0.0952 & 571\,274 & 162\,635 \\
-ML-1M & $p5/n1$ ($\geq$5/$\leq$1) & \textbf{0.1122} & 0.2108 & 0.0978 & 224\,571 &  55\,752 \\
-ML-1M & $p4/n1$ ($\geq$4/$\leq$1) & 0.1090 & 0.2106 & 0.0958 & 571\,274 &  55\,752 \\
-ML-1M & $p3/n2$ ($\geq$3/$\leq$2) & 0.0975 & 0.1873 & 0.0883 & 830\,936 & 162\,635 \\
-\midrule
-ML-10M & $p4/n2$ ($\geq$4/$\leq$2) & 0.0014$^\dagger$ & 0.0040 & 0.0105 & 4\,967\,292 & 1\,378\,960 \\
-ML-10M & $p5/n1$ ($\geq$5/$\leq$1) & 0.0026$^\dagger$ & 0.0076 & 0.0137 & 1\,530\,604 &   475\,864 \\
-ML-10M & $p4/n1$ ($\geq$4/$\leq$1) & 0.0006$^\dagger$ & 0.0015 & 0.0081 & 4\,967\,292 &   475\,864 \\
-ML-10M & $p3/n2$ ($\geq$3/$\leq$2) & 0.0008$^\dagger$ & 0.0024 & 0.0083 & 8\,181\,474 & 1\,378\,960 \\
-\midrule
-ML-20M & $p4/n2$ ($\geq$4/$\leq$2) & \textbf{0.2595} & 0.4085 & 0.2254 &  9\,915\,548 & 2\,610\,450 \\
-ML-20M & $p5/n1$ ($\geq$5/$\leq$1) & 0.0100$^\dagger$ & 0.0285 & 0.0196 &  2\,871\,557 &   912\,445 \\
-ML-20M & $p4/n1$ ($\geq$4/$\leq$1) & 0.0002$^\dagger$ & 0.0007 & 0.0076 &  9\,915\,548 &   912\,445 \\
-ML-20M & $p3/n2$ ($\geq$3/$\leq$2) & 0.0000$^\dagger$ & 0.0001 & 0.0070 & 16\,357\,812 & 2\,610\,450 \\
-\midrule
-Spotify & $p4/n2$ ($\geq$4/$\leq$2) & 0.2679 & 0.3982 & 0.2383 & 37\,614 & 23\,167 \\
-Spotify & $p5/n1$ ($\geq$5/$\leq$1) & 0.2474 & 0.3681 & 0.2196 & 23\,924 & 11\,632 \\
-Spotify & $p4/n1$ ($\geq$4/$\leq$1) & \textbf{0.3117} & 0.4412 & 0.2812 & 37\,614 & 11\,632 \\
-Spotify & $p3/n2$ ($\geq$3/$\leq$2) & 0.2719 & 0.3987 & 0.2439 & 45\,105 & 23\,167 \\
+ml-1m & 4 & 2 & 0.1080 & 0.2065 & 0.0952 & 0.0000 & 571274 & 162635 \\
+ml-1m & 5 & 1 & 0.1122 & 0.2108 & 0.0978 & 0.0000 & 224571 & 55752 \\
+ml-1m & 4 & 1 & 0.1090 & 0.2106 & 0.0958 & 0.0000 & 571274 & 55752 \\
+ml-1m & 3 & 2 & 0.0975 & 0.1873 & 0.0883 & 0.0000 & 830936 & 162635 \\
+ml-10m & 4 & 2 & 0.0014 & 0.0040 & 0.0105 & 0.0000 & 4967292 & 1378960 \\
+ml-10m & 5 & 1 & 0.0026 & 0.0076 & 0.0137 & 0.0000 & 1530604 & 475864 \\
+ml-10m & 4 & 1 & 0.0006 & 0.0015 & 0.0081 & 0.0000 & 4967292 & 475864 \\
+ml-10m & 3 & 2 & 0.0008 & 0.0024 & 0.0083 & 0.0000 & 8181474 & 1378960 \\
+ml-20m & 4 & 2 & 0.2595 & 0.4085 & 0.2254 & 0.0000 & 9915548 & 2610450 \\
+ml-20m & 5 & 1 & 0.0100 & 0.0285 & 0.0196 & 0.0000 & 2871557 & 912445 \\
+ml-20m & 4 & 1 & 0.0002 & 0.0007 & 0.0076 & 0.0000 & 9915548 & 912445 \\
+ml-20m & 3 & 2 & 0.0000 & 0.0001 & 0.0070 & 0.0000 & 16357812 & 2610450 \\
 \bottomrule
 \end{tabular}
+\caption{Arm D: Joint Positive-Negative SVD results. SVD trained on binary targets (pos=1.0, neg=0.0). Compared to Arm A (Table D) to test whether training-time negative feedback improves ranking quality.}
 \end{table}
