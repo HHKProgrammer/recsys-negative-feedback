@@ -7,6 +7,7 @@ Dataset & SVD (nDCG@10) & Arm A (nDCG@10) & Arm D (nDCG@10) & Δ D vs A & Δ D v
 ml-1m & 0.0684 & 0.0811 & 0.1122 & +0.0310 & +0.0438 & pos≥5 neg≤1 \\
 ml-10m & 0.0872 & 0.2219 & 0.0026 & -0.2193 & -0.0846 & pos≥5 neg≤1 \\
 ml-20m & 0.0826 & 0.2405 & 0.2595 & +0.0190 & +0.1769 & pos≥4 neg≤2 \\
+Spotify & 0.0176 & 0.3447 & 0.3117 & -0.0330 & +0.2941 & pos≥4 neg≤1 \\
 \bottomrule
 \end{tabular}
 \caption{Arm A (positive-only SVD) vs Arm D (joint positive-negative SVD). Arm D trains on binary targets to test whether incorporating negative feedback during training improves top-N ranking quality over positive-only training.}

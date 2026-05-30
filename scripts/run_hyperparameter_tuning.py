@@ -379,8 +379,18 @@ def main():
     trials_path = out_dir / "trials.csv"
 
     if best_params_path.exists() and not args.overwrite:
-        print(f"SKIP: {best_params_path} already exists (use --overwrite to re-tune)")
-        sys.exit(0)
+        completed = 0
+        if trials_path.exists():
+            try:
+                import csv as _csv
+                with open(trials_path) as _f:
+                    completed = sum(1 for _ in _csv.DictReader(_f))
+            except Exception:
+                completed = 0
+        if completed >= args.n_trials:
+            print(f"SKIP: {best_params_path} already exists ({completed}/{args.n_trials} trials complete)")
+            sys.exit(0)
+        print(f"RESUME: {completed}/{args.n_trials} trials done — continuing...")
 
     arm_desc = {
         "a": "Positive Preference (positive-only SVD)",
@@ -476,6 +486,17 @@ def main():
             sampler=optuna.samplers.TPESampler(seed=args.seed),
             pruner=optuna.pruners.MedianPruner(n_startup_trials=10),
         )
+
+        import sqlite3 as _sqlite3
+        try:
+            _conn = _sqlite3.connect(str(study_db))
+            _conn.execute("PRAGMA journal_mode=WAL;")
+            _conn.execute("PRAGMA synchronous=NORMAL;")
+            _conn.execute("PRAGMA busy_timeout=120000;")
+            _conn.execute("PRAGMA temp_store=MEMORY;")
+            _conn.close()
+        except Exception:
+            pass
 
         trial_durations: List[float] = []
 
