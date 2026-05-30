@@ -1,0 +1,147 @@
+Master log: logs/hpt_parallel_20260529_235121.log
+
+══════════════════════════════════════════════════════════════
+  Launching 14 workers: movielens_10m / p4_n1
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤1
+  Total target trials: 150  |  MAX_USERS: 5000
+Master log: logs/hpt_parallel_20260529_235121.log
+Master log: logs/hpt_parallel_20260529_235121.log
+
+══════════════════════════════════════════════════════════════
+  Launching 14 workers: movielens_10m / p4_n1
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤1
+  Total target trials: 150  |  MAX_USERS: 5000
+
+══════════════════════════════════════════════════════════════
+  Launching 14 workers: movielens_10m / p4_n1
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤1
+  Total target trials: 150  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_1/study.db
+══════════════════════════════════════════════════════════════
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_1/study.db
+══════════════════════════════════════════════════════════════
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_1/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 314678  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w1.log
+  [w2] PID 314680  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w2.log
+  [w3] PID 314682  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w3.log
+  [w1] PID 314683  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w1.log
+  [w4] PID 314685  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w4.log
+  [w1] PID 314679  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w1.log
+  [w2] PID 314681  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w2.log
+  [w2] PID 314686  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w2.log
+  [w3] PID 314684  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w3.log
+  [w5] PID 314687  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w5.log
+  [w3] PID 314688  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w3.log
+  [w4] PID 314689  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w4.log
+  [w6] PID 314690  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w6.log
+  [w5] PID 314692  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w5.log
+  [w7] PID 314693  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w7.log
+  [w8] PID 314694  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w8.log
+  [w6] PID 314695  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w6.log
+  [w4] PID 314691  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w4.log
+  [w7] PID 314698  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w7.log
+  [w9] PID 314696  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w9.log
+  [w10] PID 314699  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w10.log
+  [w5] PID 314697  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w5.log
+  [w6] PID 314700  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w6.log
+  [w7] PID 314702  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w7.log
+  [w11] PID 314703  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w11.log
+  [w8] PID 314704  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w8.log
+  [w9] PID 314707  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w9.log
+  [w10] PID 314710  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w10.log
+  [w12] PID 314706  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w12.log
+  [w13] PID 314709  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w13.log
+  [w11] PID 314713  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w11.log
+  [w14] PID 314712  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w14.log
+  Waiting for all 14 workers to finish...
+  [w12] PID 314715  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w12.log
+  [w8] PID 314701  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w8.log
+  [w9] PID 314705  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w9.log
+  [w10] PID 314708  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w10.log
+  [w11] PID 314711  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w11.log
+  [w12] PID 314714  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w12.log
+  [w13] PID 314716  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w13.log
+  [w13] PID 314717  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w13.log
+  [w14] PID 314718  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w14.log
+  [w14] PID 314719  →  logs/hpt_parallel_20260529_235121_movielens_10m_p4_n1_w14.log
+  Waiting for all 14 workers to finish...
+  Waiting for all 14 workers to finish...
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+    w3: 
+    w4: 
+    w5: 
+    w6: 
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w7: 
+    w8: 
+    w1: 
+    w2: 
+    w9: 
+    w10: 
+    w3: 
+    w11: 
+    w12: 
+    w13: 
+    w4: 
+    w14: 
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_10m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260529_235121_*.log
+══════════════════════════════════════════════════════════════
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w5: 
+    w6: 
+    w1: 
+    w2: 
+    w3: 
+    w4: 
+    w5: 
+    w6: 
+    w7: 
+    w8: 
+    w7: 
+    w8: 
+    w9: 
+    w9: 
+    w10: 
+    w11: 
+    w12: 
+    w13: 
+    w10: 
+    w14: 
+
+Done. Run grid + figures to use the new best params:
+    w11: 
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_10m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260529_235121_*.log
+══════════════════════════════════════════════════════════════
+    w12: 
+    w13: 
+    w14: 
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_10m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260529_235121_*.log
+══════════════════════════════════════════════════════════════

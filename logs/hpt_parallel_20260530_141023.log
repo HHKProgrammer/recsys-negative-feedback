@@ -1,0 +1,45 @@
+Master log: logs/hpt_parallel_20260530_141023.log
+
+══════════════════════════════════════════════════════════════
+  Launching 8 workers: movielens_20m / p3_n2
+  Config: configs/movielens_20m.yaml  |  pos≥3 neg≤2
+  Total target trials: 200  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/20m/tuning/arm_d/pos_ge_3_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 820932  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w1.log
+  [w2] PID 820933  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w2.log
+  [w3] PID 820934  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w3.log
+  [w4] PID 820935  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w4.log
+  [w5] PID 820936  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w5.log
+  [w6] PID 820937  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w6.log
+  [w7] PID 820938  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w7.log
+  [w8] PID 820939  →  logs/hpt_parallel_20260530_141023_movielens_20m_p3_n2_w8.log
+  Waiting for all 8 workers to finish...
+./run_hpt_parallel.sh: line 111: 820932 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 820933 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 820934 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 820935 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 820936 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 820937 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 820938 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 820939 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+    w3: 
+    w4: 
+    w5: 
+    w6: 
+    w7: 
+    w8: 
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_20m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260530_141023_*.log
+══════════════════════════════════════════════════════════════

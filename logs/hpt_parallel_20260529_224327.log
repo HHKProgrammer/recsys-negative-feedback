@@ -1,0 +1,17 @@
+Master log: logs/hpt_parallel_20260529_224327.log
+Running ALL pending ML-10M configs with 5 workers each
+N_TRIALS=150  MAX_USERS=5000
+
+
+══════════════════════════════════════════════════════════════
+  Launching 5 workers: movielens_10m / p4_n1
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤1
+  Total target trials: 150  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_1/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 151472  →  logs/hpt_parallel_20260529_224327_movielens_10m_p4_n1_w1.log
+  [w2] PID 151473  →  logs/hpt_parallel_20260529_224327_movielens_10m_p4_n1_w2.log
+  [w3] PID 151474  →  logs/hpt_parallel_20260529_224327_movielens_10m_p4_n1_w3.log
+  [w4] PID 151475  →  logs/hpt_parallel_20260529_224327_movielens_10m_p4_n1_w4.log
+  [w5] PID 151476  →  logs/hpt_parallel_20260529_224327_movielens_10m_p4_n1_w5.log
+  Waiting for all 5 workers to finish...

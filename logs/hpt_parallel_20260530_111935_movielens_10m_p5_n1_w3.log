@@ -1,0 +1,68 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:  movielens-10m
+  Arm:      Joint Positive-Negative SVD (binary targets)
+  Label:    pos_ge_5_neg_le_1
+  Trials:   200
+  Engine:   Optuna TPE
+  Output:   outputs/movielens/ml-10m/tuning/arm_d/pos_ge_5_neg_le_1/best_params.json
+
+  Preparing training data (once)...
+  Joint train: 1,516,477 positives + 472,744 negatives = 1,989,221 rows
+
+  Preparing candidate cache (once)...
+    Candidate cache loaded  (5,000 users) ← candidates_n500_u5000_s42.parquet
+    Evaluation users: 5,000
+
+  Resuming Optuna study (5/200 trials done)
+  [9/200] nDCG@10=0.0896  best=0.0896  trial_time=233.5s  ETA=12.39h
+  [13/200] nDCG@10=0.0060  best=0.0896  trial_time=231.2s  ETA=12.07h
+  [17/200] nDCG@10=0.1098  best=0.1098  trial_time=178.3s  ETA=10.90h
+  [19/200] nDCG@10=0.1049  best=0.1098  trial_time=332.3s  ETA=12.26h
+  [23/200] nDCG@10=0.1272  best=0.1286  trial_time=555.7s  ETA=15.06h
+  [28/200] nDCG@10=0.1161  best=0.1313  trial_time=888.1s  ETA=19.26h
+  [33/200] nDCG@10=0.1102  best=0.1743  trial_time=549.8s  ETA=19.68h
+  [36/200] nDCG@10=0.1770  best=0.1824  trial_time=141.1s  ETA=17.71h
+  [41/200] nDCG@10=0.1824  best=0.1824  trial_time=87.6s  ETA=15.69h
+  [44/200] nDCG@10=0.1824  best=0.1824  trial_time=79.5s  ETA=14.20h
+  [48/200] nDCG@10=0.1824  best=0.1824  trial_time=81.9s  ETA=12.89h
+  [52/200] nDCG@10=0.0038  best=0.1824  trial_time=80.3s  ETA=11.78h
+  [56/200] nDCG@10=0.1824  best=0.1824  trial_time=83.0s  ETA=10.84h
+  [62/200] nDCG@10=0.1020  best=0.1824  trial_time=348.4s  ETA=10.60h
+  [64/200] nDCG@10=0.1824  best=0.1824  trial_time=88.1s  ETA=9.97h
+  [75/200] nDCG@10=0.1159  best=0.1824  trial_time=335.9s  ETA=9.32h
+  [78/200] nDCG@10=0.0984  best=0.1824  trial_time=204.8s  ETA=8.97h
+  [88/200] nDCG@10=0.1604  best=0.1824  trial_time=440.0s  ETA=8.54h
+  [93/200] nDCG@10=0.1784  best=0.1824  trial_time=108.8s  ETA=7.90h
+  [97/200] nDCG@10=0.1824  best=0.1824  trial_time=93.2s  ETA=7.36h
+  [101/200] nDCG@10=0.0056  best=0.1824  trial_time=92.7s  ETA=6.85h
+  [105/200] nDCG@10=0.1824  best=0.1824  trial_time=78.7s  ETA=6.37h
+  [109/200] nDCG@10=0.1824  best=0.1824  trial_time=92.8s  ETA=5.94h
+  [116/200] nDCG@10=0.1549  best=0.1824  trial_time=207.4s  ETA=5.46h
+  [121/200] nDCG@10=0.1386  best=0.1824  trial_time=347.8s  ETA=5.23h
+  [124/200] nDCG@10=0.1824  best=0.1824  trial_time=91.3s  ETA=4.91h
+  [127/200] nDCG@10=0.1824  best=0.1824  trial_time=91.7s  ETA=4.61h
+  [131/200] nDCG@10=0.1736  best=0.1824  trial_time=218.6s  ETA=4.36h
+  [134/200] nDCG@10=0.1824  best=0.1824  trial_time=90.7s  ETA=4.08h
+  [140/200] nDCG@10=0.1824  best=0.1824  trial_time=90.8s  ETA=3.64h
+  [145/200] nDCG@10=0.0652  best=0.1824  trial_time=239.1s  ETA=3.34h
+  [150/200] nDCG@10=0.1701  best=0.1824  trial_time=265.3s  ETA=3.06h
+  [152/200] nDCG@10=0.1698  best=0.1824  trial_time=79.4s  ETA=2.88h
+  [154/200] nDCG@10=0.1824  best=0.1824  trial_time=79.9s  ETA=2.71h
+  [158/200] nDCG@10=0.1824  best=0.1824  trial_time=81.3s  ETA=2.43h
+  [162/200] nDCG@10=0.0056  best=0.1824  trial_time=81.1s  ETA=2.16h
+  [164/200] nDCG@10=0.1824  best=0.1824  trial_time=80.2s  ETA=2.01h
+  [170/200] nDCG@10=0.1743  best=0.1824  trial_time=174.6s  ETA=1.67h
+  [174/200] nDCG@10=0.1783  best=0.1824  trial_time=90.6s  ETA=1.43h
+  [178/200] nDCG@10=0.1824  best=0.1824  trial_time=86.0s  ETA=1.19h
+  [182/200] nDCG@10=0.1626  best=0.1824  trial_time=99.0s  ETA=0.96h
+  [186/200] nDCG@10=0.1824  best=0.1824  trial_time=83.4s  ETA=0.74h
+  [190/200] nDCG@10=0.1824  best=0.1824  trial_time=82.8s  ETA=0.52h
+  [194/200] nDCG@10=0.1495  best=0.1824  trial_time=113.2s  ETA=0.31h
+  [198/200] nDCG@10=0.1824  best=0.1824  trial_time=82.9s  ETA=0.10h
+  [204/200] nDCG@10=0.1220  best=0.1904  trial_time=186.8s  ETA=-0.20h
+  [208/200] nDCG@10=0.1904  best=0.1904  trial_time=59.7s  ETA=-0.40h
+  [212/200] nDCG@10=0.1904  best=0.1904  trial_time=58.7s  ETA=-0.60h
+  [216/200] nDCG@10=0.1904  best=0.1904  trial_time=58.7s  ETA=-0.78h
+  [220/200] nDCG@10=0.1904  best=0.1904  trial_time=59.0s  ETA=-0.97h
+  [224/200] nDCG@10=0.1904  best=0.1904  trial_time=59.1s  ETA=-1.14h

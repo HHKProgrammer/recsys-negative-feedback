@@ -1,0 +1,25 @@
+Master log: logs/hpt_parallel_20260530_144341.log
+
+══════════════════════════════════════════════════════════════
+  Launching 2 workers: movielens_20m / p3_n2
+  Config: configs/movielens_20m.yaml  |  pos≥3 neg≤2
+  Total target trials: 200  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/20m/tuning/arm_d/pos_ge_3_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 834263  →  logs/hpt_parallel_20260530_144341_movielens_20m_p3_n2_w1.log
+  [w2] PID 834264  →  logs/hpt_parallel_20260530_144341_movielens_20m_p3_n2_w2.log
+  Waiting for all 2 workers to finish...
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_20m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260530_144341_*.log
+══════════════════════════════════════════════════════════════

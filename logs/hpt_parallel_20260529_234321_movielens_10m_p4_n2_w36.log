@@ -1,0 +1,197 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:  movielens-10m
+  Arm:      Joint Positive-Negative SVD (binary targets)
+  Label:    pos_ge_4_neg_le_2
+  Trials:   14
+  Engine:   Optuna TPE
+  Output:   outputs/movielens/ml-10m/tuning/arm_d/pos_ge_4_neg_le_2/best_params.json
+
+  Preparing training data (once)...
+  Joint train: 4,929,146 positives + 1,370,442 negatives = 6,299,588 rows
+
+  Preparing candidate cache (once)...
+    Candidate cache loaded  (5,000 users) ← candidates_n500_u5000_s42.parquet
+    Evaluation users: 5,000
+
+  Resuming Optuna study (6/14 trials done)
+[W 2026-05-29 23:47:02,493] Trial 99 failed with parameters: {} because of the following error: StorageInternalError('An exception is raised during the commit. This typically happens due to invalid data in the commit, e.g. exceeding max length. ').
+Traceback (most recent call last):
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: database is locked
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_rdb/storage.py", line 78, in _create_scoped_session
+    session.commit()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 2034, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 1315, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 1290, in _prepare_impl
+    self.session.flush()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4352, in flush
+    self._flush(objects)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4488, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4448, in _flush
+    flush_context.execute()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 465, in execute
+    rec.execute(self)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 641, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 94, in save_obj
+    _emit_insert_statements(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 1234, in _emit_insert_statements
+    result = connection.execute(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) database is locked
+[SQL: INSERT INTO trial_params (trial_id, param_name, param_value, distribution_json) VALUES (?, ?, ?, ?)]
+[parameters: (100, 'n_factors', 1.0, '{"name": "CategoricalDistribution", "attributes": {"choices": [10, 20, 30, 50, 75, 100, 150, 200]}}')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/study/_optimize.py", line 201, in _run_trial
+    value_or_values = func(trial)
+  File "scripts/run_hyperparameter_tuning.py", line 483, in objective
+    params = {name: trial.suggest_categorical(name, choices)
+  File "scripts/run_hyperparameter_tuning.py", line 483, in <dictcomp>
+    params = {name: trial.suggest_categorical(name, choices)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/trial/_trial.py", line 406, in suggest_categorical
+    return self._suggest(name, CategoricalDistribution(choices=choices))
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/trial/_trial.py", line 641, in _suggest
+    storage.set_trial_param(trial_id, name, param_value_in_internal_repr, distribution)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_cached_storage.py", line 169, in set_trial_param
+    self._backend.set_trial_param(trial_id, param_name, param_value_internal, distribution)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_rdb/storage.py", line 586, in set_trial_param
+    self._set_trial_param_without_commit(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/contextlib.py", line 120, in __exit__
+    next(self.gen)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_rdb/storage.py", line 95, in _create_scoped_session
+    raise optuna.exceptions.StorageInternalError(message) from e
+optuna.exceptions.StorageInternalError: An exception is raised during the commit. This typically happens due to invalid data in the commit, e.g. exceeding max length. 
+[W 2026-05-29 23:47:02,525] Trial 99 failed with value None.
+Traceback (most recent call last):
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: database is locked
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_rdb/storage.py", line 78, in _create_scoped_session
+    session.commit()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 2034, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 1315, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 1290, in _prepare_impl
+    self.session.flush()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4352, in flush
+    self._flush(objects)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4488, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4448, in _flush
+    flush_context.execute()
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 465, in execute
+    rec.execute(self)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 641, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 94, in save_obj
+    _emit_insert_statements(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 1234, in _emit_insert_statements
+    result = connection.execute(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) database is locked
+[SQL: INSERT INTO trial_params (trial_id, param_name, param_value, distribution_json) VALUES (?, ?, ?, ?)]
+[parameters: (100, 'n_factors', 1.0, '{"name": "CategoricalDistribution", "attributes": {"choices": [10, 20, 30, 50, 75, 100, 150, 200]}}')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "scripts/run_hyperparameter_tuning.py", line 620, in <module>
+    main()
+  File "scripts/run_hyperparameter_tuning.py", line 521, in main
+    study.optimize(objective, n_trials=remaining, callbacks=[optuna_callback])
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/study/study.py", line 490, in optimize
+    _optimize(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/study/_optimize.py", line 63, in _optimize
+    _optimize_sequential(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/study/_optimize.py", line 160, in _optimize_sequential
+    frozen_trial_id = _run_trial(study, func, catch)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/study/_optimize.py", line 258, in _run_trial
+    raise func_err
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/study/_optimize.py", line 201, in _run_trial
+    value_or_values = func(trial)
+  File "scripts/run_hyperparameter_tuning.py", line 483, in objective
+    params = {name: trial.suggest_categorical(name, choices)
+  File "scripts/run_hyperparameter_tuning.py", line 483, in <dictcomp>
+    params = {name: trial.suggest_categorical(name, choices)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/trial/_trial.py", line 406, in suggest_categorical
+    return self._suggest(name, CategoricalDistribution(choices=choices))
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/trial/_trial.py", line 641, in _suggest
+    storage.set_trial_param(trial_id, name, param_value_in_internal_repr, distribution)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_cached_storage.py", line 169, in set_trial_param
+    self._backend.set_trial_param(trial_id, param_name, param_value_internal, distribution)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_rdb/storage.py", line 586, in set_trial_param
+    self._set_trial_param_without_commit(
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/contextlib.py", line 120, in __exit__
+    next(self.gen)
+  File "/home/helin/miniconda3/envs/recsys-conda/lib/python3.8/site-packages/optuna/storages/_rdb/storage.py", line 95, in _create_scoped_session
+    raise optuna.exceptions.StorageInternalError(message) from e
+optuna.exceptions.StorageInternalError: An exception is raised during the commit. This typically happens due to invalid data in the commit, e.g. exceeding max length. 

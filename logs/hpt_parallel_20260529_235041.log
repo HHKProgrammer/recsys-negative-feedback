@@ -1,0 +1,49 @@
+Master log: logs/hpt_parallel_20260529_235041.log
+
+══════════════════════════════════════════════════════════════
+  Launching 14 workers: movielens_10m / p4_n2
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤2
+  Total target trials: 150  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 314558  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w1.log
+  [w2] PID 314559  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w2.log
+  [w3] PID 314560  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w3.log
+  [w4] PID 314561  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w4.log
+  [w5] PID 314562  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w5.log
+  [w6] PID 314563  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w6.log
+  [w7] PID 314564  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w7.log
+  [w8] PID 314565  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w8.log
+  [w9] PID 314566  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w9.log
+  [w10] PID 314567  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w10.log
+  [w11] PID 314568  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w11.log
+  [w12] PID 314569  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w12.log
+  [w13] PID 314570  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w13.log
+  [w14] PID 314571  →  logs/hpt_parallel_20260529_235041_movielens_10m_p4_n2_w14.log
+  Waiting for all 14 workers to finish...
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+    w3: 
+    w4: 
+    w5: 
+    w6: 
+    w7: 
+    w8: 
+    w9: 
+    w10: 
+    w11: 
+    w12: 
+    w13: 
+    w14: 
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_10m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260529_235041_*.log
+══════════════════════════════════════════════════════════════

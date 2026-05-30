@@ -1,0 +1,47 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:  movielens-20m
+  Arm:      Joint Positive-Negative SVD (binary targets)
+  Label:    pos_ge_5_neg_le_1
+  Trials:   200
+  Engine:   Optuna TPE
+  Output:   outputs/movielens/ml-20m/tuning/arm_d/pos_ge_5_neg_le_1/best_params.json
+
+  Preparing training data (once)...
+  Joint train: 2,844,951 positives + 906,200 negatives = 3,751,151 rows
+
+  Preparing candidate cache (once)...
+    Candidate cache loaded  (5,000 users) ← candidates_n500_u5000_s42.parquet
+    Evaluation users: 5,000
+
+  Resuming Optuna study (20/200 trials done)
+  [24/200] nDCG@10=0.1298  best=0.2128  trial_time=721.9s  ETA=35.29h
+  [28/200] nDCG@10=0.2102  best=0.2128  trial_time=256.8s  ETA=23.38h
+  [29/200] nDCG@10=0.0132  best=0.2128  trial_time=194.3s  ETA=18.57h
+  [34/200] nDCG@10=0.1547  best=0.2128  trial_time=384.7s  ETA=17.96h
+  [41/200] nDCG@10=0.1097  best=0.2128  trial_time=1055.6s  ETA=23.08h
+  [45/200] nDCG@10=0.2102  best=0.2128  trial_time=267.1s  ETA=20.67h
+  [49/200] nDCG@10=0.2102  best=0.2128  trial_time=266.2s  ETA=18.85h
+  [52/200] nDCG@10=0.1977  best=0.2128  trial_time=278.3s  ETA=17.60h
+  [59/200] nDCG@10=0.1900  best=0.2128  trial_time=847.2s  ETA=18.59h
+  [63/200] nDCG@10=0.0495  best=0.2128  trial_time=204.4s  ETA=17.04h
+  [67/200] nDCG@10=0.2102  best=0.2128  trial_time=290.9s  ETA=16.01h
+  [72/200] nDCG@10=0.1125  best=0.2128  trial_time=870.4s  ETA=16.70h
+  [75/200] nDCG@10=0.1950  best=0.2128  trial_time=363.8s  ETA=16.03h
+  [79/200] nDCG@10=0.2071  best=0.2128  trial_time=251.3s  ETA=15.01h
+  [83/200] nDCG@10=0.0110  best=0.2128  trial_time=530.6s  ETA=14.70h
+  [88/200] nDCG@10=0.2108  best=0.2218  trial_time=253.8s  ETA=13.68h
+  [92/200] nDCG@10=0.2102  best=0.2218  trial_time=130.4s  ETA=12.65h
+  [96/200] nDCG@10=0.2102  best=0.2218  trial_time=129.7s  ETA=11.71h
+  [99/200] nDCG@10=0.2102  best=0.2218  trial_time=115.7s  ETA=10.95h
+  [104/200] nDCG@10=0.2081  best=0.2218  trial_time=153.8s  ETA=10.09h
+  [107/200] nDCG@10=0.2102  best=0.2218  trial_time=121.8s  ETA=9.46h
+  [111/200] nDCG@10=0.2006  best=0.2218  trial_time=451.7s  ETA=9.15h
+  [114/200] nDCG@10=0.2102  best=0.2218  trial_time=125.5s  ETA=8.59h
+  [118/200] nDCG@10=0.2102  best=0.2218  trial_time=120.3s  ETA=7.96h
+  [122/200] nDCG@10=0.1841  best=0.2218  trial_time=120.0s  ETA=7.37h
+  [126/200] nDCG@10=0.2102  best=0.2218  trial_time=118.7s  ETA=6.82h
+  [130/200] nDCG@10=0.0843  best=0.2218  trial_time=118.8s  ETA=6.30h
+  [135/200] nDCG@10=0.1889  best=0.2218  trial_time=196.7s  ETA=5.77h
+  [139/200] nDCG@10=0.1539  best=0.2218  trial_time=360.3s  ETA=5.43h
+  [143/200] nDCG@10=0.2102  best=0.2218  trial_time=121.8s  ETA=4.97h

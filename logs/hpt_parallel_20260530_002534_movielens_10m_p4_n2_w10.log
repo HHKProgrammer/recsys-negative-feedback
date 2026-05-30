@@ -1,0 +1,22 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:  movielens-10m
+  Arm:      Joint Positive-Negative SVD (binary targets)
+  Label:    pos_ge_4_neg_le_2
+  Trials:   150
+  Engine:   Optuna TPE
+  Output:   outputs/movielens/ml-10m/tuning/arm_d/pos_ge_4_neg_le_2/best_params.json
+
+  Preparing training data (once)...
+  Joint train: 4,929,146 positives + 1,370,442 negatives = 6,299,588 rows
+
+  Preparing candidate cache (once)...
+    Candidate cache loaded  (5,000 users) ← candidates_n500_u5000_s42.parquet
+    Evaluation users: 5,000
+
+  Resuming Optuna study (25/150 trials done)
+  [42/150] nDCG@10=0.1135  best=0.1135  trial_time=434.7s  ETA=13.04h
+  [80/150] nDCG@10=0.1892  best=0.1892  trial_time=924.6s  ETA=13.22h
+  [94/150] nDCG@10=0.0009  best=0.1892  trial_time=628.2s  ETA=10.31h
+  [133/150] nDCG@10=0.1689  best=0.2124  trial_time=648.8s  ETA=3.11h
+  [168/150] nDCG@10=0.2017  best=0.2124  trial_time=386.6s  ETA=-3.02h

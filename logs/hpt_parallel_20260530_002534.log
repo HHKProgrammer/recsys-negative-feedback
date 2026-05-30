@@ -1,0 +1,23 @@
+Master log: logs/hpt_parallel_20260530_002534.log
+
+══════════════════════════════════════════════════════════════
+  Launching 14 workers: movielens_10m / p4_n2
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤2
+  Total target trials: 150  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 344306  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w1.log
+  [w2] PID 344307  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w2.log
+  [w3] PID 344308  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w3.log
+  [w4] PID 344309  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w4.log
+  [w5] PID 344310  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w5.log
+  [w6] PID 344311  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w6.log
+  [w7] PID 344312  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w7.log
+  [w8] PID 344313  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w8.log
+  [w9] PID 344314  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w9.log
+  [w10] PID 344315  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w10.log
+  [w11] PID 344316  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w11.log
+  [w12] PID 344317  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w12.log
+  [w13] PID 344318  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w13.log
+  [w14] PID 344319  →  logs/hpt_parallel_20260530_002534_movielens_10m_p4_n2_w14.log
+  Waiting for all 14 workers to finish...

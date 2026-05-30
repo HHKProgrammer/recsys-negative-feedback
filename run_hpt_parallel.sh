@@ -98,7 +98,6 @@ launch_workers() {
             --neg_threshold "$neg" \
             --n_trials "$n_trials" \
             --max_users "$MAX_USERS" \
-            --overwrite \
             > "$wlog" 2>&1 &
         local pid=$!
         pids+=("$pid")
@@ -133,8 +132,6 @@ if [ "$DATASET" = "all_10m" ]; then
     echo "Running ALL pending ML-10M configs with $N_WORKERS workers each"
     echo "N_TRIALS=$N_TRIALS  MAX_USERS=$MAX_USERS"
     echo ""
-t
-    launch_workers movielens_10m p5_n1 "$N_WORKERS" "$N_TRIALS"
 
     launch_workers movielens_10m p4_n1 "$N_WORKERS" "$N_TRIALS"
 

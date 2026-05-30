@@ -1,0 +1,110 @@
+
+Hyperparameter Tuning — SVD Arm D
+  Dataset:  movielens-10m
+  Arm:      Joint Positive-Negative SVD (binary targets)
+  Label:    pos_ge_4_neg_le_1
+  Trials:   200
+  Engine:   Optuna TPE
+  Output:   outputs/movielens/ml-10m/tuning/arm_d/pos_ge_4_neg_le_1/best_params.json
+
+  Preparing training data (once)...
+  Joint train: 4,929,146 positives + 472,744 negatives = 5,401,890 rows
+
+  Preparing candidate cache (once)...
+    Candidate cache loaded  (5,000 users) ← candidates_n500_u5000_s42.parquet
+    Evaluation users: 5,000
+
+  Resuming Optuna study (43/200 trials done)
+  [44/200] nDCG@10=0.1491  best=0.1491  trial_time=1150.7s  ETA=49.86h
+  [48/200] nDCG@10=0.1395  best=0.1491  trial_time=1494.5s  ETA=55.84h
+  [52/200] nDCG@10=0.2346  best=0.2346  trial_time=341.3s  ETA=40.93h
+  [56/200] nDCG@10=0.2346  best=0.2346  trial_time=344.5s  ETA=33.31h
+  [60/200] nDCG@10=0.1269  best=0.2346  trial_time=340.1s  ETA=28.55h
+  [64/200] nDCG@10=0.2346  best=0.2346  trial_time=330.6s  ETA=25.20h
+  [68/200] nDCG@10=0.1811  best=0.2346  trial_time=860.2s  ETA=25.47h
+  [72/200] nDCG@10=0.0010  best=0.2346  trial_time=343.4s  ETA=23.13h
+  [76/200] nDCG@10=0.2346  best=0.2346  trial_time=332.0s  ETA=21.19h
+  [80/200] nDCG@10=0.2346  best=0.2346  trial_time=335.4s  ETA=19.58h
+  [85/200] nDCG@10=0.2262  best=0.2346  trial_time=439.1s  ETA=18.33h
+  [90/200] nDCG@10=0.2164  best=0.2346  trial_time=508.7s  ETA=17.37h
+  [95/200] nDCG@10=0.1828  best=0.2346  trial_time=373.1s  ETA=16.14h
+  [99/200] nDCG@10=0.2346  best=0.2346  trial_time=343.4s  ETA=15.10h
+  [103/200] nDCG@10=0.0146  best=0.2346  trial_time=675.6s  ETA=14.75h
+  [107/200] nDCG@10=0.2342  best=0.2346  trial_time=333.1s  ETA=13.80h
+  [114/200] nDCG@10=0.1568  best=0.2346  trial_time=1414.0s  ETA=14.00h
+  [118/200] nDCG@10=0.2346  best=0.2346  trial_time=320.8s  ETA=13.01h
+  [122/200] nDCG@10=0.1269  best=0.2346  trial_time=364.0s  ETA=12.14h
+  [126/200] nDCG@10=0.2346  best=0.2346  trial_time=342.9s  ETA=11.29h
+  [128/200] nDCG@10=0.2346  best=0.2346  trial_time=328.2s  ETA=10.78h
+  [133/200] nDCG@10=0.1849  best=0.2346  trial_time=731.1s  ETA=10.19h
+  [137/200] nDCG@10=0.2346  best=0.2346  trial_time=324.3s  ETA=9.41h
+  [141/200] nDCG@10=0.2241  best=0.2346  trial_time=335.0s  ETA=8.68h
+  [145/200] nDCG@10=0.2346  best=0.2346  trial_time=323.3s  ETA=7.96h
+  [149/200] nDCG@10=0.2346  best=0.2346  trial_time=320.0s  ETA=7.27h
+  [153/200] nDCG@10=0.2346  best=0.2346  trial_time=345.4s  ETA=6.62h
+  [157/200] nDCG@10=0.2346  best=0.2346  trial_time=330.1s  ETA=5.98h
+  [161/200] nDCG@10=0.1859  best=0.2346  trial_time=249.5s  ETA=5.33h
+  [163/200] nDCG@10=0.2262  best=0.2346  trial_time=395.0s  ETA=5.03h
+  [167/200] nDCG@10=0.2346  best=0.2346  trial_time=327.7s  ETA=4.43h
+  [171/200] nDCG@10=0.0012  best=0.2346  trial_time=326.2s  ETA=3.86h
+  [174/200] nDCG@10=0.2346  best=0.2346  trial_time=323.2s  ETA=3.42h
+  [179/200] nDCG@10=0.2231  best=0.2367  trial_time=476.5s  ETA=2.77h
+  [182/200] nDCG@10=0.0479  best=0.2367  trial_time=695.2s  ETA=2.40h
+  [185/200] nDCG@10=0.2367  best=0.2367  trial_time=207.9s  ETA=1.97h
+  [189/200] nDCG@10=0.2367  best=0.2367  trial_time=210.6s  ETA=1.42h
+  [193/200] nDCG@10=0.2367  best=0.2367  trial_time=212.2s  ETA=0.89h
+  [196/200] nDCG@10=0.2367  best=0.2367  trial_time=211.2s  ETA=0.50h
+  [200/200] nDCG@10=0.2367  best=0.2367  trial_time=210.0s  ETA=0.00h
+  [204/200] nDCG@10=0.2459  best=0.2459  trial_time=215.0s  ETA=-0.49h
+  [209/200] nDCG@10=0.2459  best=0.2459  trial_time=220.7s  ETA=-1.09h
+  [212/200] nDCG@10=0.2459  best=0.2459  trial_time=214.0s  ETA=-1.44h
+  [215/200] nDCG@10=0.2459  best=0.2459  trial_time=212.5s  ETA=-1.77h
+  [222/200] nDCG@10=0.2064  best=0.2459  trial_time=554.1s  ETA=-2.62h
+  [225/200] nDCG@10=0.2459  best=0.2459  trial_time=215.4s  ETA=-2.94h
+  [229/200] nDCG@10=0.2459  best=0.2459  trial_time=214.7s  ETA=-3.38h
+  [237/200] nDCG@10=0.1761  best=0.2459  trial_time=872.4s  ETA=-4.41h
+  [241/200] nDCG@10=0.2419  best=0.2459  trial_time=257.3s  ETA=-4.85h
+  [245/200] nDCG@10=0.2419  best=0.2459  trial_time=253.7s  ETA=-5.27h
+  [249/200] nDCG@10=0.2419  best=0.2459  trial_time=263.1s  ETA=-5.70h
+  [253/200] nDCG@10=0.2419  best=0.2459  trial_time=254.5s  ETA=-6.12h
+  [257/200] nDCG@10=0.1590  best=0.2459  trial_time=253.1s  ETA=-6.53h
+  [261/200] nDCG@10=0.2353  best=0.2459  trial_time=291.3s  ETA=-6.95h
+  [265/200] nDCG@10=0.2141  best=0.2459  trial_time=453.3s  ETA=-7.42h
+  [269/200] nDCG@10=0.2459  best=0.2459  trial_time=245.2s  ETA=-7.82h
+  [273/200] nDCG@10=0.2072  best=0.2459  trial_time=232.2s  ETA=-8.22h
+  [277/200] nDCG@10=0.2459  best=0.2459  trial_time=226.5s  ETA=-8.60h
+  [282/200] nDCG@10=0.0010  best=0.2469  trial_time=236.3s  ETA=-9.09h
+  [288/200] nDCG@10=0.1679  best=0.2469  trial_time=741.2s  ETA=-9.90h
+  [292/200] nDCG@10=0.2469  best=0.2469  trial_time=228.9s  ETA=-10.27h
+  [296/200] nDCG@10=0.2469  best=0.2469  trial_time=215.3s  ETA=-10.64h
+  [300/200] nDCG@10=0.2469  best=0.2469  trial_time=216.6s  ETA=-11.00h
+  [304/200] nDCG@10=0.2469  best=0.2469  trial_time=215.0s  ETA=-11.36h
+  [306/200] nDCG@10=0.2467  best=0.2469  trial_time=152.1s  ETA=-11.47h
+  [310/200] nDCG@10=0.2467  best=0.2469  trial_time=152.7s  ETA=-11.80h
+  [314/200] nDCG@10=0.2467  best=0.2469  trial_time=151.9s  ETA=-12.11h
+  [318/200] nDCG@10=0.2204  best=0.2469  trial_time=153.9s  ETA=-12.43h
+  [322/200] nDCG@10=0.2442  best=0.2469  trial_time=150.5s  ETA=-12.74h
+  [326/200] nDCG@10=0.1835  best=0.2469  trial_time=591.0s  ETA=-13.26h
+  [330/200] nDCG@10=0.2326  best=0.2469  trial_time=247.4s  ETA=-13.62h
+  [334/200] nDCG@10=0.2467  best=0.2469  trial_time=153.0s  ETA=-13.92h
+  [338/200] nDCG@10=0.2141  best=0.2469  trial_time=486.8s  ETA=-14.39h
+  [344/200] nDCG@10=0.2027  best=0.2469  trial_time=710.3s  ETA=-15.20h
+  [348/200] nDCG@10=0.2469  best=0.2469  trial_time=214.9s  ETA=-15.53h
+  [352/200] nDCG@10=0.2469  best=0.2469  trial_time=213.7s  ETA=-15.86h
+  [356/200] nDCG@10=0.2469  best=0.2469  trial_time=210.7s  ETA=-16.19h
+  [360/200] nDCG@10=0.0009  best=0.2469  trial_time=211.9s  ETA=-16.51h
+  [363/200] nDCG@10=0.2469  best=0.2469  trial_time=209.1s  ETA=-16.73h
+  [366/200] nDCG@10=0.2424  best=0.2469  trial_time=286.5s  ETA=-16.99h
+  [374/200] nDCG@10=0.0506  best=0.2469  trial_time=564.3s  ETA=-17.92h
+  [378/200] nDCG@10=0.2469  best=0.2469  trial_time=214.3s  ETA=-18.24h
+  [381/200] nDCG@10=0.2469  best=0.2469  trial_time=209.2s  ETA=-18.45h
+  [386/200] nDCG@10=0.2469  best=0.2469  trial_time=213.6s  ETA=-18.86h
+  [390/200] nDCG@10=0.2469  best=0.2469  trial_time=230.7s  ETA=-19.19h
+  [394/200] nDCG@10=0.2469  best=0.2469  trial_time=213.5s  ETA=-19.50h
+  [397/200] nDCG@10=0.2469  best=0.2469  trial_time=211.7s  ETA=-19.70h
+  [401/200] nDCG@10=0.1950  best=0.2469  trial_time=456.0s  ETA=-20.16h
+  [405/200] nDCG@10=0.2469  best=0.2469  trial_time=216.0s  ETA=-20.47h
+  [408/200] nDCG@10=0.1668  best=0.2469  trial_time=212.9s  ETA=-20.68h
+  [412/200] nDCG@10=0.0003  best=0.2469  trial_time=645.1s  ETA=-21.26h
+  [416/200] nDCG@10=0.2333  best=0.2469  trial_time=228.7s  ETA=-21.58h
+  [420/200] nDCG@10=0.2469  best=0.2469  trial_time=216.2s  ETA=-21.88h

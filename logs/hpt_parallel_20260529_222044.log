@@ -1,0 +1,5 @@
+Master log: logs/hpt_parallel_20260529_222044.log
+Running ALL pending ML-10M configs with 200 workers each
+N_TRIALS=150  MAX_USERS=5000
+
+./run_hpt_parallel.sh: line 136: t: command not found

@@ -1,0 +1,42 @@
+Master log: logs/hpt_parallel_20260530_144330.log
+
+══════════════════════════════════════════════════════════════
+  Launching 12 workers: movielens_20m / p3_n2
+  Config: configs/movielens_20m.yaml  |  pos≥3 neg≤2
+  Total target trials: 200  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/20m/tuning/arm_d/pos_ge_3_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 834179  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w1.log
+  [w2] PID 834180  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w2.log
+  [w3] PID 834181  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w3.log
+  [w4] PID 834182  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w4.log
+  [w5] PID 834183  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w5.log
+  [w6] PID 834184  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w6.log
+  [w7] PID 834185  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w7.log
+  [w8] PID 834186  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w8.log
+  [w9] PID 834187  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w9.log
+  [w10] PID 834188  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w10.log
+  [w11] PID 834189  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w11.log
+  [w12] PID 834190  →  logs/hpt_parallel_20260530_144330_movielens_20m_p3_n2_w12.log
+  Waiting for all 12 workers to finish...
+./run_hpt_parallel.sh: line 111: 834180 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 834188 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+    w3: 
+    w4: 
+    w5: 
+    w6: 
+    w7: 
+    w8: 
+    w9: 
+    w10: 
+    w11: 
+    w12: 
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_20m.yaml
+  python scripts/generate_all_figures.py
+./run_hpt_parallel.sh: line 182: unexpected EOF while looking for matching `"'

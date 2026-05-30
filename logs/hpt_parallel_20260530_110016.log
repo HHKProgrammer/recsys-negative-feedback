@@ -1,0 +1,33 @@
+Master log: logs/hpt_parallel_20260530_110016.log
+
+══════════════════════════════════════════════════════════════
+  Launching 4 workers: movielens_10m / p3_n2
+  Config: configs/movielens_10m.yaml  |  pos≥3 neg≤2
+  Total target trials: 200  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_3_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 605111  →  logs/hpt_parallel_20260530_110016_movielens_10m_p3_n2_w1.log
+  [w2] PID 605112  →  logs/hpt_parallel_20260530_110016_movielens_10m_p3_n2_w2.log
+  [w3] PID 605113  →  logs/hpt_parallel_20260530_110016_movielens_10m_p3_n2_w3.log
+  [w4] PID 605114  →  logs/hpt_parallel_20260530_110016_movielens_10m_p3_n2_w4.log
+  Waiting for all 4 workers to finish...
+./run_hpt_parallel.sh: line 111: 605111 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 605112 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 605113 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 605114 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+    w3: 
+    w4: 
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_10m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260530_110016_*.log
+══════════════════════════════════════════════════════════════

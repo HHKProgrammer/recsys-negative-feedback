@@ -1,0 +1,29 @@
+Master log: logs/hpt_parallel_20260530_134655.log
+
+══════════════════════════════════════════════════════════════
+  Launching 4 workers: movielens_20m / p4_n1
+  Config: configs/movielens_20m.yaml  |  pos≥4 neg≤1
+  Total target trials: 20  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/20m/tuning/arm_d/pos_ge_4_neg_le_1/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 801609  →  logs/hpt_parallel_20260530_134655_movielens_20m_p4_n1_w1.log
+  [w2] PID 801610  →  logs/hpt_parallel_20260530_134655_movielens_20m_p4_n1_w2.log
+  [w3] PID 801611  →  logs/hpt_parallel_20260530_134655_movielens_20m_p4_n1_w3.log
+  [w4] PID 801612  →  logs/hpt_parallel_20260530_134655_movielens_20m_p4_n1_w4.log
+  Waiting for all 4 workers to finish...
+  All workers done.
+  Results:
+    w1:   Best nDCG@10 (val, binary-target model): 0.2837
+    w2:   Best nDCG@10 (val, binary-target model): 0.2837
+    w3:   Best nDCG@10 (val, binary-target model): 0.2837
+    w4:   Best nDCG@10 (val, binary-target model): 0.2837
+
+Done. Run grid + figures to use the new best params:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_20m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260530_134655_*.log
+══════════════════════════════════════════════════════════════

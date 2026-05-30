@@ -1,0 +1,62 @@
+Master log: logs/hpt_parallel_20260529_225726.log
+Running ALL pending ML-10M configs with 2 workers each
+N_TRIALS=150  MAX_USERS=5000
+
+
+══════════════════════════════════════════════════════════════
+  Launching 2 workers: movielens_10m / p4_n1
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤1
+  Total target trials: 150  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_1/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 184883  →  logs/hpt_parallel_20260529_225726_movielens_10m_p4_n1_w1.log
+  [w2] PID 184884  →  logs/hpt_parallel_20260529_225726_movielens_10m_p4_n1_w2.log
+  Waiting for all 2 workers to finish...
+./run_hpt_parallel.sh: line 111: 184883 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 184884 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+
+══════════════════════════════════════════════════════════════
+  Launching 2 workers: movielens_10m / p4_n2
+  Config: configs/movielens_10m.yaml  |  pos≥4 neg≤2
+  Total target trials: 150  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_4_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 184909  →  logs/hpt_parallel_20260529_225726_movielens_10m_p4_n2_w1.log
+  [w2] PID 184910  →  logs/hpt_parallel_20260529_225726_movielens_10m_p4_n2_w2.log
+  Waiting for all 2 workers to finish...
+./run_hpt_parallel.sh: line 111: 184909 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 184910 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+
+══════════════════════════════════════════════════════════════
+  Launching 2 workers: movielens_10m / p3_n2
+  Config: configs/movielens_10m.yaml  |  pos≥3 neg≤2
+  Total target trials: 150  |  MAX_USERS: 5000
+  Workers share: outputs/movielens/10m/tuning/arm_d/pos_ge_3_neg_le_2/study.db
+══════════════════════════════════════════════════════════════
+  [w1] PID 302224  →  logs/hpt_parallel_20260529_225726_movielens_10m_p3_n2_w1.log
+  [w2] PID 302225  →  logs/hpt_parallel_20260529_225726_movielens_10m_p3_n2_w2.log
+  Waiting for all 2 workers to finish...
+./run_hpt_parallel.sh: line 111: 302224 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+./run_hpt_parallel.sh: line 111: 302225 Killed                  nohup python scripts/run_hyperparameter_tuning.py --config "$cfg" --arm d --threshold "$pos" --neg_threshold "$neg" --n_trials "$n_trials" --max_users "$MAX_USERS" --overwrite > "$wlog" 2>&1
+  WARNING: one or more workers exited non-zero — check logs
+  Results:
+    w1: 
+    w2: 
+
+All ML-10M configs done. Run grid + figures:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_10m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260529_225726_*.log
+══════════════════════════════════════════════════════════════
