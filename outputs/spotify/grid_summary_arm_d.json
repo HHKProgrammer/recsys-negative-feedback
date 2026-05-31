@@ -1,0 +1,130 @@
+{
+  "experiments": [
+    {
+      "exp_id": "arm_d_pos_ge_4_neg_le_2",
+      "variant": "arm_d",
+      "pos_threshold": 4,
+      "neg_threshold": 2,
+      "label": "pos_ge_4_neg_le_2",
+      "metrics": {
+        "precision@10": 0.03982120451693852,
+        "recall@10": 0.3982120451693852,
+        "ndcg@10": 0.2678674286936526,
+        "negative@10": 0.0,
+        "hit@10": 0.3982120451693852,
+        "mrr": 0.23827380132819853,
+        "sim_to_neg@10": 0.0,
+        "n_users": 6376,
+        "pos_threshold": 4,
+        "neg_threshold": 2,
+        "n_positives": 37614,
+        "n_negatives": 23167,
+        "pct_train_used": 89.03,
+        "params": {
+          "n_factors": 100,
+          "n_epochs": 30,
+          "lr_all": 0.02,
+          "reg_all": 0.2,
+          "biased": false
+        }
+      }
+    },
+    {
+      "exp_id": "arm_d_pos_ge_5_neg_le_1",
+      "variant": "arm_d",
+      "pos_threshold": 5,
+      "neg_threshold": 1,
+      "label": "pos_ge_5_neg_le_1",
+      "metrics": {
+        "precision@10": 0.0368099121706399,
+        "recall@10": 0.368099121706399,
+        "ndcg@10": 0.24744811358668417,
+        "negative@10": 0.0,
+        "hit@10": 0.368099121706399,
+        "mrr": 0.21957380065983081,
+        "sim_to_neg@10": 0.0,
+        "n_users": 6376,
+        "pos_threshold": 5,
+        "neg_threshold": 1,
+        "n_positives": 23924,
+        "n_negatives": 11632,
+        "pct_train_used": 52.08,
+        "params": {
+          "n_factors": 75,
+          "n_epochs": 75,
+          "lr_all": 0.02,
+          "reg_all": 0.2,
+          "biased": false
+        }
+      }
+    },
+    {
+      "exp_id": "arm_d_pos_ge_4_neg_le_1",
+      "variant": "arm_d",
+      "pos_threshold": 4,
+      "neg_threshold": 1,
+      "label": "pos_ge_4_neg_le_1",
+      "metrics": {
+        "precision@10": 0.044118569636135516,
+        "recall@10": 0.4411856963613551,
+        "ndcg@10": 0.3116825796790793,
+        "negative@10": 0.0,
+        "hit@10": 0.4411856963613551,
+        "mrr": 0.28120772844428815,
+        "sim_to_neg@10": 0.0,
+        "n_users": 6376,
+        "pos_threshold": 4,
+        "neg_threshold": 1,
+        "n_positives": 37614,
+        "n_negatives": 11632,
+        "pct_train_used": 72.13,
+        "params": {
+          "n_factors": 150,
+          "n_epochs": 100,
+          "lr_all": 0.02,
+          "reg_all": 0.1,
+          "biased": false
+        }
+      }
+    },
+    {
+      "exp_id": "arm_d_pos_ge_3_neg_le_2",
+      "variant": "arm_d",
+      "pos_threshold": 3,
+      "neg_threshold": 2,
+      "label": "pos_ge_3_neg_le_2",
+      "metrics": {
+        "precision@10": 0.039868255959849434,
+        "recall@10": 0.39868255959849436,
+        "ndcg@10": 0.27190237316347926,
+        "negative@10": 0.0,
+        "hit@10": 0.39868255959849436,
+        "mrr": 0.24388648063966203,
+        "sim_to_neg@10": 0.0,
+        "n_users": 6376,
+        "pos_threshold": 3,
+        "neg_threshold": 2,
+        "n_positives": 45105,
+        "n_negatives": 23167,
+        "pct_train_used": 100.0,
+        "params": {
+          "n_factors": 200,
+          "n_epochs": 50,
+          "lr_all": 0.02,
+          "reg_all": 0.1,
+          "biased": false
+        }
+      }
+    }
+  ],
+  "meta": {
+    "approach": "arm_d_joint_positive_negative_svd",
+    "description": "SVD trained on binary targets: rating>=pos_threshold -> 1.0, rating<=neg_threshold -> 0.0, middle ratings dropped. Arm D tests whether joint training on positive and negative feedback improves top-N ranking quality compared to positive-only Arm A.",
+    "rating_scale": [
+      0,
+      1
+    ],
+    "note": "Core comparison: Arm A positive-only vs Arm D joint pos-neg. Arm D > Arm A means training-time negative feedback improves ranking. Arm D approximately equal to Arm A but lower sim_to_neg means better avoidance.",
+    "completed_at": "2026-05-31T21:20:43.927260"
+  }
+}

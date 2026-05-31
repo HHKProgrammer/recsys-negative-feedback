@@ -1,0 +1,134 @@
+{
+  "experiments": [
+    {
+      "exp_id": "arm_d_pos_ge_4_neg_le_2",
+      "variant": "arm_d",
+      "pos_threshold": 4,
+      "neg_threshold": 2,
+      "label": "pos_ge_4_neg_le_2",
+      "metrics": {
+        "precision@10": 0.040849718036290644,
+        "recall@10": 0.40849718036290644,
+        "ndcg@10": 0.259501183016095,
+        "negative@10": 0.0,
+        "hit@10": 0.40849718036290644,
+        "mrr": 0.22539039419641604,
+        "sim_to_neg@10": 0.0,
+        "n_users": 138493,
+        "pos_threshold": 4,
+        "neg_threshold": 2,
+        "n_positives": 9915548,
+        "n_negatives": 2610450,
+        "pct_train_used": 63.12,
+        "params": {
+          "n_factors": 20,
+          "n_epochs": 20,
+          "lr_all": 0.005,
+          "reg_all": 0.03,
+          "biased": false
+        }
+      }
+    },
+    {
+      "exp_id": "arm_d_pos_ge_5_neg_le_1",
+      "variant": "arm_d",
+      "pos_threshold": 5,
+      "neg_threshold": 1,
+      "label": "pos_ge_5_neg_le_1",
+      "metrics": {
+        "precision@10": 0.03941932083209982,
+        "recall@10": 0.3941932083209982,
+        "ndcg@10": 0.23309848244829812,
+        "negative@10": 0.0,
+        "hit@10": 0.3941932083209982,
+        "mrr": 0.2004223231851308,
+        "sim_to_neg@10": 0.0,
+        "n_users": 138493,
+        "pos_threshold": 5,
+        "neg_threshold": 1,
+        "n_positives": 2871557,
+        "n_negatives": 912445,
+        "pct_train_used": 19.07,
+        "params": {
+          "n_factors": 10,
+          "n_epochs": 20,
+          "lr_all": 0.001,
+          "reg_all": 0.005,
+          "biased": false
+        }
+      }
+    },
+    {
+      "exp_id": "arm_d_pos_ge_4_neg_le_1",
+      "variant": "arm_d",
+      "pos_threshold": 4,
+      "neg_threshold": 1,
+      "label": "pos_ge_4_neg_le_1",
+      "metrics": {
+        "precision@10": 0.045900514827464205,
+        "recall@10": 0.45900514827464206,
+        "ndcg@10": 0.2883804626582429,
+        "negative@10": 0.0,
+        "hit@10": 0.45900514827464206,
+        "mrr": 0.2489188458852534,
+        "sim_to_neg@10": 0.0,
+        "n_users": 138493,
+        "pos_threshold": 4,
+        "neg_threshold": 1,
+        "n_positives": 9915548,
+        "n_negatives": 912445,
+        "pct_train_used": 54.56,
+        "params": {
+          "n_factors": 30,
+          "n_epochs": 30,
+          "lr_all": 0.002,
+          "reg_all": 0.05,
+          "biased": false
+        }
+      }
+    },
+    {
+      "exp_id": "arm_d_pos_ge_3_neg_le_2",
+      "variant": "arm_d",
+      "pos_threshold": 3,
+      "neg_threshold": 2,
+      "label": "pos_ge_3_neg_le_2",
+      "metrics": {
+        "precision@10": 0.047538864780169394,
+        "recall@10": 0.47538864780169393,
+        "ndcg@10": 0.299489998204983,
+        "negative@10": 0.0,
+        "hit@10": 0.47538864780169393,
+        "mrr": 0.25925089742925006,
+        "sim_to_neg@10": 0.0,
+        "n_users": 138493,
+        "pos_threshold": 3,
+        "neg_threshold": 2,
+        "n_positives": 16357812,
+        "n_negatives": 2610450,
+        "pct_train_used": 95.58,
+        "params": {
+          "n_factors": 10,
+          "n_epochs": 20,
+          "lr_all": 0.001,
+          "reg_all": 0.05,
+          "biased": false
+        }
+      }
+    }
+  ],
+  "meta": {
+    "approach": "arm_d_joint_positive_negative_svd",
+    "description": "SVD trained on binary targets: rating>=pos_threshold \u2192 1.0, rating<=neg_threshold \u2192 0.0, middle ratings dropped. Arm D tests whether joint training on positive AND negative feedback improves top-N ranking quality compared to positive-only (Arm A).",
+    "rating_scale": [
+      0,
+      1
+    ],
+    "references": [
+      "Cena Console Gena Goy Levi Tasso 2004 \u2014 explicit dislikes as constraints",
+      "Paudel Bonta Bernstein Kuflik 2016 \u2014 known-dislike avoidance in top-N"
+    ],
+    "note": "Core comparison: Arm A (positive-only) vs Arm D (joint pos-neg). Arm D > Arm A \u2192 training-time negative feedback helps. Arm D \u2248 Arm A with lower sim_to_neg \u2192 negatives improve avoidance only.",
+    "completed_at": "2026-05-31T20:18:43.869717"
+  }
+}
