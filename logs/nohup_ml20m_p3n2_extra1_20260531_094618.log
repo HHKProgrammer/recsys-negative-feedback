@@ -1,0 +1,27 @@
+nohup: ignoring input
+Master log: logs/hpt_parallel_20260531_094618.log
+N_TRIALS=116  N_WORKERS=1  MAX_USERS=5000
+
+══════════════════════════════════════════════════════════════
+  Dataset/pair: movielens_20m / p3_n2  (pos≥3  neg≤2)
+  Config file:  configs/movielens_20m.yaml
+  Study dir:    outputs/movielens/ml-20m/tuning/arm_d/pos_ge_3_neg_le_2
+  Trials:       86 done / 116 target  →  30 remaining
+  Workers:      1  (≈30 trials each, target 116)
+  MAX_USERS:    5000
+══════════════════════════════════════════════════════════════
+  [w1] PID 839184  →  logs/hpt_parallel_20260531_094618_movielens_20m_p3_n2_w1.log
+  Waiting for all 1 workers...
+  All workers done.
+  Trials now: 176 / 116
+    w1: Best nDCG@10 (val, binary-target model): 0.3009
+
+Done. Run grid + figures:
+  python scripts/run_arm_d_joint_svd_grid.py --config configs/movielens_20m.yaml
+  python scripts/generate_all_figures.py
+
+══════════════════════════════════════════════════════════════
+ HPT PARALLEL DONE
+ Summary: python scripts/summarize_hpt_arm_d.py
+ Logs:    logs/hpt_parallel_20260531_094618_*.log
+══════════════════════════════════════════════════════════════

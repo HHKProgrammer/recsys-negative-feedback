@@ -1,0 +1,17 @@
+nohup: ignoring input
+Master log: logs/hpt_parallel_20260530_203513.log
+N_TRIALS=200  N_WORKERS=2  MAX_USERS=5000
+
+══════════════════════════════════════════════════════════════
+  Dataset/pair: movielens_20m / p3_n2  (pos≥3  neg≤2)
+  Config file:  configs/movielens_20m.yaml
+  Study dir:    outputs/movielens/ml-20m/tuning/arm_d/pos_ge_3_neg_le_2
+  Trials:       31 done / 200 target  →  169 remaining
+  Workers:      2  (≈85 trials each, target 116)
+  MAX_USERS:    5000
+══════════════════════════════════════════════════════════════
+  [w1] PID 838031  →  logs/hpt_parallel_20260530_203513_movielens_20m_p3_n2_w1.log
+  [w2] PID 838032  →  logs/hpt_parallel_20260530_203513_movielens_20m_p3_n2_w2.log
+  Waiting for all 2 workers...
+  WARNING: one or more workers exited non-zero — check logs above
+  Trials now: 204 / 200
