@@ -1,8 +1,9 @@
 \begin{table}[ht]
 \centering
+\caption{Arm D: Joint Positive-Negative SVD results. SVD trained on binary targets (pos=1.0, neg=0.0). Compared to Arm A (Table D) to test whether training-time negative feedback improves ranking quality.}
 \begin{tabular}{lrrrrrrrr}
 \toprule
-Dataset & Pos≥ & Neg≤ & NDCG@10 & HR@10 & MRR & sim\_neg@10 & N\_pos & N\_neg \\
+Dataset & Pos$\geq$ & Neg$\leq$ & NDCG@10 & HR@10 & MRR & sim\_neg@10 & N\_pos & N\_neg \\
 \midrule
 ml-1m & 4 & 2 & 0.1080 & 0.2065 & 0.0952 & 0.0000 & 571274 & 162635 \\
 ml-1m & 5 & 1 & 0.1122 & 0.2108 & 0.0978 & 0.0000 & 224571 & 55752 \\
@@ -22,5 +23,4 @@ spotify & 4 & 1 & 0.3117 & 0.4412 & 0.2812 & 0.0000 & 37614 & 11632 \\
 spotify & 3 & 2 & 0.2719 & 0.3987 & 0.2439 & 0.0000 & 45105 & 23167 \\
 \bottomrule
 \end{tabular}
-\caption{Arm D: Joint Positive-Negative SVD results. SVD trained on binary targets (pos=1.0, neg=0.0). Compared to Arm A (Table D) to test whether training-time negative feedback improves ranking quality.}
 \end{table}

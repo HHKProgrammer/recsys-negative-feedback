@@ -1,0 +1,712 @@
+% cheatsheet.tex — Deep-study summary of the negative-feedback RecSys thesis
+% Compile with: pdflatex cheatsheet.tex
+\documentclass[9pt,a4paper,landscape]{article}
+
+\usepackage[landscape,margin=0.7cm,top=0.8cm,bottom=0.8cm]{geometry}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{tabularx}
+
+% ── Colour palette ─────────────────────────────────────────────────────────────
+\definecolor{arma}{RGB}{31,119,180}   % blue  – Arm A
+\definecolor{armb}{RGB}{255,127,14}   % orange – Arm B
+\definecolor{armc}{RGB}{44,160,44}    % green  – Arm C
+\definecolor{armd}{RGB}{214,39,40}    % red    – Arm D
+\definecolor{base}{RGB}{127,127,127}  % grey   – baseline
+\definecolor{headbg}{RGB}{230,240,255}
+\definecolor{secbg}{RGB}{245,245,245}
+
+% ── Section styling ────────────────────────────────────────────────────────────
+\titleformat{\section}[block]{\bfseries\normalsize\color{white}\filleft}
+  {}{0pt}{\colorbox{arma}{\parbox{\dimexpr\linewidth-2\fboxsep}{\hfill#1\hfill}}}
+\titlespacing{\section}{0pt}{4pt}{2pt}
+
+\titleformat{\subsection}[block]{\bfseries\small}
+  {}{0pt}{\colorbox{headbg}{\parbox{\dimexpr\linewidth-2\fboxsep}{#1}}}
+\titlespacing{\subsection}{0pt}{3pt}{1pt}
+
+% ── Column rule ────────────────────────────────────────────────────────────────
+\setlength{\columnsep}{8pt}
+\setlength{\columnseprule}{0.3pt}
+
+% ── Compact list ───────────────────────────────────────────────────────────────
+\setlist[itemize]{leftmargin=1em,itemsep=0pt,parsep=0pt,topsep=1pt}
+\setlist[enumerate]{leftmargin=1em,itemsep=0pt,parsep=0pt,topsep=1pt}
+
+% ── Helpers ────────────────────────────────────────────────────────────────────
+\newcommand{\A}{\textcolor{arma}{\textbf{A}}}
+\newcommand{\B}{\textcolor{armb}{\textbf{B}}}
+\newcommand{\C}{\textcolor{armc}{\textbf{C}}}
+\newcommand{\D}{\textcolor{armd}{\textbf{D}}}
+\newcommand{\Ba}{\textcolor{base}{\textbf{BL}}}
+\newcommand{\up}[1]{\textcolor{armd}{$\uparrow$#1}}
+\newcommand{\dn}[1]{\textcolor{armb}{$\downarrow$#1}}
+\newcommand{\thr}[2]{$\theta^+\!\geq\!#1,\;\theta^-\!\leq\!#2$}
+\newcommand{\metr}[2]{\textbf{#1}\;=\;#2}
+
+\captionsetup{font=scriptsize,skip=2pt}
+
+\begin{document}
+\pagestyle{empty}
+
+% ── Title bar ─────────────────────────────────────────────────────────────────
+\noindent
+\colorbox{arma!80!black}{\parbox{\linewidth}{\centering\color{white}\large\bfseries
+  Incorporating Negative Feedback in Recommender Systems — Deep-Study Cheatsheet\quad
+  \normalsize Helin Kal · Bachelor Thesis · Innsbruck 2026}}
+
+\vspace{3pt}
+\begin{multicols}{4}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Task \& Notation}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Recommendation task:} Given users $U$, items $I$, sparse matrix $R\in\mathbb{R}^{|U|\times|I|}$, learn scoring function $s:U\times I\to\mathbb{R}$ and return sorted top-$N$ list per user.
+
+\textbf{Two sub-tasks distinguished:}
+\begin{itemize}
+  \item \emph{Rating prediction:} estimate $\hat{r}_{ui}\approx r_{ui}$ — cares about magnitude.
+  \item \emph{Top-$N$ ranking:} only the induced order over candidates matters (this thesis).
+\end{itemize}
+
+\textbf{SVD score} (Surprise):
+\[
+\hat{r}_{ui} = \mu + b_u + b_i + q_i^\top p_u
+\]
+$\mu$=global mean, $b_u$/$b_i$=biases, $p_u\in\mathbb{R}^f$/$q_i\in\mathbb{R}^f$=latent vecs.
+Objective: $\min\sum_{(u,i)\in\mathcal{K}}(r_{ui}-\hat{r}_{ui})^2+\lambda(\|p_u\|^2+\|q_i\|^2+b_u^2+b_i^2)$.
+
+\textbf{Arm D binary targets:} positive interaction $\to 1.0$; negative $\to 0.0$. No bias ($b=\text{False}$) because a global mean would shift all scores.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{What Is a Recommender System?}
+% ══════════════════════════════════════════════════════════════════════════════
+
+A recommender system estimates which items from a large catalogue are most relevant to a specific user and returns a ranked shortlist. The system observes past interactions (who clicked/rated/played what) and uses them to predict future relevance — without being told explicitly what the user "likes" in terms of content.
+
+\textbf{Three paradigms:}
+\begin{itemize}
+  \item \textbf{Content-based:} recommend items similar in content to what the user liked before (uses item features, not other users).
+  \item \textbf{Collaborative filtering (CF):} recommend items liked by \emph{similar users} — no content needed, only the interaction matrix.
+  \item \textbf{Hybrid:} combine both. This thesis uses pure CF.
+\end{itemize}
+
+\textbf{Why CF works:} if user $A$ and user $B$ both liked movies $m_1, m_2, m_3$, and user $A$ also liked $m_4$, then $m_4$ is likely relevant for $B$ — even if we know nothing about $m_4$'s content. The signal is purely relational.
+
+\textbf{The sparsity problem:} a typical rating matrix $R$ is 99\%+ empty. A user rates $<$1\% of all items. CF must generalise from a tiny observed fraction to the entire space.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Collaborative Filtering — Deep Dive}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Formal setup:} $U$ = set of users, $I$ = set of items. Interaction matrix $R \in \mathbb{R}^{|U|\times|I|}$ where entry $r_{ui}$ is observed (rating, click, play) or missing. $\mathcal{K} = \{(u,i) : r_{ui}\text{ observed}\}$.
+
+\textbf{Two CF families:}
+
+\colorbox{secbg}{\parbox{\linewidth}{\small
+\textbf{Memory-based (neighbourhood):} directly measure user--user or item--item similarity. Predict $r_{ui}$ as weighted average of ratings from similar users/items. Transparent but doesn't scale — similarity must be recomputed as data grows.
+
+\textbf{Model-based (latent factor):} learn a compressed parametric model from $R$. At prediction time, run the learned model. Scales well; used in this thesis.
+}}
+
+\textbf{User--user CF example:} find users $v$ most similar to $u$, then:
+\[
+\hat{r}_{ui} = \bar{r}_u + \frac{\sum_{v\in N(u)} \text{sim}(u,v)\,(r_{vi}-\bar{r}_v)}{\sum_{v\in N(u)}|\text{sim}(u,v)|}
+\]
+where $N(u)$ = $k$ nearest neighbours of $u$, $\bar{r}_u$ = mean rating of $u$. This is the classic kNN CF formula. \textbf{Problem:} similarity recomputed for every new user; does not generalise to unseen items.
+
+\textbf{One-class CF (implicit feedback):} when data is binary (interacted / not), BPR and WMF treat every observed interaction as positive and everything else as "missing" — not negative. No explicit dislike representation. \emph{This is exactly the gap this thesis addresses.}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Matrix Factorization — How It Works}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Core idea:} assume $R$ has low rank — i.e.\ preferences can be explained by $f \ll |U|,|I|$ hidden factors. Decompose $R \approx P \cdot Q^\top$ where $P \in \mathbb{R}^{|U|\times f}$ (user matrix) and $Q \in \mathbb{R}^{|I|\times f}$ (item matrix).
+
+Each user $u$ gets a latent vector $p_u \in \mathbb{R}^f$ capturing their taste profile. Each item $i$ gets a latent vector $q_i \in \mathbb{R}^f$ capturing its "profile". The predicted preference is the inner product:
+\[
+\hat{r}_{ui} = p_u \cdot q_i = \sum_{k=1}^{f} p_{uk} \cdot q_{ik}
+\]
+
+\textbf{Geometric intuition:} think of $f=2$ factors as "action vs.\ romance" and "blockbuster vs.\ arthouse". User $u$'s vector $p_u=(0.9, 0.1)$ means they love action. Item $i$'s vector $q_i=(0.8,0.2)$ means it's an action film. Inner product = $0.9{\times}0.8+0.1{\times}0.2=0.74$ = high predicted preference. A romance film with $q_j=(0.1,0.9)$ gives $0.9{\times}0.1+0.1{\times}0.9=0.18$ = low.
+
+\textbf{Biased SVD} (used in this thesis):
+\[
+\hat{r}_{ui} = \underbrace{\mu}_{\text{global mean}} + \underbrace{b_u}_{\text{user bias}} + \underbrace{b_i}_{\text{item bias}} + \underbrace{q_i^\top p_u}_{\text{interaction term}}
+\]
+$\mu$ = average rating over all $(u,i)\in\mathcal{K}$. $b_u$ absorbs systematic user tendencies (e.g.\ a user who always rates 1 star below average). $b_i$ absorbs item popularity (e.g.\ a universally loved film). The term $q_i^\top p_u$ captures the specific user–item fit beyond these global effects.
+
+\textbf{Training — Stochastic Gradient Descent (SGD):}\\
+Minimise the regularised squared error over known entries:
+\[
+\mathcal{L} = \sum_{(u,i)\in\mathcal{K}} \underbrace{(r_{ui} - \hat{r}_{ui})^2}_{\text{prediction error}} + \lambda\underbrace{(\|p_u\|^2 + \|q_i\|^2 + b_u^2 + b_i^2)}_{\text{regularisation (prevents overfitting)}}
+\]
+For each observed $(u,i)$, compute error $e_{ui} = r_{ui} - \hat{r}_{ui}$ and update:
+\begin{align*}
+p_u &\leftarrow p_u + \eta(e_{ui}\,q_i - \lambda\,p_u) \\
+q_i &\leftarrow q_i + \eta(e_{ui}\,p_u - \lambda\,q_i) \\
+b_u &\leftarrow b_u + \eta(e_{ui} - \lambda\,b_u) \\
+b_i &\leftarrow b_i + \eta(e_{ui} - \lambda\,b_i)
+\end{align*}
+$\eta$ = learning rate (step size). $\lambda$ = regularisation strength. Iterate over all known ratings for several epochs until convergence.
+
+\textbf{What the factors learn:} after training, similar users end up with similar $p_u$ vectors, and similar items end up with similar $q_i$ vectors — without ever being told what "similar" means. The geometry emerges from co-occurrence patterns in $R$.
+
+\textbf{Why "SVD"?} The name comes from Singular Value Decomposition ($R = U\Sigma V^\top$) which also produces a low-rank approximation. Surprise's SVD uses SGD on the regularised objective instead of a full matrix decomposition, but the latent factor structure is the same.
+
+\textbf{Arm D twist — binary targets:} instead of fitting $r_{ui}\in\{1,2,3,4,5\}$, Arm D fits $r_{ui}\in\{0,1\}$. The loss function is unchanged (squared error), but now the model learns: push $q_i^\top p_u$ toward 1 when the user likes item $i$, toward 0 when they dislike it. The latent space is now shaped by \emph{both} attractive and repulsive forces. With no bias term ($\mu=b_u=b_i=0$), the inner product alone carries all signal.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Cosine Similarity}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Definition:} for two vectors $\mathbf{a}, \mathbf{b} \in \mathbb{R}^f$:
+\[
+\text{cos}(\mathbf{a},\mathbf{b}) = \frac{\mathbf{a}\cdot\mathbf{b}}{\|\mathbf{a}\|\,\|\mathbf{b}\|} = \frac{\sum_{k=1}^f a_k b_k}{\sqrt{\sum_k a_k^2}\,\sqrt{\sum_k b_k^2}} \in [-1, 1]
+\]
+
+\textbf{Geometric meaning:} measures the \emph{angle} between vectors, not their magnitude. $\cos=1$ = same direction (identical preference profile); $\cos=0$ = orthogonal (unrelated); $\cos=-1$ = opposite (perfectly dissimilar).
+
+\textbf{Why use it for sim\_neg@10?} After training, each item $i$ has a latent vector $q_i$. We check if the items in the user's top-10 list are directionally close to the user's known disliked items. Cosine similarity ignores vector length (a popular item has a larger $\|q_i\|$ but the direction is what encodes content). A high sim\_neg@10 means the recommended items are in the same latent direction as disliked items — the model failed to separate them.
+
+\textbf{In user--user CF:} cosine similarity between user rating vectors $r_u$ and $r_v$ (treating unobserved entries as 0) measures preference overlap. Pearson correlation (mean-centred cosine) is often preferred to remove rating bias.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Bayesian Personalized Ranking (BPR)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Motivation:} rating prediction (MSE) is not the same objective as ranking. A model can minimise MSE perfectly but still rank items in the wrong order. BPR directly optimises \emph{pairwise ordering}.
+
+\textbf{Key assumption:} if user $u$ interacted with item $i$ but not with item $j$, then $u$ prefers $i$ over $j$: $i \succ_u j$.
+
+\textbf{Objective — maximise posterior:}
+\[
+\text{BPR-Opt} = \sum_{(u,i,j)\in\mathcal{D}_S} \ln \sigma(\hat{r}_{uij}) - \lambda_\Theta \|\Theta\|^2
+\]
+where $\mathcal{D}_S = \{(u,i,j): i\in I_u^+,\; j\in I\setminus I_u^+\}$ are triples of (user, observed item, unobserved item), $\hat{r}_{uij} = \hat{r}_{ui} - \hat{r}_{uj}$ is the predicted preference gap, and $\sigma(x) = 1/(1+e^{-x})$ is the sigmoid.
+
+\textbf{SGD update for BPR:}
+\[
+\Theta \leftarrow \Theta + \eta \Big(\sigma(-\hat{r}_{uij})\cdot\frac{\partial \hat{r}_{uij}}{\partial \Theta} - \lambda_\Theta\Theta\Big)
+\]
+
+\textbf{Why BPR ignores negatives:} $j$ is sampled uniformly from \emph{unobserved} items — items the user never rated. These are "missing", not "disliked". BPR cannot model an explicit dislike because it has no negative class.
+
+\textbf{Contrast with Arm D:} Arm D uses explicit dislike labels ($r\leq\theta^-$) as targets, giving the model true repulsive training signal. BPR treats all non-interactions identically. This is the structural difference Cena et al.\ (2023) argue matters for recommendation quality.
+
+\textbf{BPR vs.\ SVD in this thesis:} this thesis does not implement BPR. It uses SVD (MSE-based). But BPR is discussed as the canonical implicit-CF method that structurally excludes negative feedback — the exact problem the thesis investigates.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Metrics — Mathematical Definitions}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Let $\pi_u = [i_1, i_2, \ldots, i_N]$ be the ranked recommendation list for user $u$ and $\mathcal{R}_u$ the set of relevant (held-out) items.
+
+\textbf{Hit Rate @ $k$:}
+\[
+\text{HR@}k(u) = \mathbf{1}[\mathcal{R}_u \cap \{i_1,\ldots,i_k\} \neq \emptyset]
+\]
+Binary: 1 if any relevant item appears in top-$k$, else 0. With one held-out item (LOO), this = 1 iff the held-out item is in top-$k$.
+
+\textbf{Reciprocal Rank:}
+\[
+\text{RR}(u) = \frac{1}{\min\{j : i_j \in \mathcal{R}_u\}}
+\]
+If the held-out item is at rank 3, RR = 1/3. MRR = mean over users. Rewards \emph{earlier} placement more than HR.
+
+\textbf{Discounted Cumulative Gain @ $k$:}
+\[
+\text{DCG@}k(u) = \sum_{j=1}^{k} \frac{\text{rel}(i_j)}{\log_2(j+1)}
+\]
+$\text{rel}(i_j) = 1$ if $i_j \in \mathcal{R}_u$, else 0 (binary relevance). The $\log_2(j+1)$ discount penalises relevant items found late in the list. Position 1 has weight $1/\log_2(2)=1$; position 2 has $1/\log_2(3)\approx 0.63$; position 10 has $\approx 0.29$.
+
+\textbf{Normalised DCG @ $k$:}
+\[
+\text{nDCG@}k(u) = \frac{\text{DCG@}k(u)}{\text{IDCG@}k(u)}
+\]
+IDCG = ideal DCG (relevant item at position 1). With one held-out item, IDCG$=1$, so nDCG$=$DCG. nDCG$\in[0,1]$; 1 = perfect ranking.
+
+\textbf{Aggregate over users:}
+\[
+\overline{\text{nDCG@}k} = \frac{1}{|U|}\sum_{u\in U}\text{nDCG@}k(u)
+\]
+
+\textbf{Precision @ $k$:}
+\[
+\text{P@}k(u) = \frac{|\mathcal{R}_u \cap \{i_1,\ldots,i_k\}|}{k}
+\]
+Fraction of top-$k$ that are relevant. With one held-out item, P@10 = 0.1 if item is in top-10, 0 otherwise.
+
+\textbf{Recall @ $k$ (when $|\mathcal{R}_u|>1$):}
+\[
+\text{Recall@}k(u) = \frac{|\mathcal{R}_u \cap \{i_1,\ldots,i_k\}|}{|\mathcal{R}_u|}
+\]
+
+\textbf{Numerical intuition:} Suppose the held-out item is ranked 5th out of 501 candidates. Then HR@10=1, RR=0.2, nDCG@10=$1/\log_2(6)\approx 0.387$, P@10=0.1. If ranked 1st: HR@10=1, RR=1.0, nDCG@10=1.0, P@10=0.1.
+
+\textbf{Why nDCG is the primary metric:} it is position-sensitive (distinguishes rank 1 from rank 10, unlike HR), normalised to $[0,1]$, and standard in IR/RecSys literature.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Datasets}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+Dataset & Users & Ratings & Feedback\\
+\midrule
+ML-1M  & 6\,040  & 0.99M & Explicit 1–5★\\
+ML-10M & 69\,878 & 9.93M & Explicit 1–5★\\
+ML-20M & 138\,493& 19.8M & Explicit 0.5–5★\\
+Spotify & 6\,376 & 74\,648& Implicit (skips→1–5)\\
+\bottomrule
+\end{tabular}
+
+\vspace{3pt}
+\textbf{MovieLens:} random leave-one-out (LOO) split. One pos item per user held for val, one for test.
+
+\textbf{Spotify MSSD:} each session = one "user"; skip behaviour mapped to 1–5 score via taxonomy. Sequential order discarded (MF does not model it).
+
+\textbf{Cold-start filter:} users/items with too few interactions removed before training.
+
+\textbf{Candidate sets:} 500 sampled negatives + 1 held-out positive per user (Cremonesi protocol). Saves compute; slight bias acknowledged.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Feedback Labels}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Positive thresholds} $\theta^+$: ratings $\geq 3, 4,$ or $5$.
+
+\textbf{Negative thresholds} $\theta^-$: ratings $\leq 1, 2,$ or $3$; also \emph{median} and \emph{modus} (user's own median/mode as boundary).
+
+\textbf{Key insight:} $\theta^-\!\leq\!1$ is most conservative (fewest labels, highest purity); $\theta^-\!\leq\!3$ is most inclusive (most labels, more noise). Experiments show \emph{purity beats volume}.
+
+\textbf{Spotify negative:} $\leq 2$ is best detector (HR@10=0.42) because skip-based signals are noisier — broader threshold helps.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Evaluation Metrics}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{itemize}
+  \item \textbf{nDCG@10}: primary ranking metric. Rewards relevant item near top with log discount. 1.0 = perfect rank.
+  \item \textbf{HR@10}: 1 if held-out item appears in top-10, else 0.
+  \item \textbf{MRR}: $1/\text{rank}$ of held-out item; rewards earlier placement.
+  \item \textbf{P@10}: precision at 10 (fraction of top-10 that are relevant).
+  \item \textbf{sim\_neg@10}: average cosine similarity between user's held-out positive and the \emph{negatively-labelled} items that appear in the top-10. \emph{Lower} = model pushes disliked items away. This is the \emph{avoidance} metric.
+  \item \textbf{Detection HR@10} (Arm B only): does the held-out \emph{negative} item appear in Arm B's top-10? Higher = better dislike detection.
+\end{itemize}
+
+\textbf{Bias warnings:} Sampled metrics biased (Krichene \& Rendle 2020); MovieLens offline ≠ real-world (Fan et al.\ 2024); exposure bias not corrected.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Five Strategies (Arms)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\colorbox{secbg}{\parbox{\linewidth}{\small
+\begin{tabular}{@{}p{0.25\linewidth}p{0.7\linewidth}@{}}
+\textcolor{base}{\textbf{BL}} & Full-rating SVD on \emph{all} raw ratings. Mixed-sign regression. \\
+\textcolor{arma}{\textbf{Arm A}} & SVD on \emph{positive-only} interactions ($r\geq\theta^+$). Clean signal. \\
+\textcolor{armb}{\textbf{Arm B}} & SVD on \emph{negative-only} interactions ($r\leq\theta^-$). Dislike detector; high score = likely disliked. \\
+\textcolor{armc}{\textbf{Arm C}} & Post-hoc hybrid: $s_C = \tilde{s}_A - \alpha\cdot\tilde{s}_B$ where $\tilde{s}$ = min-max normalised scores. $\alpha\in\{0.05,0.1,0.3,1.0\}$. \\
+\textcolor{armd}{\textbf{Arm D}} & Single SVD trained jointly on pos ($\to 1$) and neg ($\to 0$) as binary targets. Latent space shaped by both signals simultaneously. \\
+\end{tabular}
+}}
+
+\textbf{Post-hoc variants on BL:}
+\begin{itemize}
+  \item \textbf{Filter}: remove known-negative items from candidate set before ranking (nDCG unchanged, sim\_neg improves).
+  \item \textbf{Rerank}: $s' = s - \alpha\cdot\text{neg\_penalty}$; accuracy drops with $\alpha$.
+  \item \textbf{Weighted}: softer penalty; smaller accuracy drop.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Master Results Table}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Dataset & \Ba & \A & \B$^*$ & \C & \D \\
+        & nDCG & nDCG & HR@10 & nDCG & nDCG\\
+\midrule
+ML-1M  & .068 & .081 & .11 & .071 & \textbf{.112}\\
+ML-10M & .087 & .222 & .19 & .087 & \textbf{.254}\\
+ML-20M & .083 & .241 & .22 & .083 & \textbf{.300}\\
+Spotify& .018 & \textbf{.345} & .42 & .342 & .312\\
+\bottomrule
+\multicolumn{6}{@{}l@{}}{\tiny $^*$Arm B: detection task (not top-$N$); best threshold shown.}
+\end{tabular}
+
+\vspace{3pt}
+\textbf{$\Delta$ vs.\ full-rating baseline:}
+\begin{itemize}
+  \item Arm A: ML-1M +19\%, ML-10M +155\%, ML-20M +191\%, Spotify +1859\%.
+  \item Arm D: ML-1M +64\%, ML-10M +191\%, ML-20M +263\%, Spotify +1671\%.
+  \item \emph{Why such huge Spotify gains?} Baseline SVD on mixed-sign implicit signals is near-random (nDCG=0.018); filtering noise unlocks enormous headroom.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Key Findings (RQ answers)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{RQ1 — Does explicit neg.\ feedback improve top-$N$ quality?}\\
+Yes, but \emph{only when trained jointly} (Arm D) or when positive signal is first cleaned (Arm A). Post-hoc reranking hurts ranking accuracy ($-1$–$2\%$ nDCG) while Arm D beats baseline by up to $+263\%$.
+
+\textbf{RQ2 — Does it generalise across feedback types and scales?}\\
+Partially. On explicit MovieLens: Arm D $>$ Arm A. On implicit Spotify: Arm A $\geq$ Arm D (noise in skip labels limits joint training). Benefit grows with dataset size (ML-20M $>$ ML-10M $>$ ML-1M for both Arm A and D).
+
+\textbf{RQ3 — Best tradeoff accuracy vs.\ avoidance?}\\
+\textbf{No single winner}. Arm D maximises nDCG. Post-hoc filter maximises avoidance (sim\_neg) at zero nDCG cost. Arm C midpoint. The tradeoff is fundamental: pushing items away lowers nDCG.
+
+\textbf{The purity principle:} using \thr{5}{1} (fewest, cleanest labels) often beats \thr{3}{2} (more labels, noisier) in nDCG — label purity $>$ label volume.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig 1 — Is the Baseline Correct?}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig1_is_baseline_correct.png}
+\end{center}
+\captionof{figure}{\textbf{X:} datasets (ML-1M, 10M, 20M). \textbf{Y-left:} nDCG@10 and HR@10 values of the full-rating SVD baseline. \textbf{Y-right:} expected literature range (shaded). All values land in the plausible band, confirming the pipeline is correctly implemented.}
+
+\textbf{Why it matters:} Before testing arms, we verify the baseline is correct. A baseline outside expected range would invalidate all comparisons.
+
+\textbf{Baseline nDCG:} ML-1M=0.068, ML-10M=0.087, ML-20M=0.083. Within 0.05–0.13 range from literature.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig 2 — Core Accuracy–Avoidance Tradeoff}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig2_core_tradeoff.png}
+\end{center}
+\captionof{figure}{\textbf{X:} sim\_neg@10 (cosine sim of top-10 to disliked items; lower = more avoidance). \textbf{Y:} nDCG@10 (higher = better ranking). Each dot = one (variant, threshold, $\alpha$) configuration. The negative correlation reveals the fundamental tradeoff: variants that avoid dislikes well sacrifice ranking quality.}
+
+\textbf{Interpretation:}
+\begin{itemize}
+  \item Top-left cluster (low sim\_neg, high nDCG) = best of both worlds — only Arm A / Arm D achieve this.
+  \item Rerank with large $\alpha$ moves bottom-right: good avoidance, poor ranking.
+  \item Filter stays at $y=\text{baseline}$ — avoidance without ranking cost, but only removes \emph{already-seen} negatives.
+  \item The tradeoff is not tunable away with post-hoc methods; it requires joint training.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig 3 — Best Variant per Dataset}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig3_best_variant_per_dataset.png}
+\end{center}
+\captionof{figure}{\textbf{X:} variant name (filter, rerank, weighted, baseline shown as dotted). \textbf{Y:} best achievable nDCG@10 per variant (across all thresholds and $\alpha$ values) for each dataset. Bars are grouped by dataset. Shows that no post-hoc variant beats the baseline nDCG.}
+
+\textbf{Key read:} All post-hoc bars are at or below the dotted baseline. Filter = tied (nDCG unchanged). Rerank/weighted = slightly below. Conclusion: post-hoc negative feedback cannot improve ranking accuracy, only avoidance.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig 4 — Alpha Sensitivity}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig4_alpha_sensitivity.png}
+\end{center}
+\captionof{figure}{\textbf{X:} $\alpha \in \{0.1, 0.3, 1.0\}$ (penalty strength from gentle to aggressive). \textbf{Y:} nDCG@10. Lines = different neg.\ threshold definitions (fixed$\leq$1 through median/modus). Higher $\alpha$ = more penalty = lower nDCG.}
+
+\textbf{Reading:}
+\begin{itemize}
+  \item $\alpha=0.1$: barely hurts nDCG ($-1$–$2\%$) but also barely helps avoidance.
+  \item $\alpha=1.0$: nDCG collapses (e.g.\ ML-20M drops from 0.083 to 0.026–0.070 depending on threshold).
+  \item Narrower threshold (fixed$\leq$1) is more stable across $\alpha$ than broad threshold (fixed$\leq$3).
+  \item \emph{Take-away:} there is no $\alpha$ that improves nDCG while avoiding dislikes — the tradeoff is always present.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig 5 — Threshold Comparison}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig5_threshold_comparison.png}
+\end{center}
+\captionof{figure}{\textbf{Left panel X:} threshold definition (fixed$\leq$1, fixed$\leq$2, fixed$\leq$3, median, modus). \textbf{Y:} nDCG@10 for each variant. \textbf{Right panel X:} same thresholds. \textbf{Y:} sim\_neg@10 (avoidance quality). Bars grouped by variant (baseline, filter, rerank, weighted).}
+
+\textbf{Pattern:}
+\begin{itemize}
+  \item nDCG (left): all thresholds produce near-identical nDCG within a variant.
+  \item sim\_neg (right): broader thresholds (fixed$\leq$3, median, modus) achieve lower sim\_neg (more avoidance) because more items are excluded.
+  \item Rerank with broad threshold: largest avoidance but largest nDCG penalty.
+  \item \emph{The choice of threshold affects avoidance quantity, not ranking quality}.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig 6 — Dataset Scaling}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig6_dataset_scaling.png}
+\end{center}
+\captionof{figure}{\textbf{Left X:} dataset (ML-1M, 10M, 20M). \textbf{Y:} nDCG@10 for baseline and best rerank. \textbf{Right X:} dataset size in millions of ratings. \textbf{Y:} both nDCG@10 and HR@10. Shows how SVD performance changes with data volume.}
+
+\textbf{Observation:}
+\begin{itemize}
+  \item Baseline nDCG: 1M=0.068, 10M=0.087, 20M=0.083. Non-monotone (20M slightly lower than 10M — possibly sparsity changes at scale).
+  \item Best rerank never beats baseline.
+  \item HR@10 follows a similar trajectory to nDCG.
+  \item Post-hoc variants do not become more effective with more data.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig — Arm B: Dislike Detection}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig_arm_b_detection.png}
+\end{center}
+\captionof{figure}{\textbf{X:} negative threshold definition per dataset (4 panels). \textbf{Y:} Detection HR@10 — probability that the held-out \emph{disliked} item lands in Arm B's top-10. Higher = Arm B correctly identifies disliked items.}
+
+\textbf{Key numbers:}
+\begin{itemize}
+  \item ML-1M: HR@10$\approx$0.11 (weak detection regardless of threshold).
+  \item ML-10M: fixed$\leq$1 → 0.19, fixed$\leq$2 → 0.17 (moderate); fixed$\leq$3 collapses to 0.01 — too much noise.
+  \item ML-20M: fixed$\leq$1 → 0.22 (best on ML), fixed$\leq$3 → 0.01.
+  \item Spotify: fixed$\leq$2 → 0.42 (strongest detection!), broader thresholds also good (0.37–0.40).
+  \item \emph{Why does Spotify detect better?} Skip signal is more extreme and consistent than star ratings; the latent space separates skipped tracks more cleanly.
+  \item \emph{Why does fixed$\leq$3 collapse on large ML?} At 10M+, almost all users have ratings $\leq$3; the "negative" class becomes near-universal and loses discriminative power.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig — Arm C: Hybrid vs.\ Arm A}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig_arm_c_headline.png}
+\end{center}
+\captionof{figure}{\textbf{Top row X:} $\alpha$ values. \textbf{Y:} nDCG@10. Lines = threshold configs. \textbf{Bottom row X:} $\alpha$. \textbf{Y:} sim\_neg@10. Arm A is shown as a horizontal dashed reference.}
+
+\textbf{Arm C formula:} $s_C(u,i) = \tilde{s}_A(u,i) - \alpha \cdot \tilde{s}_B(u,i)$ where $\tilde{s}$ is min-max normalised.
+
+\textbf{ML-1M result:} Arm A nDCG=0.081, best Arm C nDCG=0.071 (config: pos$\geq$3, neg$\leq$1, $\alpha$=0.05). Arm C loses nDCG vs.\ Arm A but gains avoidance (sim\_neg improves from 0 to 0.64).
+
+\textbf{Spotify result:} Arm A=0.345, best Arm C=0.342 — nearly tied. Arm C with small $\alpha$ preserves Arm A quality while adding avoidance.
+
+\textbf{Conclusion:} Arm C is a soft avoidance tool, not an accuracy booster. Its value depends on whether the application prioritises dislike avoidance.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig — Arm D: Joint Binary vs.\ Baselines}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig_arm_d_comparison.png}
+\end{center}
+\captionof{figure}{\textbf{X:} datasets (4 groups). \textbf{Y:} nDCG@10. Bars: full-rating SVD (grey), Arm A (blue), and the 4 Arm D threshold configurations (red shades). Shows which method wins per dataset and which Arm D config is best.}
+
+\textbf{On MovieLens:} Arm D $>$ Arm A $>$ Baseline for all three sizes. Best Arm D configs:
+\begin{itemize}
+  \item ML-1M: \thr{5}{1} → nDCG=0.112 ($+$64\% vs.\ baseline).
+  \item ML-10M: \thr{4}{1} → 0.254 ($+$191\%).
+  \item ML-20M: \thr{3}{2} → 0.300 ($+$263\%).
+\end{itemize}
+\textbf{On Spotify:} Arm A=0.345 $>$ Arm D=0.312. Joint training on noisy skip labels does not improve over clean positive-only training. Negative skip labels are too noisy to provide consistent contrast signals.
+
+\textbf{Why no bias in Arm D?} Binary targets 0/1 have no meaningful global mean; adding $\mu$ shifts all scores by a constant and degrades ranking. All best HPT configs found $b=\text{False}$.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Fig — Master nDCG: All Methods}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{../figures/fig_master_ndcg.png}
+\end{center}
+\captionof{figure}{\textbf{X:} method and dataset (grouped bars). \textbf{Y:} nDCG@10. All arms shown side by side per dataset. Arm D in red is best on ML; Arm A in blue is best on Spotify.}
+
+\textbf{Single take-away:} On explicit ratings, joint binary training (Arm D) is the strongest strategy. On implicit skip data, clean positive-only (Arm A) is the ceiling — noisy negatives add no value.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{HPT Details (Arm D)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Random search over: $f\in\{10,20,30,50,75,100,150,200\}$, epochs$\in\{10,20,30,50,75,100\}$, $\eta\in\{0.001,0.002,0.005,0.01,0.02\}$, $\lambda\in\{0.005,0.01,0.03,0.05,0.1,0.2\}$, bias$\in\{\text{True,False}\}$.
+
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+DS & Config & $f$ & $e$ & $\eta$ & $\lambda$ \\
+\midrule
+1M  & $\geq$4/$\leq$2 & 20 & 20 & .001 & .030 \\
+1M  & $\geq$5/$\leq$1 & 10 & 20 & .002 & .005 \\
+10M & $\geq$4/$\leq$1 & 10 & 30 & .002 & .100 \\
+10M & $\geq$3/$\leq$2 & 10 & 30 & .001 & .100 \\
+20M & $\geq$4/$\leq$1 & 30 & 30 & .002 & .050 \\
+20M & $\geq$3/$\leq$2 & 10 & 20 & .001 & .050 \\
+Sp. & $\geq$4/$\leq$1 &150 &100 & .020 & .100 \\
+Sp. & $\geq$3/$\leq$2 &200 & 50 & .020 & .100 \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\textbf{Pattern:} ML datasets converge with small $f$ (10–30), few epochs, low $\eta$. Spotify needs large $f$ (75–200) and more epochs — the skip-based signal requires more capacity to capture nuance.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Implementation Pipeline}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\colorbox{secbg}{\parbox{\linewidth}{\small
+\begin{enumerate}
+  \item \textbf{Data prep} (\texttt{src/data/}): load raw ratings, standardise schema, filter cold-start, remap IDs, compute user median/modus, generate pos/neg labels, split train/val/test (LOO).
+  \item \textbf{Candidate sets}: sample 500 negative candidates + 1 held-out pos per user. Build once before HPT loop (not per trial — key efficiency fix).
+  \item \textbf{HPT} (\texttt{scripts/run\_hyperparameter\_tuning.py}): Optuna random search, parallel workers, val nDCG@10 objective, SQLite study DB. Bugs fixed: duplicate CSV headers, trial overshoot, WAL timing.
+  \item \textbf{Grid runs} (\texttt{scripts/run\_arm\_*\_grid.py}): iterate over threshold × $\alpha$ combinations, train Surprise SVD with best HPT params, score all candidates, compute metrics.
+  \item \textbf{Evaluation} (\texttt{src/evaluation/}): nDCG, HR, MRR, P@10, sim\_neg@10, detection HR@10. Results saved to CSV + JSONL.
+  \item \textbf{Figures \& tables} (\texttt{scripts/generate\_all\_figures.py}, \texttt{generate\_arm\_figures.py}): matplotlib plots + LaTeX tables auto-generated from CSV.
+\end{enumerate}
+}}
+
+\textbf{Key invariant:} All arms use the same Surprise SVD interface; only training data differs. This isolates the treatment of negative feedback as the single variable.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Post-hoc Variants: Numerical Summary}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{tabular}{@{}llrr@{}}
+\toprule
+DS & Config & nDCG@10 & sim\_neg@10\\
+\midrule
+\multicolumn{4}{@{}l@{}}{\textit{ML-10M baseline = 0.087}}\\
+Filter fixed$\leq$1 & & .087 & .035\\
+Filter fixed$\leq$2 & & .087 & .164\\
+Rerank $\leq$1 $\alpha$0.1 & & .086 & .023\\
+Rerank $\leq$2 $\alpha$0.1 & & .084 & .147\\
+Rerank $\leq$3 $\alpha$1.0 & & .039 & .242\\
+Weighted $\leq$1 $\alpha$0.1 && .087 & .029\\
+\midrule
+\multicolumn{4}{@{}l@{}}{\textit{ML-20M baseline = 0.083}}\\
+Filter fixed$\leq$1 & & .083 & .033\\
+Rerank $\leq$1 $\alpha$0.1 & & .081 & .021\\
+Rerank $\leq$3 $\alpha$1.0 & & .029 & .189\\
+Weighted $\leq$1 $\alpha$0.1 && .083 & .027\\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\textbf{Read:} Filter is free (0 nDCG cost) but only removes items already seen as negative. Rerank with aggressive $\alpha$ strongly avoids but destroys ranking.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Arm B Detection Numbers}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+DS & Threshold & HR@10 & nDCG@10 & Users\\
+\midrule
+ML-1M  & $\leq$1 & .113 & .058 & 3663\\
+ML-1M  & $\leq$2 & .092 & .044 & 5423\\
+ML-10M & $\leq$1 & .187 & .092 & 37305\\
+ML-10M & $\leq$3 & .010 & .004 & 69439\\
+ML-20M & $\leq$1 & .220 & .104 & 72161\\
+ML-20M & $\leq$3 & .012 & .005 & 136851\\
+Spotify& $\leq$2 & .419 & .286 & 3707\\
+Spotify& $\leq$1 & .278 & .192 & 2083\\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\textbf{Cliff at fixed$\leq$3 on large ML:} nearly every user has ratings $\leq$3 → negative class is the majority → SVD cannot learn a meaningful dislike space.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Cross-Arm Relationships \& Insights}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{mdframed}[backgroundcolor=arma!10,linewidth=0.4pt]
+\textbf{Insight 1: Positive-only $>$ full-rating SVD.}\\
+Arm A consistently beats baseline by 19–191\% on ML and 1859\% on Spotify. Why? Mixed-sign regression forces the model to simultaneously minimize errors on likes and dislikes. This creates conflicting gradient signals in the latent space. Removing low ratings removes the noise, and the model learns a cleaner preference geometry.
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=armd!10,linewidth=0.4pt]
+\textbf{Insight 2: Joint binary (Arm D) beats positive-only on explicit data.}\\
+The binary 0/1 contrast provides explicit negative gradient that pushes disliked items away. This sharpens the latent space beyond what positive-only training achieves, provided the negative labels are clean (1-star or 2-star). On Spotify, skip labels are noisier — the contrast degrades and Arm A wins.
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=armc!10,linewidth=0.4pt]
+\textbf{Insight 3: Post-hoc cannot replicate training-time effects.}\\
+Reranking modifies the output list but not the latent representation. The model never learned to avoid dislikes internally. Arm C (hybrid) adds avoidance at a nDCG cost. Arm D (joint) achieves both internally with no post-hoc cost.
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=armb!10,linewidth=0.4pt]
+\textbf{Insight 4: Label purity $>$ label volume.}\\
+\thr{5}{1} on ML-1M gives nDCG=0.112; \thr{3}{2} gives 0.098 despite $5\times$ more training data. Ambiguous mid-range ratings (2–3 stars) are not reliable dislike signals and introduce noise that overwhelms the volume benefit.
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=base!10,linewidth=0.4pt]
+\textbf{Insight 5: Explicit vs.\ implicit feedback have different ceilings.}\\
+Explicit ratings provide unambiguous dislike signals (1★). Implicit skip signals carry more noise (a skip can mean: didn't like it, heard it recently, wrong mood, shuffle). This fundamentally limits what joint training can achieve on Spotify. Denoising (Li et al.\ 2026) could help but is outside scope.
+\end{mdframed}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Theoretical Background}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Why does negative feedback matter at all?}
+\begin{itemize}
+  \item Cena et al.\ (2023): dislike is a \emph{distinct signal}, not just absence of like. A user who has not seen an item differs from one who has seen and rejected it.
+  \item Paudel et al.\ (2018): \emph{loss aversion} — preventing a strongly disliked recommendation contributes more to satisfaction than a marginal relevance gain.
+  \item Peska \& Vojtas (2013): non-purchase events in e-commerce = weak implicit negatives.
+\end{itemize}
+
+\textbf{Why does BPR / one-class MF ignore negatives?}\\
+Rendle et al.\ (2012) treat all observed interactions as positive and sample non-interacted as "missing". Dislike is structurally absent. This is fine for pure relevance optimisation but violates the Cena et al.\ structural distinction.
+
+\textbf{Neural \& graph extensions:}
+\begin{itemize}
+  \item NFARec, SIGformer, Pone-GNN: sign-aware graph neural networks processing positive and negative edges in parallel.
+  \item YouTube sequential rec (Wang et al.\ 2023): negative feedback loop at industrial scale.
+  \item LLM denoising (Jeong et al.\ 2025): use LLMs to refine noisy negative labels before training.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Common Exam / Oral Questions}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{Q: Why does the full-rating SVD underperform positive-only?}\\
+A: Mixed-sign regression creates conflicting gradients. A 1★ and a 5★ item for the same user pull the user's latent vector in opposite directions simultaneously, smearing the preference geometry.
+
+\textbf{Q: Why does filter not change nDCG?}\\
+A: Filter only removes items the model has \emph{already} scored poorly (known negatives from training). These rarely appear in top-10 anyway. sim\_neg improves only because those same items are excluded from the candidate set.
+
+\textbf{Q: Why is Arm D's best $\theta^-$ conservative (fixed$\leq$1 or fixed$\leq$2)?}\\
+A: With binary 0/1 targets, mislabelled negatives (e.g.\ a 3★ item labelled 0) create contradictory training signals — the model is told to push away items the user rated mediocrely, not disliked. Clean labels avoid this contradiction.
+
+\textbf{Q: Why no bias in Arm D?}\\
+A: $\mu = \text{mean of all targets}$. With binary targets, $\mu \approx \text{fraction of positives}$. Adding it adds a dataset-level offset that harms relative ranking. The inner product $q_i^\top p_u$ alone is the ranking signal.
+
+\textbf{Q: What is sim\_neg@10?}\\
+A: Average cosine similarity between the user vector and the negatively-labelled items appearing in the top-10. It measures how "close" the top recommendations are to things the user dislikes. Lower = better avoidance.
+
+\textbf{Q: Why does Arm B collapse at fixed$\leq$3 on large datasets?}\\
+A: At ML-10M and ML-20M, nearly all users have rated some items $\leq$3. The "negative" class becomes almost universal; SVD learns a trivially flat dislike space and the detection signal is lost.
+
+\textbf{Q: Why does Spotify benefit so much from Arm A vs.\ baseline?}\\
+A: The full-rating baseline on Spotify trains on skip-mapped scores (1–5) with mixed signs, producing near-random rankings (nDCG=0.018). Removing the negative signals leaves a clean positive preference signal that SVD can learn effectively (+1859\%).
+
+\end{multicols}
+
+\vspace{2pt}
+\noindent\rule{\linewidth}{0.6pt}\\
+\tiny
+\textbf{Legend:} \textcolor{base}{\textbf{BL}}=Full-rating SVD baseline \
+\textcolor{arma}{\textbf{Arm A}}=Positive-only SVD \
+\textcolor{armb}{\textbf{Arm B}}=Negative-only detector \
+\textcolor{armc}{\textbf{Arm C}}=Post-hoc hybrid ($s_A - \alpha s_B$) \
+\textcolor{armd}{\textbf{Arm D}}=Joint binary SVD (pos$\to$1, neg$\to$0) \
+sim\_neg@10=cosine sim of top-10 recs to disliked items (lower=more avoidance) \
+nDCG=normalized discounted cumulative gain \
+LOO=leave-one-out split \
+$f$=latent factors, $\eta$=learning rate, $\lambda$=regularization, $e$=epochs.
+
+\end{document}

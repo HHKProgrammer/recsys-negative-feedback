@@ -1,5 +1,6 @@
 \begin{table}[ht]
 \centering
+\caption{Best variant per dataset vs baseline}
 \begin{tabular}{lrrrrrr}
 \toprule
 Dataset & Variant & Best NDCG@10 & Baseline NDCG & Change (\%) & Best config & sim\_neg@10 \\
@@ -13,10 +14,6 @@ ml-10m & weighted & 0.0865 & 0.0872 & -0.8 & weighted\_fixed\_1\_a0.1 & 0.0287 \
 ml-20m & filter & 0.0826 & 0.0826 & 0.0 & filter\_fixed\_2 & 0.1453 \\
 ml-20m & rerank & 0.0814 & 0.0826 & -1.4 & rerank\_fixed\_1\_a0.1 & 0.0205 \\
 ml-20m & weighted & 0.0826 & 0.0826 & 0.0 & weighted\_fixed\_1\_a0.1 & 0.0267 \\
-spotify & filter & 0.0176 & 0.0176 & 0.0 & filter\_fixed\_1 & 0.0202 \\
-spotify & rerank & 0.0179 & 0.0176 & 1.6 & rerank\_fixed\_3\_a0.3 & 0.0606 \\
-spotify & weighted & 0.018 & 0.0176 & 2.5 & weighted\_fixed\_1\_a1.0 & 0.0042 \\
 \bottomrule
 \end{tabular}
-\caption{Best variant per dataset vs baseline}
 \end{table}

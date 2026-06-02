@@ -1,14 +1,21 @@
+% Chapter 5.6 / 5.7 — Arm D vs Arm A Headline Comparison
+% Requires: \usepackage{booktabs} in preamble
 \begin{table}[ht]
 \centering
-\begin{tabular}{lrrrrrr}
+\caption{Arm~D (joint binary SVD) versus Arm~A (positive-only SVD) and the
+  full-rating SVD baseline. Test-set nDCG@10. Arm~D uses the best-performing
+  threshold configuration per dataset (selected on validation nDCG@10).
+  $\Delta_{\text{D vs A}}$ and $\Delta_{\text{D vs SVD}}$ are relative
+  improvements.}
+\label{tab:arm_d_vs_arm_a}
+\begin{tabular}{lrrrrrl}
 \toprule
-Dataset & SVD (nDCG@10) & Arm A (nDCG@10) & Arm D (nDCG@10) & Δ D vs A & Δ D vs SVD & Best Arm D config \\
+Dataset       & SVD    & Arm~A  & Arm~D  & $\Delta_{\text{D vs A}}$ & $\Delta_{\text{D vs SVD}}$ & Best config \\
 \midrule
-ml-1m & 0.0684 & 0.0811 & 0.1122 & +0.0310 & +0.0438 & pos≥5 neg≤1 \\
-ml-10m & 0.0872 & 0.2219 & 0.2535 & +0.0316 & +0.1663 & pos≥4 neg≤1 \\
-ml-20m & 0.0826 & 0.2405 & 0.2995 & +0.0589 & +0.2169 & pos≥3 neg≤2 \\
-spotify & 0.0176 & 0.3447 & 0.3117 & -0.0330 & +0.2941 & pos≥4 neg≤1 \\
+MovieLens 1M  & 0.0684 & 0.0811 & 0.1122 & $+38.3\%$ & $+64.0\%$ & ${\geq}5$\,/\,${\leq}1$ \\
+MovieLens 10M & 0.0872 & 0.2219 & 0.2535 & $+14.2\%$ & $+190.7\%$ & ${\geq}4$\,/\,${\leq}1$ \\
+MovieLens 20M & 0.0826 & 0.2405 & 0.2995 & $+24.5\%$ & $+262.6\%$ & ${\geq}3$\,/\,${\leq}2$ \\
+Spotify MSSD  & 0.0176 & 0.3447 & 0.3117 & $-9.6\%$  & $+1671.0\%$ & ${\geq}4$\,/\,${\leq}1$ \\
 \bottomrule
 \end{tabular}
-\caption{Arm A (positive-only SVD) vs Arm D (joint positive-negative SVD). Arm D trains on binary targets to test whether incorporating negative feedback during training improves top-N ranking quality over positive-only training.}
 \end{table}

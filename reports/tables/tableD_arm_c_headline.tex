@@ -1,12 +1,26 @@
+% Chapter 5.5 — Arm C: Post-Hoc Hybrid Re-Ranking
+% Full grid run on ML-1M and Spotify only (10M/20M baseline = pos-only SVD)
+% Requires: \usepackage{booktabs} in preamble
 \begin{table}[ht]
 \centering
-\begin{tabular}{lrrrrrrrr}
+\caption{Arm~C accuracy--avoidance tradeoff on MovieLens~1M and Spotify~MSSD.
+  Arm~A is positive-only SVD (ranking baseline); Arm~C adds a cosine-similarity
+  penalty to push recommendations away from known disliked items.
+  sim\_neg@10 measures cosine similarity of the top-10 list to the user's
+  disliked items in latent space (lower = better avoidance; 0 = no avoidance data).
+  Best config selected by highest nDCG@10 over all ($\theta^+$, $\theta^-$, $\alpha$).}
+\label{tab:arm_c}
+\begin{tabular}{llrrrrrr}
 \toprule
-Dataset & SVD baseline NDCG@10 & Arm A NDCG@10 & Arm A Δ vs baseline (\%) & Arm C NDCG@10 & Arm C Δ vs baseline (\%) & Best Arm C config & Arm A sim\_neg@10 & Arm C sim\_neg@10 \\
+Dataset      & Model   & nDCG@10 & $\Delta$\,vs Baseline & sim\_neg@10 & Best config \\
 \midrule
-ml-1m & 0.0684 & 0.0811 & 18.6 & 0.0707 & 3.3 & arm\_c\_pos\_ge\_3\_neg\_le\_1\_alpha\_0.05 & 0.0 & 0.6369 \\
-spotify & 0.0176 & 0.3447 & 1858.7 & 0.3423 & 1844.9 & arm\_c\_pos\_ge\_4\_neg\_le\_1\_alpha\_0.05 & 0.0 & 0.2021 \\
+MovieLens 1M & Baseline  & 0.0684 & ---      & 0.000 & --- \\
+             & Arm~A     & 0.0811 & $+18.6\%$ & 0.000 & $\theta^+\!\geq\!4$ \\
+             & Arm~C     & 0.0707 & $+3.3\%$  & 0.637 & $\theta^+\!\geq\!3,\ \theta^-\!\leq\!1,\ \alpha\!=\!0.05$ \\
+\midrule
+Spotify MSSD & Baseline  & 0.0176 & ---       & 0.000 & --- \\
+             & Arm~A     & 0.3447 & $+1858.5\%$ & 0.000 & $\theta^+\!\geq\!4$ \\
+             & Arm~C     & 0.3423 & $+1844.9\%$ & 0.202 & $\theta^+\!\geq\!4,\ \theta^-\!\leq\!1,\ \alpha\!=\!0.05$ \\
 \bottomrule
 \end{tabular}
-\caption{Arm A vs Arm C headline comparison. Best config = highest NDCG@10 over all (pos_threshold, neg_threshold, alpha). No significance tests — requires per-user data (future work).}
 \end{table}

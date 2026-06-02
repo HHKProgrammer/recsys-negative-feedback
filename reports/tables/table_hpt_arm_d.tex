@@ -1,0 +1,46 @@
+% Appendix — HPT Results: Best Hyperparameters for Arm D
+% Requires: \usepackage{booktabs} in preamble
+% Engine: Random search (uniform sampling over the grid defined in Section 4)
+% Val nDCG evaluated on up to 5000 users with 500 candidate items
+\begin{table}[ht]
+\centering
+\caption{Best hyperparameters found by random search for each Arm~D
+  configuration, selected by validation nDCG@10.
+  $f$ = number of latent factors; $e$ = training epochs;
+  $\eta$ = learning rate; $\lambda$ = regularization; $b$ = biased model.
+  All best configurations have $b\!=\!\text{False}$ (no global bias terms),
+  which is consistent with binary targets (0/1) where a global mean would
+  introduce an offset.
+  Train rows = total binary training interactions (positives + negatives)
+  for the HPT runs (using \texttt{train\_inner}); final model uses full \texttt{train}.}
+\label{tab:hpt_arm_d}
+\begin{tabular}{llrrrrrrr}
+\toprule
+Dataset       & Config          & Trials & Val nDCG & $f$ & $e$ & $\eta$ & $\lambda$ & Train rows \\
+\midrule
+\multicolumn{9}{l}{\textit{MovieLens 1M}} \\
+              & ${\geq}4$/${\leq}2$ & 200 & 0.1058 & 20  & 20 & 0.001 & 0.03 & --- \\
+              & ${\geq}4$/${\leq}1$ & 200 & 0.1103 & 20  & 20 & 0.001 & 0.03 & --- \\
+              & ${\geq}5$/${\leq}1$ & 200 & 0.0981 & 10  & 20 & 0.002 & 0.005 & --- \\
+              & ${\geq}3$/${\leq}2$ & 200 & 0.1043 & 20  & 20 & 0.001 & 0.03 & --- \\
+\midrule
+\multicolumn{9}{l}{\textit{MovieLens 10M}} \\
+              & ${\geq}4$/${\leq}2$ & 192 & 0.2165 & 10  & 30 & 0.002 & 0.05  & 6{,}299{,}588 \\
+              & ${\geq}4$/${\leq}1$ & 423 & 0.2469 & 10  & 30 & 0.002 & 0.10  & 5{,}401{,}890 \\
+              & ${\geq}5$/${\leq}1$ & 226 & 0.1919 & 10  & 20 & 0.010 & 0.05  & 1{,}989{,}221 \\
+              & ${\geq}3$/${\leq}2$ & 330 & 0.2614 & 10  & 30 & 0.001 & 0.10  & 9{,}492{,}113 \\
+\midrule
+\multicolumn{9}{l}{\textit{MovieLens 20M}} \\
+              & ${\geq}4$/${\leq}2$ & 200 & 0.2574 & 20  & 20 & 0.005 & 0.03  & 12{,}433{,}426 \\
+              & ${\geq}4$/${\leq}1$ & 189 & 0.2839 & 30  & 30 & 0.002 & 0.05  & 10{,}745{,}496 \\
+              & ${\geq}5$/${\leq}1$ & 206 & 0.2224 & 10  & 20 & 0.001 & 0.005 & 3{,}751{,}151 \\
+              & ${\geq}3$/${\leq}2$ & 204 & 0.3009 & 10  & 20 & 0.001 & 0.05  & 18{,}833{,}707 \\
+\midrule
+\multicolumn{9}{l}{\textit{Spotify MSSD}} \\
+              & ${\geq}4$/${\leq}2$ & 200 & 0.2534 & 100 & 30 & 0.02  & 0.20  & --- \\
+              & ${\geq}4$/${\leq}1$ & 200 & 0.2913 & 150 & 100 & 0.02 & 0.10  & --- \\
+              & ${\geq}5$/${\leq}1$ & 200 & 0.2228 & 75  & 75 & 0.02  & 0.20  & --- \\
+              & ${\geq}3$/${\leq}2$ & 200 & 0.2600 & 200 & 50 & 0.02  & 0.10  & --- \\
+\bottomrule
+\end{tabular}
+\end{table}

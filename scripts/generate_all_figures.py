@@ -65,7 +65,15 @@ TABLES_DIR.mkdir(parents=True, exist_ok=True)
 
 
 plt.style.use("seaborn-v0_8-whitegrid")
-plt.rcParams.update({"font.size": 11, "axes.titlesize": 12, "figure.dpi": 120})
+plt.rcParams.update({
+    "font.size":        14,
+    "axes.titlesize":   15,
+    "axes.labelsize":   13,
+    "xtick.labelsize":  12,
+    "ytick.labelsize":  12,
+    "legend.fontsize":  12,
+    "figure.dpi":       120,
+})
 
 # one consistent color per variant / dataset throughout all figures
 VARIANT_COLORS = {
@@ -279,74 +287,88 @@ def save(name: str):
 #   If the bar is inside the green band → results look correct.
 
 def fig1_is_my_baseline_correct(standard: dict):
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    from matplotlib.patches import Patch
 
-    # left: actual NDCG@10 vs random-rank reference line
-    # NOTE: the old version showed an *estimated* RMSE bar alongside real Surprise numbers
-    # which was misleading (different metric, different dataset, not computed).
-    # Replaced with: actual NDCG@10 per dataset vs a random-ranker reference
-    # (random ranker on 501 candidates hits rank ~250.5 → expected NDCG ≈ log2(2)/log2(251) ≈ 0.0028)
-    ax = axes[0]
-    ds_list_left = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"] if d in standard]
-    if ds_list_left:
-        ndcg_vals = [m(get_baseline(standard[ds]), "ndcg@10") for ds in ds_list_left]
-        hr_vals   = [m(get_baseline(standard[ds]), "hit@10")  for ds in ds_list_left]
-        x         = np.arange(len(ds_list_left))
-        w         = 0.35
-        bar_colors = [DATASET_COLORS.get(ds, "#888") for ds in ds_list_left]
-        ax.bar(x - w/2, ndcg_vals, w, color=bar_colors, alpha=0.85, label="NDCG@10 (measured)")
-        ax.bar(x + w/2, hr_vals,   w, color=bar_colors, alpha=0.45, label="HR@10 (measured)")
-        # random-rank reference: hit prob = k / n_candidates = 10 / 501 ≈ 0.020
-        random_hr = 10 / 501
-        ax.axhline(random_hr, color="red", lw=1.2, linestyle="--",
-                   label=f"Random ranker HR@10 ≈ {random_hr:.3f}")
-        for i, (nd, hr) in enumerate(zip(ndcg_vals, hr_vals)):
-            ax.text(i - w/2, nd + 0.001, f"{nd:.4f}", ha="center", fontsize=8)
-            ax.text(i + w/2, hr + 0.001, f"{hr:.4f}", ha="center", fontsize=8)
-        ax.set_xticks(x)
-        ax.set_xticklabels([DATASET_LABEL.get(ds, ds) for ds in ds_list_left], fontsize=8)
-        ax.set_ylabel("Metric value")
-        ax.set_title("Fig 1a — Baseline SVD: NDCG@10 and HR@10\n"
-                     "(501 sampled candidates, random LOO split)")
-        ax.legend(fontsize=9)
-        ax.text(0.03, 0.03,
-                "All values computed on held-out test set.\n"
-                "Random ranker reference: hit@10 = 10/501 ≈ 0.020.",
-                transform=ax.transAxes, fontsize=7.5, color="#666",
-                verticalalignment="bottom", style="italic")
-
-    # right: NDCG vs expected range
-    ax = axes[1]
     ds_list = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"] if d in standard]
-    if ds_list:
-        ndcg_vals = [m(get_baseline(standard[ds]), "ndcg@10") for ds in ds_list]
-        x = np.arange(len(ds_list))
-        bar_colors = [DATASET_COLORS.get(ds, "#888") for ds in ds_list]
-        ax.bar(x, ndcg_vals, color=bar_colors, alpha=0.85, zorder=3)
+    if not ds_list:
+        return
 
-        for i, ds in enumerate(ds_list):
-            lo, hi = BENCHMARKS["ndcg_expected"].get(ds, (0, 0))
-            ax.fill_between([i - 0.45, i + 0.45], lo, hi, alpha=0.2,
-                            color="green", zorder=2)
-            ax.plot([i - 0.45, i + 0.45], [lo, lo], "k--", lw=0.8, alpha=0.4)
-            ax.plot([i - 0.45, i + 0.45], [hi, hi], "k--", lw=0.8, alpha=0.4)
-            ax.text(i, ndcg_vals[i] + 0.001, f"{ndcg_vals[i]:.4f}",
-                    ha="center", fontsize=9)
+    ds_labels  = [DATASET_LABEL.get(ds, ds) for ds in ds_list]
+    bar_colors = [DATASET_COLORS.get(ds, "#888") for ds in ds_list]
+    ndcg_vals  = [m(get_baseline(standard[ds]), "ndcg@10") for ds in ds_list]
+    hr_vals    = [m(get_baseline(standard[ds]), "hit@10")  for ds in ds_list]
+    x, w       = np.arange(len(ds_list)), 0.35
+    random_hr  = 10 / 501
 
-        ax.set_xticks(x)
-        ax.set_xticklabels([DATASET_LABEL.get(ds, ds) for ds in ds_list], fontsize=8)
-        ax.set_ylabel("NDCG@10")
-        ax.set_title("Fig 1b — My NDCG@10 vs Plausibility Range\n"
-                     "(green band = heuristic estimate, not a published benchmark)")
+    # ── Fig 1a: Baseline ranking performance ──────────────────────────────────
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(x - w/2, ndcg_vals, w, color=bar_colors, alpha=0.85, label="nDCG@10")
+    ax.bar(x + w/2, hr_vals,   w, color=bar_colors, alpha=0.45, label="HR@10")
+    ax.axhline(random_hr, color="red", lw=1.4, linestyle="--",
+               label=f"Random ranker HR@10 ≈ {random_hr:.3f}")
+    for i, (nd, hr) in enumerate(zip(ndcg_vals, hr_vals)):
+        ax.text(i - w/2, nd + 0.002, f"{nd:.4f}", ha="center", fontsize=11)
+        ax.text(i + w/2, hr + 0.002, f"{hr:.4f}", ha="center", fontsize=11)
+    ax.set_xticks(x)
+    ax.set_xticklabels(ds_labels)
+    ax.set_ylabel("Metric value")
+    ax.set_title("Baseline ranking performance")
+    ax.legend()
+    fig.tight_layout()
+    save("fig1a_baseline_performance")
+    plt.close(fig)
 
-        from matplotlib.patches import Patch
-        ax.legend(handles=[
-            Patch(facecolor="green", alpha=0.25,
-                  label="Plausibility range (own estimate: NCF He et al. 2017\n"
-                        "scaled to 500-candidate sampled eval — not a direct benchmark)"),
-            Patch(facecolor=VARIANT_COLORS["baseline"], label="My baseline SVD"),
-        ], fontsize=8)
+    # ── Fig 1b: nDCG plausibility check ───────────────────────────────────────
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(x, ndcg_vals, color=bar_colors, alpha=0.85, zorder=3)
+    for i, ds in enumerate(ds_list):
+        lo, hi = BENCHMARKS["ndcg_expected"].get(ds, (0, 0))
+        ax.fill_between([i - 0.45, i + 0.45], lo, hi, alpha=0.12,
+                        color="green", zorder=2)
+        ax.plot([i - 0.45, i + 0.45], [lo, lo], "k--", lw=0.8, alpha=0.4)
+        ax.plot([i - 0.45, i + 0.45], [hi, hi], "k--", lw=0.8, alpha=0.4)
+        ax.text(i, ndcg_vals[i] + 0.002, f"{ndcg_vals[i]:.4f}",
+                ha="center", fontsize=11)
+    ax.set_xticks(x)
+    ax.set_xticklabels(ds_labels)
+    ax.set_ylabel("nDCG@10")
+    ax.set_title("nDCG@10 plausibility check")
+    ax.legend(handles=[
+        Patch(facecolor="green", alpha=0.15, label="Reference range for plausibility only"),
+        Patch(facecolor=bar_colors[0],       label="Baseline SVD"),
+    ])
+    fig.tight_layout()
+    save("fig1b_ndcg_plausibility")
+    plt.close(fig)
 
+    # keep the combined version for backwards compatibility
+    fig, axes = plt.subplots(2, 1, figsize=(9, 10))
+    ax = axes[0]
+    ax.bar(x - w/2, ndcg_vals, w, color=bar_colors, alpha=0.85, label="nDCG@10")
+    ax.bar(x + w/2, hr_vals,   w, color=bar_colors, alpha=0.45, label="HR@10")
+    ax.axhline(random_hr, color="red", lw=1.4, linestyle="--",
+               label=f"Random ranker HR@10 ≈ {random_hr:.3f}")
+    for i, (nd, hr) in enumerate(zip(ndcg_vals, hr_vals)):
+        ax.text(i - w/2, nd + 0.002, f"{nd:.4f}", ha="center", fontsize=11)
+        ax.text(i + w/2, hr + 0.002, f"{hr:.4f}", ha="center", fontsize=11)
+    ax.set_xticks(x); ax.set_xticklabels(ds_labels)
+    ax.set_ylabel("Metric value"); ax.set_title("Baseline ranking performance")
+    ax.legend()
+    ax = axes[1]
+    ax.bar(x, ndcg_vals, color=bar_colors, alpha=0.85, zorder=3)
+    for i, ds in enumerate(ds_list):
+        lo, hi = BENCHMARKS["ndcg_expected"].get(ds, (0, 0))
+        ax.fill_between([i - 0.45, i + 0.45], lo, hi, alpha=0.12, color="green", zorder=2)
+        ax.plot([i - 0.45, i + 0.45], [lo, lo], "k--", lw=0.8, alpha=0.4)
+        ax.plot([i - 0.45, i + 0.45], [hi, hi], "k--", lw=0.8, alpha=0.4)
+        ax.text(i, ndcg_vals[i] + 0.002, f"{ndcg_vals[i]:.4f}", ha="center", fontsize=11)
+    ax.set_xticks(x); ax.set_xticklabels(ds_labels)
+    ax.set_ylabel("nDCG@10"); ax.set_title("nDCG@10 plausibility check")
+    ax.legend(handles=[
+        Patch(facecolor="green", alpha=0.15, label="Reference range for plausibility only"),
+        Patch(facecolor=bar_colors[0], label="Baseline SVD"),
+    ])
+    fig.tight_layout()
     save("fig1_is_baseline_correct")
 
 
@@ -367,44 +389,81 @@ def fig1_is_my_baseline_correct(standard: dict):
 #             but NDCG also goes down the tradeoff is the main finding
 
 def fig2_the_tradeoff(standard: dict):
-    ds_list = [d for d in ["ml-1m", "ml-10m"] if d in standard]
+    from collections import defaultdict
+
+    ds_list = [d for d in ["ml-1m", "ml-10m", "ml-20m", "spotify"] if d in standard]
     if not ds_list:
-        print("  skipping fig2: no ml results")
+        print("  skipping fig2: no results")
         return
 
-    fig, axes = plt.subplots(1, len(ds_list), figsize=(7 * len(ds_list), 5))
-    if len(ds_list) == 1:
-        axes = [axes]
+    panel_labels = {
+        "ml-1m":   "MovieLens 1M",
+        "ml-10m":  "MovieLens 10M",
+        "ml-20m":  "MovieLens 20M",
+        "spotify": "Spotify MSSD",
+    }
 
-    for ax, ds in zip(axes, ds_list):
+    n = len(ds_list)
+    fig, axes = plt.subplots(n, 1, figsize=(9, 5 * n), squeeze=False)
+    axes_flat = np.array(axes).flatten()
+
+    for ax, ds in zip(axes_flat, ds_list):
         exps = standard[ds]
-        for variant in ["baseline", "filter", "rerank", "weighted"]:
+        bl   = get_baseline(exps)
+        if bl is None:
+            ax.set_title(panel_labels.get(ds, ds.upper()) + "\n(no data)")
+            continue
+        b_ndcg = m(bl, "ndcg@10")
+
+        # baseline nDCG as thin grey horizontal reference
+        ax.axhline(b_ndcg, color="#999", lw=1.0, linestyle="-",
+                   label=f"Baseline  nDCG = {b_ndcg:.4f}", zorder=1)
+
+        for variant in ["filter", "rerank", "weighted"]:
             sub = [e for e in exps if e["variant"] == variant]
             if not sub:
                 continue
-            color = VARIANT_COLORS.get(variant, "#888")
-            xs = [m(e, "sim_to_neg@10") for e in sub]
-            ys = [m(e, "ndcg@10") for e in sub]
-            ax.scatter(xs, ys, color=color, s=55, label=variant, zorder=3, alpha=0.85)
-            if variant in ("rerank", "weighted"):
-                sub_s = sorted(sub, key=lambda e: e.get("alpha") or 0)
-                ax.plot([m(e, "sim_to_neg@10") for e in sub_s],
-                        [m(e, "ndcg@10")       for e in sub_s],
-                        color=color, lw=0.8, alpha=0.4, linestyle="--")
-                # label the alpha=1.0 point
-                last = sub_s[-1]
-                ax.annotate(f"α={last.get('alpha')}", (m(last, "sim_to_neg@10"), m(last, "ndcg@10")),
-                            textcoords="offset points", xytext=(4, -10), fontsize=7.5, color=color)
+            color  = VARIANT_COLORS.get(variant, "#888")
+            v_label = {"filter": "Filter", "rerank": "Rerank", "weighted": "Weighted"}[variant]
 
-        b_ndcg = m(get_baseline(exps), "ndcg@10")
-        ax.axhline(b_ndcg, color=VARIANT_COLORS["baseline"],
-                   lw=1.2, linestyle=":", alpha=0.7, label=f"baseline NDCG = {b_ndcg:.4f}")
-        ax.set_xlabel("sim_to_neg@10\n(lower = top-10 is further from disliked items)")
-        ax.set_ylabel("NDCG@10  (higher = better)")
-        ax.set_title(f"Fig 2 — The Core Tradeoff ({ds.upper()})\n"
-                     "Reducing similarity to negatives hurts NDCG")
-        ax.legend(fontsize=8)
+            if variant == "filter":
+                # one diamond per threshold config
+                xs = [m(e, "sim_to_neg@10") for e in sub]
+                ys = [m(e, "ndcg@10") for e in sub]
+                ax.scatter(xs, ys, color=color, s=60, label=v_label,
+                           zorder=3, alpha=0.85, marker="D")
+            else:
+                # group by threshold key → one thin line per threshold, sorted by alpha
+                by_thr = defaultdict(list)
+                for e in sub:
+                    thr_key = (e.get("threshold_type", ""),
+                               e.get("fixed_threshold", ""),
+                               e.get("threshold_label", ""))
+                    by_thr[thr_key].append(e)
 
+                first = True
+                for thr_key, thr_sub in sorted(by_thr.items()):
+                    thr_sub_s = sorted(thr_sub, key=lambda e: e.get("alpha") or 0)
+                    if len(thr_sub_s) < 2:
+                        continue
+                    xs_s = [m(e, "sim_to_neg@10") for e in thr_sub_s]
+                    ys_s = [m(e, "ndcg@10")       for e in thr_sub_s]
+                    ax.plot(xs_s, ys_s, color=color, lw=1.8, alpha=0.70,
+                            marker="o", markersize=5,
+                            label=v_label if first else None, zorder=3)
+                    first = False
+
+        ax.set_xlabel("sim_neg@10  (lower = stronger avoidance)")
+        ax.set_ylabel("nDCG@10  (higher = better ranking)")
+        ax.set_title(panel_labels.get(ds, ds.upper()))
+        ax.legend(fontsize=13)
+
+    for ax in axes_flat[len(ds_list):]:
+        ax.set_visible(False)
+
+    fig.suptitle("Ranking accuracy versus negative-item avoidance",
+                 fontsize=13, y=1.01)
+    fig.tight_layout()
     save("fig2_core_tradeoff")
 
 
@@ -422,11 +481,27 @@ def fig3_best_variant_per_dataset(standard: dict):
         print("  skipping fig3: no results")
         return
 
-    n = len(available)
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 5), sharey=False)
-    if n == 1:
-        axes = [axes]
+    baseline_grey = "#888"
+    variant_colors_local = {**VARIANT_COLORS, "baseline": baseline_grey}
 
+    panel_labels = {
+        "ml-1m":   "MovieLens 1M",
+        "ml-10m":  "MovieLens 10M",
+        "ml-20m":  "MovieLens 20M",
+        "spotify": "Spotify MSSD",
+    }
+    variant_labels = {
+        "baseline": "Baseline",
+        "filter":   "Filter",
+        "rerank":   "Rerank",
+        "weighted": "Weighted",
+    }
+
+    n = len(available)
+    fig, axes = plt.subplots(n, 1, figsize=(9, 4 * n), sharey=False, squeeze=False)
+    axes = axes.flatten()
+
+    handles_seen = {}
     for ax, (ds, exps) in zip(axes, available.items()):
         variants = ["baseline", "filter", "rerank", "weighted"]
         best = {}
@@ -435,26 +510,42 @@ def fig3_best_variant_per_dataset(standard: dict):
             if sub:
                 best[v] = max(m(e, "ndcg@10") for e in sub)
 
-        colors = [VARIANT_COLORS.get(v, "#888") for v in best]
-        bars = ax.bar(list(best.keys()), list(best.values()),
-                      color=colors, alpha=0.85)
+        colors = [variant_colors_local.get(v, "#888") for v in best]
+        x_labels = [variant_labels.get(v, v) for v in best]
+        bars = ax.bar(x_labels, list(best.values()), color=colors, alpha=0.85)
+
         b_val = best.get("baseline", 0)
-        ax.axhline(b_val, color=VARIANT_COLORS["baseline"],
-                   lw=1.5, linestyle="--", alpha=0.7, label="baseline")
+        ax.axhline(b_val, color=baseline_grey, lw=1.2, linestyle="--", alpha=0.6)
 
         for bar, val in zip(bars, best.values()):
             ax.text(bar.get_x() + bar.get_width() / 2,
-                    val + 0.0005, f"{val:.4f}",
-                    ha="center", va="bottom", fontsize=8.5)
+                    val + 0.0003, f"{val:.4f}",
+                    ha="center", va="bottom", fontsize=13.5)
 
-        ax.set_title(f"{ds.upper()}\n{classify(ds, exps)}", fontsize=9)
-        ax.set_ylabel("Best NDCG@10" if ax is axes[0] else "")
-        ax.set_ylim(0, max(best.values()) * 1.20)
+        ax.set_title(panel_labels.get(ds, ds.upper()), fontsize=10)
+        ax.set_ylabel("nDCG@10")
+        y_min = min(best.values()) * 0.94
+        ax.set_ylim(y_min, max(best.values()) * 1.10)
         ax.tick_params(axis="x", rotation=10)
-        ax.legend(fontsize=8)
 
-    fig.suptitle("Fig 3 — Best NDCG@10 per Variant across Datasets\n"
-                 "(best threshold + best alpha for each variant)", fontsize=11)
+        # collect handles for shared legend
+        for bar, v in zip(bars, best.keys()):
+            if v not in handles_seen:
+                handles_seen[v] = bar
+
+    from matplotlib.patches import Patch
+    legend_handles = [
+        Patch(facecolor=variant_colors_local.get(v, "#888"), alpha=0.85,
+              label=variant_labels.get(v, v))
+        for v in ["baseline", "filter", "rerank", "weighted"]
+        if v in handles_seen
+    ]
+    fig.legend(handles=legend_handles, loc="upper center", ncol=len(legend_handles),
+               fontsize=13, frameon=False, bbox_to_anchor=(0.5, 1.02))
+
+    fig.suptitle("Best nDCG@10 per post-hoc strategy across MovieLens datasets",
+                 fontsize=11, y=1.06)
+    fig.tight_layout()
     save("fig3_best_variant_per_dataset")
 
 
@@ -468,41 +559,51 @@ def fig3_best_variant_per_dataset(standard: dict):
 # Finding: no sweet spot  any alpha > 0 starts to lower NDCG.
 
 def fig4_alpha_sensitivity(standard: dict):
+    from matplotlib.patches import Patch
+
     ml = {k: v for k, v in standard.items() if k.startswith("ml")}
     if not ml:
         print("  skipping fig4: no ml results")
         return
 
+    panel_labels = {
+        "ml-1m":  "MovieLens 1M",
+        "ml-10m": "MovieLens 10M",
+        "ml-20m": "MovieLens 20M",
+    }
+
     n = len(ml)
-    fig, axes = plt.subplots(1, n, figsize=(6 * n, 5), sharey=False)
-    if n == 1:
-        axes = [axes]
+    fig, axes = plt.subplots(n, 1, figsize=(9, 5 * n), sharey=False, squeeze=False)
+    axes = axes.flatten()
 
     for ax, (ds, exps) in zip(axes, ml.items()):
         b_ndcg = m(get_baseline(exps), "ndcg@10")
-        ax.axhline(b_ndcg, color=VARIANT_COLORS["baseline"],
-                   lw=1.5, linestyle="--", label=f"baseline ({b_ndcg:.4f})")
+        ax.axhline(b_ndcg, color="#999", lw=1.2, linestyle="-",
+                   label=f"Baseline  nDCG = {b_ndcg:.4f}")
 
         for variant in ["rerank", "weighted"]:
             sub = [e for e in exps if e["variant"] == variant and e.get("alpha") is not None]
             if not sub:
                 continue
-            df = pd.DataFrame([{"alpha": e["alpha"], "ndcg": m(e, "ndcg@10")} for e in sub])
+            df    = pd.DataFrame([{"alpha": e["alpha"], "ndcg": m(e, "ndcg@10")} for e in sub])
             means = df.groupby("alpha")["ndcg"].mean()
-            stds  = df.groupby("alpha")["ndcg"].std().fillna(0)
+            lo    = df.groupby("alpha")["ndcg"].min()
+            hi    = df.groupby("alpha")["ndcg"].max()
             color = VARIANT_COLORS[variant]
+            v_label = "Rerank" if variant == "rerank" else "Weighted"
             ax.plot(means.index, means.values, marker="o",
-                    color=color, lw=2, ms=7, label=variant)
-            ax.fill_between(means.index, means - stds, means + stds,
-                            color=color, alpha=0.12)
+                    color=color, lw=2, ms=7, label=v_label)
+            ax.fill_between(means.index, lo, hi, color=color, alpha=0.15,
+                            label=f"{v_label} threshold range")
 
-        ax.set_xlabel("Alpha (penalty strength)\n0.1 = gentle,  0.3 = moderate,  1.0 = aggressive")
-        ax.set_ylabel("NDCG@10")
-        ax.set_title(f"Fig 4 — Effect of Alpha on NDCG ({ds.upper()})\n"
-                     "Is there a penalty level that helps without hurting?")
-        ax.legend(fontsize=9)
+        ax.set_xlabel("Penalty strength α")
+        ax.set_ylabel("nDCG@10")
+        ax.set_title(panel_labels.get(ds, ds.upper()))
+        ax.legend(fontsize=13)
         ax.set_xticks([0.1, 0.3, 1.0])
 
+    fig.suptitle("Penalty strength sensitivity", fontsize=12, y=1.02)
+    fig.tight_layout()
     save("fig4_alpha_sensitivity")
 
 
@@ -524,14 +625,14 @@ def fig5_threshold_comparison(standard: dict):
         print("  skipping fig5: no ml-1m results")
         return
 
-    exps = standard["ml-1m"]
+    exps   = standard["ml-1m"]
     b_ndcg = m(get_baseline(exps), "ndcg@10")
 
     rows = []
     for e in exps:
         if e["variant"] == "baseline":
             continue
-        t = e.get("threshold_type", "")
+        t     = e.get("threshold_type", "")
         label = f"fixed≤{e['fixed_threshold']}" if t == "fixed" else t.capitalize()
         rows.append({
             "threshold": label,
@@ -542,33 +643,53 @@ def fig5_threshold_comparison(standard: dict):
     if not rows:
         return
 
-    df = pd.DataFrame(rows)
-    order = [o for o in ["fixed≤1", "fixed≤2", "fixed≤3", "Median", "Modus"]
-             if o in df["threshold"].unique()]
+    df        = pd.DataFrame(rows)
+    thr_order = [o for o in ["fixed≤1", "fixed≤2", "fixed≤3", "Median", "Modus"]
+                 if o in df["threshold"].unique()]
+    thr_idx   = {t: i for i, t in enumerate(thr_order)}
+    df["x"]   = df["threshold"].map(thr_idx)
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    palette = {v: VARIANT_COLORS.get(v, "#888") for v in df["variant"].unique()}
+    variant_labels = {"filter": "Filter", "rerank": "Rerank", "weighted": "Weighted"}
 
-    ax = axes[0]
-    sns.barplot(data=df, x="threshold", y="ndcg", hue="variant",
-                order=order, palette=palette, ax=ax)
-    ax.axhline(b_ndcg, color=VARIANT_COLORS["baseline"],
-               lw=1.5, linestyle="--", label="baseline")
-    ax.set_title("Fig 5a — NDCG@10 by Threshold (ML-1M)\n"
-                 "Broader negative definition → more NDCG damage")
-    ax.set_xlabel("How we define 'negative'")
-    ax.set_ylabel("NDCG@10")
-    ax.legend(title="Variant", fontsize=8)
+    fig, axes = plt.subplots(2, 1, figsize=(9, 11))
 
-    ax = axes[1]
-    sns.barplot(data=df, x="threshold", y="sim_neg", hue="variant",
-                order=order, palette=palette, ax=ax)
-    ax.set_title("Fig 5b — sim_to_neg@10 by Threshold (ML-1M)\n"
-                 "Broader definition also reduces negative similarity more")
-    ax.set_xlabel("How we define 'negative'")
-    ax.set_ylabel("sim_to_neg@10\n(lower = top-10 further from dislikes)")
-    ax.legend(title="Variant", fontsize=8)
+    for ax, col, ylabel, show_baseline in [
+        (axes[0], "ndcg",    "nDCG@10",                               True),
+        (axes[1], "sim_neg", "sim_neg@10  (lower = stronger avoidance)", False),
+    ]:
+        if show_baseline:
+            ax.axhline(b_ndcg, color="#999", lw=1.2, linestyle="-",
+                       label=f"Baseline  nDCG = {b_ndcg:.4f}")
 
+        for variant in ["filter", "rerank", "weighted"]:
+            sub = df[df["variant"] == variant]
+            if sub.empty:
+                continue
+            color   = VARIANT_COLORS.get(variant, "#888")
+            v_label = variant_labels[variant]
+            grp     = sub.groupby("x")[col]
+            means   = grp.mean()
+            lo      = grp.min()
+            hi      = grp.max()
+
+            ax.plot(means.index, means.values, color=color, lw=2,
+                    marker="o", markersize=6, label=v_label, zorder=3)
+            # shade only where there is actual spread (rerank/weighted have multiple α)
+            if (hi - lo).max() > 1e-6:
+                ax.fill_between(means.index, lo.values, hi.values,
+                                color=color, alpha=0.15,
+                                label=f"{v_label} α range")
+
+        ax.set_xticks(range(len(thr_order)))
+        ax.set_xticklabels(thr_order)
+        ax.set_xlabel("Negative-threshold definition")
+        ax.set_ylabel(ylabel)
+        ax.set_title("nDCG@10" if show_baseline else "sim_neg@10")
+        ax.legend(fontsize=13)
+
+    fig.suptitle("Effect of negative-threshold definition  (MovieLens 1M)",
+                 fontsize=12, y=1.02)
+    fig.tight_layout()
     save("fig5_threshold_comparison")
 
 
@@ -606,41 +727,52 @@ def fig6_dataset_scaling(standard: dict):
         })
     df = pd.DataFrame(rows)
 
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+    fig, axes = plt.subplots(2, 1, figsize=(9, 11))
+
+    ds_display = {
+        "ml-1m":  "MovieLens 1M\n(1M ratings)",
+        "ml-10m": "MovieLens 10M\n(10M ratings)",
+        "ml-20m": "MovieLens 20M\n(20M ratings)",
+    }
+    ds_annot = {
+        "ml-1m":  "MovieLens 1M",
+        "ml-10m": "MovieLens 10M",
+        "ml-20m": "MovieLens 20M",
+    }
 
     ax = axes[0]
     x, w = np.arange(len(ds_order)), 0.35
-    ax.bar(x - w/2, df["baseline_ndcg"], w, color=VARIANT_COLORS["baseline"],
+    ax.bar(x - w/2, df["baseline_ndcg"], w, color="#888",
            alpha=0.85, label="Baseline SVD")
     ax.bar(x + w/2, df["best_rerank_ndcg"], w, color=VARIANT_COLORS["rerank"],
            alpha=0.85, label="Best Rerank")
     for i, row in df.iterrows():
         ax.text(i - w/2, row["baseline_ndcg"] + 0.001,
-                f"{row['baseline_ndcg']:.4f}", ha="center", fontsize=8)
+                f"{row['baseline_ndcg']:.4f}", ha="center", fontsize=13)
         ax.text(i + w/2, row["best_rerank_ndcg"] + 0.001,
-                f"{row['best_rerank_ndcg']:.4f}", ha="center", fontsize=8)
+                f"{row['best_rerank_ndcg']:.4f}", ha="center", fontsize=13)
     ax.set_xticks(x)
-    ax.set_xticklabels([f"{ds}\n({int(n_ratings[ds])}M ratings)" for ds in ds_order])
-    ax.set_ylabel("NDCG@10")
-    ax.set_title("Fig 6a — Baseline vs Best Rerank across Sizes\n"
-                 "Does more data help, and does rerank help more?")
-    ax.legend(fontsize=9)
+    ax.set_xticklabels([ds_display.get(ds, ds) for ds in ds_order])
+    ax.set_ylabel("nDCG@10")
+    ax.set_title("Baseline vs. best rerank")
+    ax.legend(fontsize=13)
 
     ax = axes[1]
     ax.plot(df["n_M_ratings"], df["baseline_ndcg"], "o-",
-            color=VARIANT_COLORS["baseline"], lw=2, ms=8, label="Baseline NDCG@10")
+            color="#555", lw=2, ms=8, label="Baseline nDCG@10")
     ax.plot(df["n_M_ratings"], df["baseline_hr"], "s--",
             color=DATASET_COLORS["ml-1m"], lw=2, ms=8, label="Baseline HR@10")
     for _, row in df.iterrows():
-        ax.annotate(row["dataset"],
+        ax.annotate(ds_annot.get(row["dataset"], row["dataset"]),
                     (row["n_M_ratings"], row["baseline_ndcg"]),
-                    textcoords="offset points", xytext=(5, 5), fontsize=9)
+                    textcoords="offset points", xytext=(5, 5), fontsize=13)
     ax.set_xlabel("Dataset size (millions of ratings)")
-    ax.set_ylabel("Metric")
-    ax.set_title("Fig 6b — Does SVD Improve with More Data?\n"
-                 "(each point = one MovieLens version)")
-    ax.legend(fontsize=9)
+    ax.set_ylabel("Metric value")
+    ax.set_title("Performance across dataset scale")
+    ax.legend(fontsize=13)
 
+    fig.suptitle("Dataset-scale performance comparison", fontsize=12, y=1.02)
+    fig.tight_layout()
     save("fig6_dataset_scaling")
 
 
@@ -682,7 +814,7 @@ def fig7_movielens_vs_spotify(standard: dict):
         ax.set_title(f"Fig 7 — {title_extra}")
         ax.set_xlabel("Variant")
         ax.set_ylabel("NDCG@10")
-        ax.legend(fontsize=8)
+        ax.legend(fontsize=13)
 
         if ds == "spotify":
             note = ("Skip→rating mapping: skip-before-30s=1, skip-before-end=2,\n"
@@ -754,7 +886,7 @@ def fig8_known_neg_eval(standard: dict, option_a: dict):
                  color="#666", lw=1.5, ms=6, label="Standard NDCG@10")
         ax2.plot(x, [inj_ndcg[v] for v in variants], "s--",
                  color="#222", lw=1.5, ms=6, label="Injected NDCG@10")
-        ax2.set_ylabel("NDCG@10", fontsize=9)
+        ax2.set_ylabel("NDCG@10", fontsize=13)
 
         ax.set_xticks(x)
         ax.set_xticklabels(variants)
@@ -765,39 +897,88 @@ def fig8_known_neg_eval(standard: dict, option_a: dict):
 
         h1, l1 = ax.get_legend_handles_labels()
         h2, l2 = ax2.get_legend_handles_labels()
-        ax.legend(h1 + h2, l1 + l2, fontsize=8)
+        ax.legend(h1 + h2, l1 + l2, fontsize=13)
 
     save("fig8_known_neg_eval")
 
 
 #  7.  TABLES
 
-def df_to_latex(df: "pd.DataFrame", path: Path, caption: str = "") -> None:
-    """Write a DataFrame to a .tex file without needing jinja2."""
-    cols = list(df.columns)
-    col_fmt = "l" + "r" * (len(cols) - 1)
-    header = " & ".join(str(c).replace("_", r"\_").replace("%", r"\%") for c in cols)
-    lines = [
-        r"\begin{table}[ht]",
-        r"\centering",
-        rf"\begin{{tabular}}{{{col_fmt}}}",
-        r"\toprule",
-        header + r" \\",
-        r"\midrule",
-    ]
-    for _, row in df.iterrows():
-        cells = []
-        for v in row:
-            s = str(v).replace("_", r"\_").replace("%", r"\%").replace("&", r"\&")
-            cells.append(s)
-        lines.append(" & ".join(cells) + r" \\")
-    lines += [
-        r"\bottomrule",
-        r"\end{tabular}",
-    ]
-    if caption:
-        lines.append(rf"\caption{{{caption}}}")
-    lines.append(r"\end{table}")
+def _escape_cell(v) -> str:
+    """Escape a table cell value for LaTeX."""
+    s = str(v)
+    if s in ("nan", "NaN", "None", ""):
+        return "--"
+    s = s.replace("&",  r"\&")
+    s = s.replace("%",  r"\%")
+    s = s.replace("_",  r"\_")
+    s = s.replace("≤",  r"$\leq$")
+    s = s.replace("≥",  r"$\geq$")
+    s = s.replace("→",  r"$\to$")
+    return s
+
+
+def df_to_latex(df: "pd.DataFrame", path: Path, caption: str = "",
+                longtable: bool = False, label: str = "") -> None:
+    """Write a DataFrame to a .tex file.
+
+    longtable=True generates a longtable environment (multi-page safe).
+    """
+    cols     = list(df.columns)
+    n_cols   = len(cols)
+    col_fmt  = "l" + "r" * (n_cols - 1)
+    header   = " & ".join(_escape_cell(c) for c in cols) + r" \\"
+
+    if longtable:
+        cap_line  = rf"\caption{{{caption}}}" if caption else ""
+        lab_line  = rf"\label{{{label}}}"     if label   else ""
+        cap_block = (cap_line + (lab_line if label else "") + r"\\") if caption else ""
+        lines = [
+            rf"\begin{{longtable}}{{{col_fmt}}}",
+        ]
+        if cap_block:
+            lines.append(cap_block)
+        lines += [
+            r"\toprule",
+            header,
+            r"\midrule",
+            r"\endfirsthead",
+            rf"\multicolumn{{{n_cols}}}{{l}}{{\tablename\ \thetable{{}} -- continued}}\\",
+            r"\toprule",
+            header,
+            r"\midrule",
+            r"\endhead",
+            r"\midrule",
+            rf"\multicolumn{{{n_cols}}}{{r}}{{\textit{{Continued on next page}}}}\\",
+            r"\endfoot",
+            r"\bottomrule",
+            r"\endlastfoot",
+        ]
+        for _, row in df.iterrows():
+            lines.append(" & ".join(_escape_cell(v) for v in row) + r" \\")
+        lines.append(r"\end{longtable}")
+    else:
+        lines = [
+            r"\begin{table}[ht]",
+            r"\centering",
+        ]
+        if caption:
+            lab = rf"\label{{{label}}}" if label else ""
+            lines.append(rf"\caption{{{caption}}}{lab}")
+        lines += [
+            rf"\begin{{tabular}}{{{col_fmt}}}",
+            r"\toprule",
+            header,
+            r"\midrule",
+        ]
+        for _, row in df.iterrows():
+            lines.append(" & ".join(_escape_cell(v) for v in row) + r" \\")
+        lines += [
+            r"\bottomrule",
+            r"\end{tabular}",
+            r"\end{table}",
+        ]
+
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -920,7 +1101,9 @@ def generate_tables(standard: dict, train_positive: dict,
     if rows:
         df = pd.DataFrame(rows).sort_values(["Dataset", "Variant", "Threshold", "Alpha"])
         df.to_csv(TABLES_DIR / "table1_all_results.csv", index=False)
-        df_to_latex(df, TABLES_DIR / "table1_all_results.tex", "All experiments across all datasets")
+        df_to_latex(df, TABLES_DIR / "table1_all_results.tex",
+                    "All post-hoc negative-feedback experiments across all datasets.",
+                    longtable=True, label="tab:all_results")
         print("  table1_all_results")
 
     # table 2: one row per dataset  baseline summary + quality verdict
@@ -1074,16 +1257,16 @@ def fig_arm_b_detection(arm_b: dict):
                    label=f"Random chance ≈ {10/501:.3f}")
 
         for i, (h, n_) in enumerate(zip(hit_vals, ndcg_vals)):
-            ax.text(i - w/2, h + 0.003, f"{h:.3f}", ha="center", fontsize=8)
-            ax.text(i + w/2, n_ + 0.003, f"{n_:.3f}", ha="center", fontsize=8)
+            ax.text(i - w/2, h + 0.003, f"{h:.3f}", ha="center", fontsize=13)
+            ax.text(i + w/2, n_ + 0.003, f"{n_:.3f}", ha="center", fontsize=13)
 
         ax.set_xticks(x)
-        ax.set_xticklabels(labels, fontsize=9)
+        ax.set_xticklabels(labels, fontsize=13)
         ax.set_xlabel("Negative threshold")
         ax.set_ylabel("Detection metric (higher = better dislike detection)")
         ax.set_title(f"Arm B — Dislike Detection Quality ({ds.upper()})\n"
                      "LNO eval: held-out dislike vs 500 neutral items")
-        ax.legend(fontsize=8)
+        ax.legend(fontsize=13)
         ax.text(0.02, 0.02,
                 "LNO = leave-one-negative-out. High rank for disliked item = correct detection.\n"
                 "501 candidates: 1 held-out dislike + 500 neutral unseen items.",
@@ -1137,7 +1320,7 @@ def fig_arm_c_headline(arm_a: dict, arm_c: dict, standard: dict):
                 sign = "+" if delta >= 0 else ""
                 ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.0003,
                         f"{sign}{delta:.1f}%", ha="center", va="bottom",
-                        fontsize=8, fontweight="bold")
+                        fontsize=13, fontweight="bold")
                 ax.text(bar.get_x() + bar.get_width() / 2,
                         bar.get_height() / 2 if bar.get_height() > 0.002 else bar.get_height() + 0.001,
                         f"{val:.4f}", ha="center", va="center", fontsize=7.5, color="white"
@@ -1145,7 +1328,7 @@ def fig_arm_c_headline(arm_a: dict, arm_c: dict, standard: dict):
 
             ylabel = ("NDCG@10 (↑ better)" if metric == "ndcg@10"
                       else "sim_to_neg@10 (↓ further from dislikes)")
-            ax.set_ylabel(ylabel, fontsize=9)
+            ax.set_ylabel(ylabel, fontsize=13)
             if row == 0:
                 best_c_info = ""
                 if best_arm_c:
@@ -1153,7 +1336,7 @@ def fig_arm_c_headline(arm_a: dict, arm_c: dict, standard: dict):
                     nl   = best_arm_c.get("neg_label",     "?")
                     alph = best_arm_c.get("alpha",          "?")
                     best_c_info = f"\nBest Arm C: pos≥{pt}, {nl}, α={alph}"
-                ax.set_title(f"Arm A vs Arm C — {ds.upper()}{best_c_info}", fontsize=9)
+                ax.set_title(f"Arm A vs Arm C — {ds.upper()}{best_c_info}", fontsize=13)
 
     fig.suptitle("Fig — Arm A vs Arm C: Does the hybrid beat positive-only SVD?\n"
                  "Δ% vs standard SVD baseline shown on bars. No significance testing yet.",
@@ -1208,7 +1391,7 @@ def fig_arm_d_comparison(arm_a: dict, arm_c: dict, arm_d: dict, standard: dict):
                 ax.text(bar.get_x() + bar.get_width() / 2,
                         bar.get_height() + 0.0003,
                         f"{sign}{delta:.1f}%", ha="center", va="bottom",
-                        fontsize=8, fontweight="bold")
+                        fontsize=13, fontweight="bold")
                 ax.text(bar.get_x() + bar.get_width() / 2,
                         bar.get_height() / 2 if bar.get_height() > 0.002 else bar.get_height() + 0.001,
                         f"{val:.4f}", ha="center", va="center",
@@ -1216,14 +1399,14 @@ def fig_arm_d_comparison(arm_a: dict, arm_c: dict, arm_d: dict, standard: dict):
 
             ylabel = ("NDCG@10 (↑ better)" if metric == "ndcg@10"
                       else "sim_to_neg@10 (↓ further from dislikes)")
-            ax.set_ylabel(ylabel, fontsize=9)
+            ax.set_ylabel(ylabel, fontsize=13)
             if row == 0:
                 d_info = ""
                 if best_arm_d:
                     pos = best_arm_d.get("pos_threshold", "?")
                     neg = best_arm_d.get("neg_threshold", "?")
                     d_info = f"\nBest Arm D: pos≥{pos}, neg≤{neg}"
-                ax.set_title(f"Arm A vs Arm D — {ds.upper()}{d_info}", fontsize=9)
+                ax.set_title(f"Arm A vs Arm D — {ds.upper()}{d_info}", fontsize=13)
 
     fig.suptitle(
         "Fig — Arm A vs Arm D: Does joint positive-negative training improve ranking?\n"
@@ -1424,7 +1607,7 @@ def fig9_training_time_vs_posthoc(standard: dict, train_positive: dict):
             delta = (val - b_ndcg) / b_ndcg * 100 if b_ndcg else 0
             sign = "+" if delta >= 0 else ""
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.0005,
-                    f"{sign}{delta:.1f}%", ha="center", va="bottom", fontsize=8, fontweight="bold")
+                    f"{sign}{delta:.1f}%", ha="center", va="bottom", fontsize=13, fontweight="bold")
 
         ax.set_ylim(0, max(ndcgs) * 1.15)
         ax.set_ylabel("NDCG@10")

@@ -1,0 +1,33 @@
+% Chapter 5.7 — Master Results Table: All Methods × All Datasets
+% This is the central summary table for the thesis.
+% Requires: \usepackage{booktabs} in preamble
+% Arm B is shown as HR@10 (detection task, not ranking task)
+\begin{table}[ht]
+\centering
+\caption{Test-set nDCG@10 for all evaluated strategies across all four datasets.
+  Baseline = full-rating SVD trained on all ratings.
+  Arm~A = positive-only SVD ($\theta^+\!\geq\!4$).
+  Arm~B = dislike detector (best HR@10 over thresholds; detection task only).
+  Arm~C = post-hoc hybrid re-ranking (best config).
+  Arm~D = joint binary SVD (best config per dataset).
+  Relative improvement ($\Delta$) is computed against the full-rating baseline.
+  ``---'' = not applicable (Arm~B optimizes detection, not top-$N$ ranking).}
+\label{tab:master_results}
+\begin{tabular}{lrrrrr}
+\toprule
+Dataset        & Baseline & Arm~A  & Arm~B (HR@10) & Arm~C  & Arm~D  \\
+               & nDCG@10  & nDCG@10 & det.\ HR@10  & nDCG@10 & nDCG@10 \\
+\midrule
+MovieLens 1M   & 0.0684   & 0.0811  & 0.11\,(neg\,$\leq$1)  & 0.0707  & \textbf{0.1122} \\
+MovieLens 10M  & 0.0872   & 0.2219  & 0.19\,(neg\,$\leq$1)  & 0.0865  & \textbf{0.2535} \\
+MovieLens 20M  & 0.0826   & 0.2405  & 0.22\,(neg\,$\leq$1)  & 0.0826  & \textbf{0.2995} \\
+Spotify MSSD   & 0.0176   & \textbf{0.3447}  & 0.42\,(neg\,$\leq$2)  & 0.3423  & 0.3117  \\
+\midrule
+\multicolumn{6}{l}{\textit{Relative improvement vs.\ full-rating baseline (Arm~A / Arm~D):}} \\
+MovieLens 1M   & ---      & $+18.6\%$  & ---  & $+3.4\%$  & $+64.0\%$ \\
+MovieLens 10M  & ---      & $+154.5\%$ & ---  & $-0.8\%$  & $+190.7\%$ \\
+MovieLens 20M  & ---      & $+191.2\%$ & ---  & $\approx\!0\%$ & $+262.6\%$ \\
+Spotify MSSD   & ---      & $+1858.5\%$ & --- & $+1844.9\%$ & $+1671.0\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
